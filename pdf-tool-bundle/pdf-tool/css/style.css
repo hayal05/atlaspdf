@@ -100,3 +100,13 @@ h1{font-size:clamp(25px,3.2vw,31px);line-height:1.1;letter-spacing:-1px}
 .size-disclaimer{grid-column:1/-1;margin:2px 0 0;padding-top:8px;border-top:1px solid #eef1f5;color:#98a4b5;font-size:9px;line-height:1.4}
 .size-assessment[hidden]{display:none!important}
 @media(max-width:520px){.size-assessment{grid-template-columns:1fr;gap:8px;padding:12px}.size-main strong{font-size:21px}.size-disclaimer{margin-top:0}}
+
+
+/* Show placed pictures and text in the page preview before exporting. */
+.preview-page-stage{position:relative;flex:none;line-height:0;max-width:100%;box-shadow:0 4px 22px #17243a2b;background:#fff}
+.preview-page-stage[hidden]{display:none!important}
+.preview-page-stage>canvas{display:block;max-width:100%;height:auto;margin:0!important;box-shadow:none!important}
+.preview-items{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.preview-item{position:absolute;overflow:hidden}
+.preview-item img{display:block;width:100%;height:100%;object-fit:fill}
+.preview-text{white-space:pre;line-height:1.2;min-width:1em;font-family:Helvetica,Arial,sans-serif}

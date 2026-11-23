@@ -30,7 +30,7 @@ async function refresh() {
   $('previewEdit').disabled = $('previewRotate').disabled = $('previewRemove').disabled = !selected;
   if (!selected) {
     $('previewTitle').textContent = 'Page preview'; $('previewMeta').textContent = 'Select a page';
-    $('previewCanvas').hidden = true; $('previewEmpty').hidden = false; return;
+    $('previewCanvas').hidden = true; $('previewPageStage').hidden = true; $('previewEmpty').hidden = false; return;
   }
   $('previewTitle').textContent = selected.file.name;
   $('previewMeta').textContent = `Page ${selected.idx + 1} · ${state.selected + 1} of ${n}`;
