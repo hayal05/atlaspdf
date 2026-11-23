@@ -48,7 +48,7 @@
       </aside>
       <section class="preview-panel" aria-label="Selected PDF page preview">
         <div class="preview-toolbar"><div><strong id="previewTitle">Page preview</strong><span id="previewMeta">Select a page</span></div><div class="preview-actions"><button id="previewEdit" class="tool-button" disabled title="Edit selected page">✎ Edit</button><button id="previewRotate" class="tool-button" disabled title="Rotate selected page">↻ Rotate</button><button id="previewRemove" class="tool-button danger-tool" disabled title="Remove selected page">✕</button></div></div>
-        <div id="previewCanvasArea" class="preview-canvas-area"><div id="previewEmpty" class="preview-empty"><span>PDF</span><strong>Select a page to preview</strong></div><canvas id="previewCanvas" hidden></canvas></div>
+        <div id="previewCanvasArea" class="preview-canvas-area"><div id="previewEmpty" class="preview-empty"><span>PDF</span><strong>Select a page to preview</strong></div><div id="previewPageStage" class="preview-page-stage" hidden><canvas id="previewCanvas"></canvas><div id="previewItems" class="preview-items" aria-hidden="true"></div></div></div>
         <div class="preview-zoom-controls" aria-label="Preview zoom controls"><button id="zoomOut" type="button" title="Zoom out" aria-label="Zoom out" disabled>−</button><span id="zoomLevel" aria-live="polite">100%</span><button id="zoomIn" type="button" title="Zoom in" aria-label="Zoom in" disabled>＋</button></div>
       </section>
     </div>
