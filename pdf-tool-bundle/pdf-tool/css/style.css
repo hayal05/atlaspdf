@@ -62,3 +62,6 @@ h1{font-size:clamp(25px,3.2vw,31px);line-height:1.1;letter-spacing:-1px}
   .intro-copy{margin-top:3px;font-size:12px}
   .privacy-note{padding:6px 9px}
 }
+
+/* Hide the initial upload drop zone once at least one PDF page is loaded. */
+.upload-zone[hidden]{display:none!important}

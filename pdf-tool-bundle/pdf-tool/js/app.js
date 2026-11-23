@@ -17,6 +17,7 @@ async function refresh() {
   const n = state.pages.length, files = new Set(state.pages.map(p => p.file.id)).size;
   $('empty').hidden = n > 0;
   $('documentWorkspace').hidden = n === 0;
+  $('uploadZone').hidden = n > 0;
   $('download').disabled = !n || busy;
   $('info').textContent = n ? `${n} page${n > 1 ? 's' : ''} · ${files} PDF file${files > 1 ? 's' : ''}` : '';
   $('pageCount').textContent = n ? `${n} total` : '';
