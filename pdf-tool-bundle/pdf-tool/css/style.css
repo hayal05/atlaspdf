@@ -74,3 +74,12 @@ h1{font-size:clamp(25px,3.2vw,31px);line-height:1.1;letter-spacing:-1px}
 .workspace.has-documents .documents-section>.section-heading{display:none}
 .workspace.has-documents .documents-section{margin-top:0}
 @media(max-width:640px){.workspace.has-documents{padding-top:8px}}
+
+
+/* Zoom controls anchored below the large PDF page preview. */
+.preview-zoom-controls{min-height:48px;display:flex;align-items:center;justify-content:center;gap:13px;border-top:1px solid var(--line);background:#fff}
+.preview-zoom-controls button{display:grid;place-items:center;width:30px;height:30px;border:1px solid var(--line);border-radius:7px;background:#fff;color:#40516b;font-size:19px;line-height:1}
+.preview-zoom-controls button:hover:not(:disabled){color:var(--blue);border-color:#b9cbea;background:var(--blue-soft)}
+.preview-zoom-controls button:disabled{opacity:.35;cursor:not-allowed}
+.preview-zoom-controls span{min-width:43px;text-align:center;color:#66758b;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.preview-canvas-area canvas{margin:0}
