@@ -1,7 +1,7 @@
 import { loadFiles, exportPdf, download } from './merge.js';
 import { renderGrid, renderPreview } from './pages.js';
 import { compress } from './compress.js';
-import { openEditor, rotateItems, setClipboardImage } from './editor.js';
+import { openEditor, rotateItems, setClipboardImage, hasClipboardImage, pasteClipboardToPage } from './editor.js';
 
 const $ = id => document.getElementById(id);
 const state = { pages: [], selected: -1, zoom: 1 };
@@ -43,6 +43,7 @@ async function refresh() {
   const selected = state.pages[state.selected];
   $('previewEdit').disabled = $('previewRotate').disabled = $('previewRemove').disabled = !selected;
   $('previewSnip').disabled = !selected;
+  $('previewPaste').disabled = !selected || !hasClipboardImage();
   if (snipMode && !selected) stopSnip();
   if (!selected) {
     $('previewTitle').textContent = 'Page preview'; $('previewMeta').textContent = 'Select a page';
@@ -131,7 +132,8 @@ function startSnip() {
       const bytes = new Uint8Array(await blob.arrayBuffer());
       const url = URL.createObjectURL(blob);
       setClipboardImage({ bytes, mime: 'image/png', url });
-      say('Snip copied. Select a destination page and choose Edit → Paste.');
+      $('previewPaste').disabled = state.selected < 0;
+      say('Snip copied. Select the destination page and click Paste Snip.');
     } catch (err) { console.error(err); say('Could not capture that area.', true); }
     stopSnip();
   };
@@ -158,6 +160,15 @@ $('picker').onchange = e => { add(e.target.files); e.target.value = ''; };
 $('download').onclick = save;
 $('previewEdit').onclick = () => { if (state.selected >= 0) actions.edit(state.selected); };
 $('previewSnip').onclick = startSnip;
+$('previewPaste').onclick = async () => {
+  const page = state.pages[state.selected];
+  if (!page || !hasClipboardImage()) return;
+  try {
+    await pasteClipboardToPage(page);
+    refresh();
+    say('Snip pasted onto the selected page.');
+  } catch (e) { console.error(e); say('Could not paste the snipped image.', true); }
+};
 $('previewRotate').onclick = () => { if (state.selected >= 0) actions.rotate(state.selected); };
 $('previewRemove').onclick = () => { if (state.selected >= 0) actions.remove(state.selected); };
 $('zoomOut').onclick = () => { state.zoom = Math.max(0.5, Math.round((state.zoom - 0.25) * 100) / 100); refresh(); };

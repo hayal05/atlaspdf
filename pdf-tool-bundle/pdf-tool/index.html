@@ -47,7 +47,7 @@
         <div id="grid" class="page-list"></div>
       </aside>
       <section class="preview-panel" aria-label="Selected PDF page preview">
-        <div class="preview-toolbar"><div><strong id="previewTitle">Page preview</strong><span id="previewMeta">Select a page</span></div><div class="preview-actions"><button id="previewSnip" class="tool-button" disabled title="Select an area of this page to copy">▧ Snip</button><button id="previewEdit" class="tool-button" disabled title="Edit selected page">✎ Edit</button><button id="previewRotate" class="tool-button" disabled title="Rotate selected page">↻ Rotate</button><button id="previewRemove" class="tool-button danger-tool" disabled title="Remove selected page">✕</button></div></div>
+        <div class="preview-toolbar"><div><strong id="previewTitle">Page preview</strong><span id="previewMeta">Select a page</span></div><div class="preview-actions"><button id="previewSnip" class="tool-button" disabled title="Select an area of this page to copy">▧ Snip</button><button id="previewPaste" class="tool-button" disabled title="Paste the last snipped area onto this page">▧ Paste Snip</button><button id="previewEdit" class="tool-button" disabled title="Edit selected page">✎ Edit</button><button id="previewRotate" class="tool-button" disabled title="Rotate selected page">↻ Rotate</button><button id="previewRemove" class="tool-button danger-tool" disabled title="Remove selected page">✕</button></div></div>
         <div id="previewCanvasArea" class="preview-canvas-area"><div id="previewEmpty" class="preview-empty"><span>PDF</span><strong>Select a page to preview</strong></div><div id="previewPageStage" class="preview-page-stage" hidden><canvas id="previewCanvas"></canvas><div id="previewItems" class="preview-items" aria-hidden="true"></div></div></div>
         <div class="preview-zoom-controls" aria-label="Preview zoom controls"><button id="zoomOut" type="button" title="Zoom out" aria-label="Zoom out" disabled>−</button><span id="zoomLevel" aria-live="polite">100%</span><button id="zoomIn" type="button" title="Zoom in" aria-label="Zoom in" disabled>＋</button></div>
       </section>
@@ -62,7 +62,7 @@
 <div id="editor" hidden>
   <div id="etools">
     <strong class="editor-title">Edit PDF page</strong>
-    <button id="eimg">＋ Picture</button><button id="epaste" disabled title="Paste the last snipped area">▧ Paste</button><button id="etxt">＋ Text</button>
+    <button id="eimg">＋ Picture</button><button id="etxt">＋ Text</button>
     <span id="eimgctl" hidden><label>Opacity <input id="eop" type="range" min="0.1" max="1" step="0.05"></label></span>
     <span id="etxtctl" hidden><label>Size <input id="esz" type="number" min="4" max="300" style="width:64px"></label> <label>Color <input id="ecol" type="color"></label></span>
     <button id="edel" hidden>Delete item</button><span id="emsg"></span><button id="edone" class="button button-primary">Done</button>
