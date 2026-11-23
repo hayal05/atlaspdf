@@ -4,7 +4,7 @@ import { compress } from './compress.js';
 import { openEditor, rotateItems } from './editor.js';
 
 const $ = id => document.getElementById(id);
-const state = { pages: [], selected: -1 };
+const state = { pages: [], selected: -1, zoom: 1 };
 let busy = false, msgTimer, previewToken = 0;
 const setBusy = b => { busy = b; document.body.classList.toggle('busy', b); };
 
@@ -23,6 +23,9 @@ async function refresh() {
   $('info').textContent = n ? `${n} page${n > 1 ? 's' : ''} · ${files} PDF file${files > 1 ? 's' : ''}` : '';
   $('pageCount').textContent = n ? `${n} total` : '';
   renderGrid($('grid'), state, actions);
+  $('zoomLevel').textContent = `${Math.round(state.zoom * 100)}%`;
+  $('zoomOut').disabled = !n || state.zoom <= 0.5;
+  $('zoomIn').disabled = !n || state.zoom >= 3;
   const selected = state.pages[state.selected];
   $('previewEdit').disabled = $('previewRotate').disabled = $('previewRemove').disabled = !selected;
   if (!selected) {
@@ -33,12 +36,12 @@ async function refresh() {
   $('previewMeta').textContent = `Page ${selected.idx + 1} · ${state.selected + 1} of ${n}`;
   $('previewEmpty').hidden = true; $('previewCanvas').hidden = false;
   const token = ++previewToken;
-  try { await renderPreview(selected, $('previewCanvas'), $('previewCanvasArea')); }
+  try { await renderPreview(selected, $('previewCanvas'), $('previewCanvasArea'), state.zoom); }
   catch (e) { console.error(e); if (token === previewToken) say('Could not render this PDF page.', true); }
 }
 
 const actions = {
-  select(i) { state.selected = i; refresh(); },
+  select(i) { state.selected = i; state.zoom = 1; refresh(); },
   async rotate(i) { const p = state.pages[i]; if (p.items?.length) await rotateItems(p); p.rot = (p.rot + 90) % 360; refresh(); },
   edit(i) { openEditor(state.pages[i], refresh); },
   remove(i) { state.pages.splice(i, 1); state.selected = state.pages.length ? Math.min(i, state.pages.length - 1) : -1; refresh(); },
@@ -82,6 +85,8 @@ $('download').onclick = save;
 $('previewEdit').onclick = () => { if (state.selected >= 0) actions.edit(state.selected); };
 $('previewRotate').onclick = () => { if (state.selected >= 0) actions.rotate(state.selected); };
 $('previewRemove').onclick = () => { if (state.selected >= 0) actions.remove(state.selected); };
+$('zoomOut').onclick = () => { state.zoom = Math.max(0.5, Math.round((state.zoom - 0.25) * 100) / 100); refresh(); };
+$('zoomIn').onclick = () => { state.zoom = Math.min(3, Math.round((state.zoom + 0.25) * 100) / 100); refresh(); };
 const isFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes('Files');
 window.addEventListener('dragover', e => { if (isFiles(e)) { e.preventDefault(); $('uploadZone').classList.add('hot'); } });
 window.addEventListener('dragleave', e => { if (!e.relatedTarget) $('uploadZone').classList.remove('hot'); });
