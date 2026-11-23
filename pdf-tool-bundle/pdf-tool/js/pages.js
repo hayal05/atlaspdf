@@ -27,12 +27,9 @@ export function renderGrid(grid, state, a) {
     const card = el('div', 'page-card' + (i === state.selected ? ' sel' : '')); card.draggable = true;
     const thumb = el('div', 'page-thumb'), rot = el('div', 'rot'); rot.style.transform = `rotate(${p.rot}deg)`;
     thumb.append(rot); p.box = rot;
-    const label = el('div', 'page-label', `<${i + 1}> ${p.file.name}`); label.title = `${p.file.name}, page ${p.idx + 1}`;
-    const tools = el('div', 'page-tools');
-    const ed = el('button', '', '✎'), r = el('button', '', '↻'), d = el('button', '', '×');
-    ed.title = 'Edit page'; r.title = 'Rotate page'; d.title = 'Remove page';
-    ed.onclick = e => { e.stopPropagation(); a.edit(i); }; r.onclick = e => { e.stopPropagation(); a.rotate(i); }; d.onclick = e => { e.stopPropagation(); a.remove(i); };
-    tools.append(ed,r,d); card.append(thumb,label,tools);
+    const label = el('div', 'page-label', String(i + 1));
+    label.setAttribute('aria-label', `Page ${i + 1}`);
+    card.append(thumb, label);
     card.onclick = () => a.select(i);
     card.ondragstart = e => { e.dataTransfer.setData('text/x-page', String(i)); e.dataTransfer.effectAllowed = 'move'; card.classList.add('drag'); };
     card.ondragend = () => card.classList.remove('drag');
