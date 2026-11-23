@@ -45,7 +45,7 @@ export function renderGrid(grid, state, a) {
 }
 
 let previewRender = 0;
-export async function renderPreview(page, canvas, area) {
+export async function renderPreview(page, canvas, area, zoom = 1) {
   const token = ++previewRender, dpr = Math.min(window.devicePixelRatio || 1, 2);
   const docPage = await page.file.doc.getPage(page.idx + 1);
   const base = docPage.getViewport({ scale: 1 });
@@ -54,8 +54,8 @@ export async function renderPreview(page, canvas, area) {
   const availableW = Math.max(1, area.clientWidth - 16);
   const availableH = Math.max(1, area.clientHeight - 16);
   // Fit the complete page inside the preview area without vertical scrolling.
-  const scale = Math.min(availableW / rotated.width, availableH / rotated.height, 2.1);
-  area.style.alignItems = 'center';
+  const fitScale = Math.min(availableW / rotated.width, availableH / rotated.height, 2.1);
+  const scale = fitScale * zoom;
   const viewport = docPage.getViewport({ scale: scale * dpr, rotation });
   canvas.width = Math.floor(viewport.width); canvas.height = Math.floor(viewport.height);
   canvas.style.width = (viewport.width / dpr) + 'px'; canvas.style.height = (viewport.height / dpr) + 'px';
