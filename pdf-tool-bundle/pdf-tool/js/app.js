@@ -1,10 +1,11 @@
 import { loadFiles, exportPdf, download } from './merge.js';
 import { renderGrid, renderPreview } from './pages.js';
 import { compress } from './compress.js';
-import { openEditor, rotateItems } from './editor.js';
+import { openEditor, rotateItems, setClipboardImage } from './editor.js';
 
 const $ = id => document.getElementById(id);
 const state = { pages: [], selected: -1, zoom: 1 };
+let snipMode = false, snipOverlay = null, snipStart = null;
 let busy = false, msgTimer, previewToken = 0;
 const setBusy = b => { busy = b; document.body.classList.toggle('busy', b); };
 
@@ -41,6 +42,8 @@ async function refresh() {
   $('zoomIn').disabled = !n || state.zoom >= 3;
   const selected = state.pages[state.selected];
   $('previewEdit').disabled = $('previewRotate').disabled = $('previewRemove').disabled = !selected;
+  $('previewSnip').disabled = !selected;
+  if (snipMode && !selected) stopSnip();
   if (!selected) {
     $('previewTitle').textContent = 'Page preview'; $('previewMeta').textContent = 'Select a page';
     $('previewCanvas').hidden = true; $('previewPageStage').hidden = true; $('previewEmpty').hidden = false; return;
@@ -76,6 +79,64 @@ async function add(files) {
   finally { setBusy(false); refresh(); }
 }
 
+function stopSnip() {
+  snipMode = false; snipStart = null;
+  if (snipOverlay) snipOverlay.remove();
+  snipOverlay = null;
+  $('previewSnip').classList.remove('active');
+  $('previewSnip').textContent = '▧ Snip';
+}
+
+function startSnip() {
+  if (state.selected < 0 || busy) return;
+  if (snipMode) { stopSnip(); return; }
+  const stage = $('previewPageStage'), source = $('previewCanvas');
+  if (stage.hidden || !source.width) return;
+  snipMode = true;
+  $('previewSnip').classList.add('active');
+  $('previewSnip').textContent = 'Cancel snip';
+  snipOverlay = document.createElement('div');
+  snipOverlay.className = 'snip-overlay';
+  snipOverlay.setAttribute('aria-label', 'Drag to select an area to snip');
+  const selection = document.createElement('div');
+  selection.className = 'snip-selection';
+  snipOverlay.append(selection);
+  stage.append(snipOverlay);
+  let start = null;
+  snipOverlay.onpointerdown = e => {
+    e.preventDefault(); start = { x: e.offsetX, y: e.offsetY };
+    selection.style.cssText = `left:${start.x}px;top:${start.y}px;width:0;height:0;display:block`;
+    snipOverlay.setPointerCapture(e.pointerId);
+  };
+  snipOverlay.onpointermove = e => {
+    if (!start) return;
+    const x = Math.min(start.x, e.offsetX), y = Math.min(start.y, e.offsetY);
+    selection.style.left = x + 'px'; selection.style.top = y + 'px';
+    selection.style.width = Math.abs(e.offsetX - start.x) + 'px';
+    selection.style.height = Math.abs(e.offsetY - start.y) + 'px';
+  };
+  snipOverlay.onpointerup = async e => {
+    if (!start) return;
+    const x = Math.min(start.x, e.offsetX), y = Math.min(start.y, e.offsetY);
+    const w = Math.abs(e.offsetX - start.x), h = Math.abs(e.offsetY - start.y);
+    start = null;
+    if (w < 8 || h < 8) { stopSnip(); say('Select a larger area to snip.', true); return; }
+    const rect = source.getBoundingClientRect(), factorX = source.width / rect.width, factorY = source.height / rect.height;
+    const crop = document.createElement('canvas');
+    crop.width = Math.max(1, Math.round(w * factorX)); crop.height = Math.max(1, Math.round(h * factorY));
+    crop.getContext('2d').drawImage(source, Math.round(x * factorX), Math.round(y * factorY), crop.width, crop.height, 0, 0, crop.width, crop.height);
+    try {
+      const blob = await new Promise(resolve => crop.toBlob(resolve, 'image/png'));
+      if (!blob) throw new Error('Could not create snip');
+      const bytes = new Uint8Array(await blob.arrayBuffer());
+      const url = URL.createObjectURL(blob);
+      setClipboardImage({ bytes, mime: 'image/png', url });
+      say('Snip copied. Select a destination page and choose Edit → Paste.');
+    } catch (err) { console.error(err); say('Could not capture that area.', true); }
+    stopSnip();
+  };
+}
+
 async function save() {
   setBusy(true); $('download').disabled = true; $('download').textContent = 'Building…';
   try {
@@ -96,6 +157,7 @@ $('empty').onclick = () => $('picker').click();
 $('picker').onchange = e => { add(e.target.files); e.target.value = ''; };
 $('download').onclick = save;
 $('previewEdit').onclick = () => { if (state.selected >= 0) actions.edit(state.selected); };
+$('previewSnip').onclick = startSnip;
 $('previewRotate').onclick = () => { if (state.selected >= 0) actions.rotate(state.selected); };
 $('previewRemove').onclick = () => { if (state.selected >= 0) actions.remove(state.selected); };
 $('zoomOut').onclick = () => { state.zoom = Math.max(0.5, Math.round((state.zoom - 0.25) * 100) / 100); refresh(); };
