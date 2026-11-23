@@ -45,3 +45,20 @@ button,select,input{font:inherit}button{cursor:pointer}
 .sidebar-add{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;border:1px solid #cbd8ec;border-radius:8px;background:#f4f7ff;color:var(--blue);font-size:21px;line-height:1;transition:background .15s,border-color .15s,transform .15s}
 .sidebar-add:hover{background:var(--blue-soft);border-color:#9fb8e8;transform:translateY(-1px)}
 .sidebar-add:focus-visible{outline:3px solid #2d63e244;outline-offset:2px}
+
+
+/* Compact the introductory hero to give the PDF workspace more room. */
+.workspace{padding-top:20px}
+.intro{gap:14px;margin-bottom:14px}
+.eyebrow{margin-bottom:3px}
+h1{font-size:clamp(25px,3.2vw,31px);line-height:1.1;letter-spacing:-1px}
+.intro-copy{margin-top:4px;font-size:13px}
+.privacy-note{gap:8px;padding:7px 10px}
+.privacy-icon{width:27px;height:27px;font-size:16px}
+@media(max-width:640px){
+  .workspace{padding-top:15px}
+  .intro{gap:8px;margin-bottom:12px}
+  h1{font-size:26px}
+  .intro-copy{margin-top:3px;font-size:12px}
+  .privacy-note{padding:6px 9px}
+}
