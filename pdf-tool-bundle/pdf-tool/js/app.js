@@ -19,7 +19,7 @@ function refresh() {
   const n = state.pages.length, files = new Set(state.pages.map(p => p.file.id)).size;
   $('empty').hidden = n > 0;
   $('download').disabled = !n || busy;
-  $('info').textContent = n ? `${n} page${n > 1 ? 's' : ''} from ${files} file${files > 1 ? 's' : ''}. New PDFs are added after the selected page, or at the end if none is selected.` : '';
+  $('info').textContent = n ? `${n} page${n > 1 ? 's' : ''} · ${files} PDF file${files > 1 ? 's' : ''}` : '';
   renderGrid($('grid'), state, actions);
 }
 
@@ -45,17 +45,23 @@ const actions = {
 };
 
 async function add(files) {
-  files = [...files];
+  files = [...files].filter(f => f.type === 'application/pdf' || f.name.toLowerCase().endsWith('.pdf'));
   if (!files.length || busy) return;
   const total = files.reduce((s, f) => s + f.size, 0);
   if (total > 150 * 1048576 && !confirm(`These files add up to ${Math.round(total / 1048576)} MB. Large files can be slow or crash the browser tab. Continue?`)) return;
-  setBusy(true); $('info').textContent = 'Loading…';
-  const { pages, errors } = await loadFiles(files, t => { $('info').textContent = t; });
-  const at = state.selected >= 0 ? state.selected + 1 : state.pages.length;
-  state.pages.splice(at, 0, ...pages);
-  state.selected = -1;
-  setBusy(false); refresh();
-  if (errors.length) say(errors.join(' · '), true);
+  setBusy(true); $('info').textContent = 'Loading PDFs…';
+  try {
+    const { pages, errors } = await loadFiles(files, t => { $('info').textContent = t; });
+    const at = state.selected >= 0 ? state.selected + 1 : state.pages.length;
+    state.pages.splice(at, 0, ...pages);
+    state.selected = -1;
+    if (errors.length) say(errors.join(' · '), true);
+  } catch (e) {
+    console.error(e);
+    say('Could not load those PDFs. Check that they are valid and not password-protected.', true);
+  } finally {
+    setBusy(false); refresh();
+  }
 }
 
 async function save() {
@@ -64,23 +70,39 @@ async function save() {
     const built = await exportPdf(state.pages);
     let res;
     try { res = await compress(built, $('quality').value, t => { $('download').textContent = t; }); }
-    catch (e) { console.error(e); res = { bytes: built, report: 'Compression failed (the file may be too large for this browser), so it was downloaded without compression.' }; }
+    catch (e) { console.error(e); res = { bytes: built, report: 'Compression failed, so the original-quality PDF was downloaded.' }; }
     const { bytes, report } = res;
     download(bytes);
     say(report, false, 12000);
   }
-  catch (e) { say('Couldn’t build the PDF. One of the files may be encrypted or damaged.', true); console.error(e); }
-  setBusy(false); $('download').textContent = 'Download'; refresh();
+  catch (e) { say('Could not build the PDF. One of the files may be encrypted or damaged.', true); console.error(e); }
+  setBusy(false); $('download').textContent = '↓ Download PDF'; refresh();
 }
 
 const isFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes('Files');
-$('add').onclick = () => $('picker').click();
-$('empty').onclick = () => $('picker').click();
+const openPicker = () => { if (!busy) $('picker').click(); };
+$('add').onclick = openPicker;
+$('browse').onclick = e => { e.stopPropagation(); openPicker(); };
+$('uploadZone').onclick = e => { if (!e.target.closest('button')) openPicker(); };
+$('empty').onclick = openPicker;
 $('picker').onchange = e => { add(e.target.files); e.target.value = ''; };
 $('download').onclick = save;
-window.addEventListener('dragover', e => { if (isFiles(e)) { e.preventDefault(); $('empty').classList.add('hot'); } });
-window.addEventListener('dragleave', e => { if (!e.relatedTarget) $('empty').classList.remove('hot'); });
-window.addEventListener('drop', e => { if (isFiles(e)) { e.preventDefault(); $('empty').classList.remove('hot'); add(e.dataTransfer.files); } });
+window.addEventListener('dragover', e => {
+  if (isFiles(e)) {
+    e.preventDefault();
+    $('uploadZone').classList.add('hot');
+  }
+});
+window.addEventListener('dragleave', e => {
+  if (!e.relatedTarget) $('uploadZone').classList.remove('hot');
+});
+window.addEventListener('drop', e => {
+  if (isFiles(e)) {
+    e.preventDefault();
+    $('uploadZone').classList.remove('hot');
+    add(e.dataTransfer.files);
+  }
+});
 window.addEventListener('keydown', e => { if ($('editor').hidden && (e.key === 'Delete' || e.key === 'Backspace') && state.selected >= 0) actions.remove(state.selected); });
 
 addEventListener('unhandledrejection', e => { console.error(e.reason); say('Something went wrong. Reloading the page and trying again usually helps.', true); });
