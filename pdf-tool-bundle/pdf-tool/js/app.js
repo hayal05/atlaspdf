@@ -16,6 +16,7 @@ function say(text, err, ms) {
 async function refresh() {
   const n = state.pages.length, files = new Set(state.pages.map(p => p.file.id)).size;
   $('empty').hidden = n > 0;
+  $('documentWorkspace').closest('.workspace').classList.toggle('has-documents', n > 0);
   $('documentWorkspace').hidden = n === 0;
   $('uploadZone').hidden = n > 0;
   $('download').disabled = !n || busy;
