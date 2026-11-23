@@ -59,7 +59,35 @@ export async function renderPreview(page, canvas, area, zoom = 1) {
   const viewport = docPage.getViewport({ scale: scale * dpr, rotation });
   canvas.width = Math.floor(viewport.width); canvas.height = Math.floor(viewport.height);
   canvas.style.width = (viewport.width / dpr) + 'px'; canvas.style.height = (viewport.height / dpr) + 'px';
+  const stage = document.getElementById('previewPageStage');
+  const layer = document.getElementById('previewItems');
+  stage.style.width = canvas.style.width; stage.style.height = canvas.style.height;
+  stage.hidden = false;
+  layer.replaceChildren();
   const ctx = canvas.getContext('2d');
   await docPage.render({ canvasContext: ctx, viewport }).promise;
   if (token !== previewRender) return;
+
+  // Mirror the editor's normalized item positions over the rendered PDF page.
+  const cssScale = parseFloat(canvas.style.width) / rotated.width;
+  for (const item of page.items || []) {
+    const node = el('div', 'preview-item');
+    node.style.left = (item.x * 100) + '%';
+    node.style.top = (item.y * 100) + '%';
+    node.style.width = (item.w * 100) + '%';
+    node.style.height = (item.h * 100) + '%';
+    if (item.type === 'image') {
+      const img = el('img');
+      img.src = item.url;
+      img.alt = '';
+      img.style.opacity = item.opacity;
+      node.append(img);
+    } else if (item.type === 'text') {
+      node.classList.add('preview-text');
+      node.textContent = item.text;
+      node.style.color = item.color;
+      node.style.fontSize = (item.size * cssScale) + 'px';
+    }
+    layer.append(node);
+  }
 }
