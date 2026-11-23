@@ -83,3 +83,20 @@ h1{font-size:clamp(25px,3.2vw,31px);line-height:1.1;letter-spacing:-1px}
 .preview-zoom-controls button:disabled{opacity:.35;cursor:not-allowed}
 .preview-zoom-controls span{min-width:43px;text-align:center;color:#66758b;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
 .preview-canvas-area canvas{margin:0}
+
+
+/* Pre-compression file-size guidance. */
+.size-assessment{display:grid;grid-template-columns:minmax(130px,.7fr) minmax(0,1.3fr);gap:7px 20px;align-items:center;margin:0 0 14px;padding:14px 17px;border:1px solid var(--line);border-radius:12px;background:#fff}
+.size-main{display:flex;flex-direction:column;gap:2px}
+.size-kicker{color:#8b98aa;font-size:9px;font-weight:800;letter-spacing:1.1px}
+.size-main strong{font-size:23px;line-height:1.25;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.size-main small{color:var(--muted);font-size:10px}
+.size-status{min-width:0}
+.size-badge{display:inline-flex;align-items:center;padding:4px 8px;border-radius:6px;background:#edf3ff;color:#365b9e;font-size:10px;font-weight:750}
+.size-badge.recommended{background:#fff2e7;color:#a85b18}
+.size-badge.optional{background:#fff8df;color:#8a6b12}
+.size-badge.unnecessary{background:#eaf6ef;color:#28734f}
+.size-status p{margin:5px 0 0;color:#66758b;font-size:11px;line-height:1.4}
+.size-disclaimer{grid-column:1/-1;margin:2px 0 0;padding-top:8px;border-top:1px solid #eef1f5;color:#98a4b5;font-size:9px;line-height:1.4}
+.size-assessment[hidden]{display:none!important}
+@media(max-width:520px){.size-assessment{grid-template-columns:1fr;gap:8px;padding:12px}.size-main strong{font-size:21px}.size-disclaimer{margin-top:0}}

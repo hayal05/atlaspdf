@@ -21,7 +21,7 @@ async function refresh() {
   $('uploadZone').hidden = n > 0;
   $('download').disabled = !n || busy;
   $('info').textContent = n ? `${n} page${n > 1 ? 's' : ''} · ${files} PDF file${files > 1 ? 's' : ''}` : '';
-  $('pageCount').textContent = n ? `${n} total` : '';
+  $('pageCount').textContent = n ? `${n} total` : '';\n  const byFile = new Map();\n  for (const page of state.pages) byFile.set(page.file.id, (byFile.get(page.file.id) || 0) + 1);\n  const estimatedBytes = [...byFile.entries()].reduce((sum, [id, count]) => {\n    const file = state.pages.find(page => page.file.id === id).file;\n    return sum + file.bytes.length * (count / Math.max(1, file.doc.numPages));\n  }, 0);\n  const sizeMB = estimatedBytes / 1048576;\n  const sizeStatus = sizeMB >= 10 ? 'recommended' : sizeMB >= 5 ? 'optional' : 'unnecessary';\n  $('sizeAssessment').hidden = !n;\n  $('estimatedSize').textContent = sizeMB >= 1 ? `${sizeMB.toFixed(1)} MB` : `${Math.max(1, Math.round(estimatedBytes / 1024))} KB`;\n  $('sizeBadge').textContent = sizeStatus === 'recommended' ? 'Compression recommended' : sizeStatus === 'optional' ? 'Compression optional' : 'Compression not needed';\n  $('sizeBadge').className = `size-badge ${sizeStatus}`;\n  $('sizeAdvice').textContent = sizeStatus === 'recommended' ? 'Your selected pages may produce a large PDF. Consider Medium or High compression.' : sizeStatus === 'optional' ? 'Your PDF is moderate in size. Compress only if you need a smaller file.' : 'Your selected pages are relatively small. Original quality is likely sufficient.';
   renderGrid($('grid'), state, actions);
   $('zoomLevel').textContent = `${Math.round(state.zoom * 100)}%`;
   $('zoomOut').disabled = !n || state.zoom <= 0.5;
