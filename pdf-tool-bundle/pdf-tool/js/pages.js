@@ -81,7 +81,46 @@ export async function renderPreview(page, canvas, area, zoom = 1) {
       img.src = item.url;
       img.alt = '';
       img.style.opacity = item.opacity;
-      node.append(img);
+      const handle = el('span', 'preview-resize-handle');
+      handle.setAttribute('aria-label', 'Resize pasted image');
+      node.append(img, handle);
+      node.addEventListener('pointerdown', e => {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation();
+        document.querySelectorAll('.preview-item.selected').forEach(n => n.classList.remove('selected'));
+        node.classList.add('selected');
+        const resizing = e.target === handle;
+        const rect = stage.getBoundingClientRect();
+        const startX = e.clientX, startY = e.clientY;
+        const origin = { x: item.x, y: item.y, w: item.w, h: item.h };
+        const ratio = item.ar * rect.width / rect.height;
+        node.setPointerCapture?.(e.pointerId);
+        const move = ev => {
+          const dx = (ev.clientX - startX) / rect.width;
+          const dy = (ev.clientY - startY) / rect.height;
+          if (resizing) {
+            const delta = Math.abs(dx) >= Math.abs(dy) ? dx : dy / ratio;
+            item.w = Math.max(0.03, Math.min(origin.w + delta, 1 - origin.x, (1 - origin.y) / ratio));
+            item.h = item.w * ratio;
+          } else {
+            item.x = Math.max(0, Math.min(1 - item.w, origin.x + dx));
+            item.y = Math.max(0, Math.min(1 - item.h, origin.y + dy));
+          }
+          node.style.left = (item.x * 100) + '%';
+          node.style.top = (item.y * 100) + '%';
+          node.style.width = (item.w * 100) + '%';
+          node.style.height = (item.h * 100) + '%';
+        };
+        const finish = () => {
+          document.removeEventListener('pointermove', move);
+          document.removeEventListener('pointerup', finish);
+          document.removeEventListener('pointercancel', finish);
+        };
+        document.addEventListener('pointermove', move);
+        document.addEventListener('pointerup', finish);
+        document.addEventListener('pointercancel', finish);
+      });
     } else if (item.type === 'text') {
       node.classList.add('preview-text');
       node.textContent = item.text;

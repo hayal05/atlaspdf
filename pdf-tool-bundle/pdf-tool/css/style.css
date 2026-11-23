@@ -118,3 +118,12 @@ h1{font-size:clamp(25px,3.2vw,31px);line-height:1.1;letter-spacing:-1px}
 .snip-overlay{position:absolute;inset:0;z-index:2;cursor:crosshair;touch-action:none}
 .snip-selection{position:absolute;display:none;border:2px solid var(--blue);background:#2d63e226;box-shadow:0 0 0 9999px #18243a35;pointer-events:none}
 #epaste:disabled{opacity:.4;cursor:not-allowed}
+
+
+/* Allow pasted snips to be selected, moved and resized in the main preview. */
+.preview-items{pointer-events:none}
+.preview-item{pointer-events:auto;overflow:visible;touch-action:none;cursor:move}
+.preview-item img{pointer-events:none;user-select:none}
+.preview-item.selected{outline:2px solid var(--blue);outline-offset:1px}
+.preview-resize-handle{position:absolute;right:-6px;bottom:-6px;width:13px;height:13px;border:2px solid #fff;border-radius:3px;background:var(--blue);box-shadow:0 1px 4px #17243a55;cursor:nwse-resize;display:none;touch-action:none}
+.preview-item.selected .preview-resize-handle{display:block}
