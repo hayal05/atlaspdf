@@ -51,10 +51,10 @@ export async function renderPreview(page, canvas, area) {
   const base = docPage.getViewport({ scale: 1 });
   const rotation = (base.rotation + page.rot) % 360;
   const rotated = docPage.getViewport({ scale: 1, rotation });
-  const availableW = Math.max(240, area.clientWidth - 16), availableH = Math.max(300, area.clientHeight - 16);
-  const fitScale = Math.min(availableW / rotated.width, availableH / rotated.height, 2.1);
-  // Use the full available preview area instead of leaving oversized side margins.
-  const scale = fitScale;
+  const availableW = Math.max(240, area.clientWidth - 16);
+  // Fit to the preview width; let tall pages scroll vertically instead of shrinking them.
+  const scale = Math.min(availableW / rotated.width, 2.1);
+  area.style.alignItems = 'flex-start';
   const viewport = docPage.getViewport({ scale: scale * dpr, rotation });
   canvas.width = Math.floor(viewport.width); canvas.height = Math.floor(viewport.height);
   canvas.style.width = (viewport.width / dpr) + 'px'; canvas.style.height = (viewport.height / dpr) + 'px';
