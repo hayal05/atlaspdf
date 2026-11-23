@@ -1,7 +1,9 @@
 // Page editor: place pictures and text on one page. Item positions are fractions (0-1)
 // of the page as displayed (after rotation), measured from the top-left corner.
 const $ = id => document.getElementById(id);
-let cur, sel, scale, vis, onDone;
+let cur, sel, scale, vis, onDone, clipboardImage = null;
+
+export function setClipboardImage(image) { clipboardImage = image; }
 
 export async function openEditor(p, done) {
   cur = p; p.items ||= []; sel = null; onDone = done;
@@ -14,6 +16,7 @@ export async function openEditor(p, done) {
   c.width = v.width; c.height = v.height;
   for (const e of [c, $('stage')]) { e.style.width = w + 'px'; e.style.height = h + 'px'; }
   $('emsg').textContent = '';
+  $('epaste').disabled = !clipboardImage;
   $('editor').hidden = false;
   $('layer').replaceChildren();
   p.items.forEach(mount);
@@ -91,6 +94,16 @@ async function addImage(file) {
   cur.items.push(it); mount(it); select(it);
 }
 
+async function pasteImage() {
+  if (!clipboardImage) return;
+  const { bytes, mime, url } = clipboardImage;
+  const im = new Image(); im.src = url;
+  try { await im.decode(); } catch { $('emsg').textContent = 'Could not read the snipped image.'; return; }
+  const ar = im.naturalHeight / im.naturalWidth, w = 0.3;
+  const it = { type: 'image', bytes: new Uint8Array(bytes), mime, url, ar, x: 0.1, y: 0.1, w, h: w * ar * vis.width / vis.height, opacity: 1 };
+  cur.items.push(it); mount(it); select(it);
+}
+
 function addText() {
   const it = { type: 'text', text: 'Text', size: 18, color: '#000000', x: 0.1, y: 0.1, w: 0.2, h: 0.04 };
   cur.items.push(it); mount(it); select(it);
@@ -98,6 +111,7 @@ function addText() {
 }
 
 $('eimg').onclick = () => $('epick').click();
+$('epaste').onclick = pasteImage;
 $('epick').onchange = e => { if (e.target.files[0]) addImage(e.target.files[0]); e.target.value = ''; };
 $('etxt').onclick = addText;
 $('edone').onclick = close;
