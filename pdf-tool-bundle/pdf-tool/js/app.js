@@ -71,6 +71,7 @@ async function save() {
 }
 
 $('add').onclick = () => { if (!busy) $('picker').click(); };
+$('addMore').onclick = () => { if (!busy) $('picker').click(); };
 $('browse').onclick = e => { e.stopPropagation(); $('picker').click(); };
 $('uploadZone').onclick = e => { if (!e.target.closest('button')) $('picker').click(); };
 $('empty').onclick = () => $('picker').click();
