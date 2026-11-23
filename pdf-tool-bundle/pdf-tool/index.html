@@ -28,18 +28,15 @@
 </header>
 <input type="file" id="picker" accept="application/pdf,.pdf" multiple hidden>
 <main class="workspace">
-  <section class="intro">
-    <div><p class="eyebrow">YOUR DOCUMENTS, IN ONE PLACE</p><h1>PDF workspace</h1><p class="intro-copy">Combine, arrange, edit and compress your PDF files.</p></div>
-  </section>
-  <section id="uploadZone" class="upload-zone" aria-label="Upload PDF files">
+    <section id="uploadZone" class="upload-zone" aria-label="Upload PDF files">
     <div class="upload-symbol" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 32V8m0 0-9 9m9-9 9 9M9 29v10h30V29" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-    <div class="upload-copy"><h2>Drop your PDF files here</h2><p>or choose files from your device</p><small>PDF files only · Multiple files supported</small></div>
+    <div class="upload-copy"><h2>Drop PDF files here</h2></div>
     <button id="browse" class="button button-secondary" type="button">Browse files</button>
   </section>
   <section class="documents-section">
-    <div class="section-heading"><div><h2>Your documents</h2><p>Select a page to see a larger preview.</p></div><span class="section-hint">DRAG PAGES TO REORDER</span></div>
-    <div id="sizeAssessment" class="size-assessment" hidden aria-live="polite"><div class="size-main"><span class="size-kicker">PDF SIZE ESTIMATE</span><strong id="estimatedSize">—</strong><small id="sizeBasis">Based on the pages currently selected</small></div><div class="size-status"><span id="sizeBadge" class="size-badge">—</span><p id="sizeAdvice"></p></div><p class="size-disclaimer">This is an estimate based on source file sizes and selected page counts. Actual output size may vary. Compression can make text unselectable.</p></div>
-    <div id="empty" class="empty-state"><span class="empty-file" aria-hidden="true">PDF</span><strong>No documents added yet</strong><span>Upload one or more PDFs to start working.</span></div>
+    <div class="section-heading"><h2>Your documents</h2></div>
+    <div id="sizeAssessment" class="size-assessment" hidden aria-live="polite"><div class="size-main"><span class="size-kicker">PDF SIZE ESTIMATE</span><strong id="estimatedSize">—</strong><small id="sizeBasis">Based on the pages currently selected</small></div><div class="size-status"><span id="sizeBadge" class="size-badge">—</span><p id="sizeAdvice"></p></div></div>
+    <div id="empty" class="empty-state"><span class="empty-file" aria-hidden="true">PDF</span><strong>No documents added yet</strong></div>
     <div id="documentWorkspace" class="document-workspace" hidden>
       <aside class="page-sidebar">
         <div class="sidebar-heading"><div class="sidebar-title"><strong>Pages</strong><span id="pageCount"></span></div><button id="addMore" class="sidebar-add" type="button" title="Add another PDF" aria-label="Add another PDF">＋</button></div>
@@ -54,7 +51,7 @@
   </section>
   <footer class="site-footer">
     <span>AtlasPDF</span>
-    <span>Secure, browser-based PDF tools. Your files never leave your device.</span>
+    
     <span class="developer-credit">Developed by <strong>Hayelom M.</strong> <span aria-label="Copyright">©</span> 2026</span>
   </footer>
 </main>
