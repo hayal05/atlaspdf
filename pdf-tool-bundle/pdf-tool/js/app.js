@@ -44,6 +44,7 @@ async function refresh() {
   $('previewEdit').disabled = $('previewRotate').disabled = $('previewRemove').disabled = !selected;
   $('previewSnip').disabled = !selected;
   $('organizePages').disabled = !n;
+  $('cropNumber').disabled = !n;
   $('previewPaste').disabled = !selected || !hasClipboardImage();
   if (snipMode && !selected) stopSnip();
   if (!selected) {
@@ -229,7 +230,7 @@ function startSnip() {
 async function save() {
   setBusy(true); $('download').disabled = true; $('download').textContent = 'Building…';
   try {
-    const built = await exportPdf(state.pages);
+    const built = await exportPdf(state.pages, exportOptions());
     let res;
     try { res = await compress(built, $('quality').value, t => { $('download').textContent = t; }); }
     catch (e) { console.error(e); res = { bytes: built, report: 'Compression failed, so the original-quality PDF was downloaded.' }; }
@@ -245,8 +246,35 @@ $('uploadZone').onclick = e => { if (!e.target.closest('button')) $('picker').cl
 $('empty').onclick = () => $('picker').click();
 $('picker').onchange = e => { add(e.target.files); e.target.value = ''; };
 $('download').onclick = save;
+function exportOptions() {
+  return { pageNumbers: $('includePageNumbers').checked, numberPosition: $('numberPosition').value, startNumber: 1 };
+}
+function openCropNumber() {
+  const page = state.pages[state.selected], crop = page?.crop || {};
+  $('cropTop').value = Math.round((crop.top || 0) * 1000) / 10;
+  $('cropBottom').value = Math.round((crop.bottom || 0) * 1000) / 10;
+  $('cropLeft').value = Math.round((crop.left || 0) * 1000) / 10;
+  $('cropRight').value = Math.round((crop.right || 0) * 1000) / 10;
+  $('cropNumberDialog').hidden = false;
+}
+function applyCrop() {
+  const values = ['Top','Bottom','Left','Right'].map(side => Number($('crop'+side).value));
+  if (values.some(v => !Number.isFinite(v) || v < 0 || v > 40) || values[0] + values[1] >= 90 || values[2] + values[3] >= 90) {
+    say('Crop margins must be between 0% and 40%.', true); return;
+  }
+  const crop = { top: values[0]/100, bottom: values[1]/100, left: values[2]/100, right: values[3]/100 };
+  const targets = $('cropScope').value === 'selected' ? [state.pages[state.selected]] : state.pages;
+  targets.filter(Boolean).forEach(page => { page.crop = crop; });
+  say($('cropScope').value === 'selected' ? 'Crop settings applied to the selected page. They will appear in the exported PDF.' : 'Crop settings applied to all pages. They will appear in the exported PDF.');
+}
 $('organizePages').onclick = () => { $('pageRanges').value = ''; $('organizeDialog').hidden = false; $('pageRanges').focus(); };
 $('organizeClose').onclick = closeOrganize;
+$('cropNumber').onclick = openCropNumber;
+$('cropNumberClose').onclick = () => { $('cropNumberDialog').hidden = true; };
+$('cropNumberDone').onclick = () => { $('cropNumberDialog').hidden = true; };
+$('applyCrop').onclick = applyCrop;
+$('cropNumberDialog').addEventListener('click', e => { if (e.target === $('cropNumberDialog')) $('cropNumberDialog').hidden = true; });
+
 $('organizeDialog').addEventListener('click', e => { if (e.target === $('organizeDialog')) closeOrganize(); });
 $('extractRanges').onclick = () => runOrganize('extract');
 $('splitRanges').onclick = () => runOrganize('split');
