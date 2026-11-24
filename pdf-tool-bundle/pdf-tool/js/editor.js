@@ -198,7 +198,7 @@ export async function drawItems(out, pg, p, font) {
       const [x,y] = map(it.x,it.y+it.h,R,W,H);
       pg.drawRectangle({ x, y, width:it.w*vw, height:it.h*vh, rotate:degrees(R),
         color:it.shape === 'highlight' ? col : undefined,
-        opacity:it.shape === 'highlight' ? it.opacity : 1,
+        opacity:it.shape === 'highlight' ? it.opacity : 0,
         borderColor:it.shape === 'rectangle' ? col : undefined,
         borderWidth:it.shape === 'rectangle' ? 2 : 0 });
     } else {
