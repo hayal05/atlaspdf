@@ -45,6 +45,18 @@ export async function exportPdf(pages, options = {}) {
     }
     out.addPage(pg);
     if (p.items?.length) { font ||= await out.embedFont(PDFLib.StandardFonts.Helvetica); await drawItems(out, pg, p, font); }
+    if (options.watermark?.text && (options.watermark.scope !== 'selected' || options.watermark.selectedIndex === out.getPageCount() - 1)) {
+      font ||= await out.embedFont(PDFLib.StandardFonts.Helvetica);
+      const box = pg.getCropBox();
+      const label = clean(options.watermark.text).slice(0, 80);
+      const size = Math.max(12, Math.min(96, Number(options.watermark.size) || 36));
+      const width = font.widthOfTextAtSize(label, size);
+      const hex = options.watermark.color || '#777777';
+      const color = rgb(parseInt(hex.slice(1,3),16)/255, parseInt(hex.slice(3,5),16)/255, parseInt(hex.slice(5,7),16)/255);
+      pg.drawText(label, { x: box.x + (box.width - width) / 2, y: box.y + (box.height - size) / 2,
+        size, font, color, opacity: Math.max(0.05, Math.min(1, Number(options.watermark.opacity) || 0.25)),
+        rotate: degrees(Number(options.watermark.rotation) || 0) });
+    }
     if (options.pageNumbers) {
       font ||= await out.embedFont(PDFLib.StandardFonts.Helvetica);
       const box = pg.getCropBox();
