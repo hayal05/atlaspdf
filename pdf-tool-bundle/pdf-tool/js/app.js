@@ -63,7 +63,7 @@ function parsePageRanges(value, total) {
   if (!input) throw new Error('Enter at least one page range.');
   const ranges = input.split(',').map(part => {
     const token = part.trim();
-    const match = token.match(/^(\\d+)(?:\\s*-\\s*(\\d+))?$/);
+    const match = token.match(/^(\d+)(?:\s*-\s*(\d+))?$/);
     if (!match) throw new Error(`Invalid range: ${token}`);
     const start = Number(match[1]), end = Number(match[2] || match[1]);
     if (start < 1 || end < start || end > total) throw new Error(`Page range ${token} is outside 1-${total}.`);
