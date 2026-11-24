@@ -43,6 +43,7 @@ async function refresh() {
   const selected = state.pages[state.selected];
   $('previewEdit').disabled = $('previewRotate').disabled = $('previewRemove').disabled = !selected;
   $('previewSnip').disabled = !selected;
+  $('organizePages').disabled = !n;
   $('previewPaste').disabled = !selected || !hasClipboardImage();
   if (snipMode && !selected) stopSnip();
   if (!selected) {
@@ -55,6 +56,92 @@ async function refresh() {
   const token = ++previewToken;
   try { await renderPreview(selected, $('previewCanvas'), $('previewCanvasArea'), state.zoom); }
   catch (e) { console.error(e); if (token === previewToken) say('Could not render this PDF page.', true); }
+}
+
+function parsePageRanges(value, total) {
+  const input = value.trim();
+  if (!input) throw new Error('Enter at least one page range.');
+  const ranges = input.split(',').map(part => {
+    const token = part.trim();
+    const match = token.match(/^(\d+)(?:\s*-\s*(\d+))?$/);
+    if (!match) throw new Error(`Invalid range: ${token}`);
+    const start = Number(match[1]), end = Number(match[2] || match[1]);
+    if (start < 1 || end < start || end > total) throw new Error(`Page range ${token} is outside 1-${total}.`);
+    return { start: start - 1, end: end - 1 };
+  });
+  const seen = new Set();
+  for (const range of ranges) {
+    for (let i = range.start; i <= range.end; i++) {
+      if (seen.has(i)) throw new Error('Page ranges must not overlap.');
+      seen.add(i);
+    }
+  }
+  return ranges;
+}
+
+function closeOrganize() {
+  $('organizeDialog').hidden = true;
+}
+
+async function runOrganize(operation) {
+  if (busy || !state.pages.length) return;
+  let ranges;
+  try {
+    ranges = parsePageRanges($('pageRanges').value, state.pages.length);
+    if (operation === 'split' && ranges.length < 2) throw new Error('Enter at least two ranges to create separate PDF files.');
+    if (operation === 'remove' && ranges.reduce((n, r) => n + r.end - r.start + 1, 0) >= state.pages.length) {
+      throw new Error('At least one page must remain in the workspace.');
+    }
+  } catch (e) { say(e.message, true); return; }
+
+  setBusy(true);
+  const buttons = ['extractRanges', 'splitRanges', 'removeRanges'].map(id => $(id));
+  buttons.forEach(button => { button.disabled = true; });
+  try {
+    if (operation === 'remove') {
+      const remove = new Set(ranges.flatMap(r => Array.from({ length: r.end - r.start + 1 }, (_, i) => r.start + i)));
+      const selectedPage = state.pages[state.selected];
+      const oldIndex = state.selected;
+      state.pages = state.pages.filter((_, i) => !remove.has(i));
+      state.selected = state.pages.indexOf(selectedPage);
+      if (state.selected < 0) state.selected = Math.min(oldIndex, state.pages.length - 1);
+      closeOrganize();
+      refresh();
+      say(`${remove.size} page${remove.size === 1 ? '' : 's'} removed.`);
+      return;
+    }
+
+    if (operation === 'extract') {
+      const selected = ranges.flatMap(r => state.pages.slice(r.start, r.end + 1));
+      $('info').textContent = 'Extracting pages…';
+      const bytes = await exportPdf(selected);
+      download(bytes, 'atlaspdf-extracted-pages.pdf');
+      closeOrganize();
+      say(`${selected.length} page${selected.length === 1 ? '' : 's'} extracted.`);
+      return;
+    }
+
+    $('info').textContent = 'Preparing split PDFs…';
+    const outputs = [];
+    for (let i = 0; i < ranges.length; i++) {
+      const range = ranges[i];
+      const bytes = await exportPdf(state.pages.slice(range.start, range.end + 1));
+      outputs.push(bytes);
+      $('info').textContent = `Preparing split PDF ${i + 1} of ${ranges.length}…`;
+    }
+    outputs.forEach((bytes, i) => {
+      setTimeout(() => download(bytes, `atlaspdf-part-${i + 1}.pdf`), i * 350);
+    });
+    closeOrganize();
+    say(`${outputs.length} split PDFs prepared. If your browser asks, allow multiple downloads.`, false, 9000);
+  } catch (e) {
+    console.error(e);
+    say('Could not complete that page operation. Check the PDF and try again.', true);
+  } finally {
+    setBusy(false);
+    buttons.forEach(button => { button.disabled = false; });
+    refresh();
+  }
 }
 
 const actions = {
@@ -158,6 +245,13 @@ $('uploadZone').onclick = e => { if (!e.target.closest('button')) $('picker').cl
 $('empty').onclick = () => $('picker').click();
 $('picker').onchange = e => { add(e.target.files); e.target.value = ''; };
 $('download').onclick = save;
+$('organizePages').onclick = () => { $('pageRanges').value = ''; $('organizeDialog').hidden = false; $('pageRanges').focus(); };
+$('organizeClose').onclick = closeOrganize;
+$('organizeDialog').addEventListener('click', e => { if (e.target === $('organizeDialog')) closeOrganize(); });
+$('extractRanges').onclick = () => runOrganize('extract');
+$('splitRanges').onclick = () => runOrganize('split');
+$('removeRanges').onclick = () => runOrganize('remove');
+$('pageRanges').addEventListener('keydown', e => { if (e.key === 'Escape') closeOrganize(); });
 $('previewEdit').onclick = () => { if (state.selected >= 0) actions.edit(state.selected); };
 $('previewSnip').onclick = startSnip;
 $('previewPaste').onclick = async () => {
