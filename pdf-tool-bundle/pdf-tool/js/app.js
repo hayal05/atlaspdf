@@ -45,6 +45,7 @@ async function refresh() {
   $('previewSnip').disabled = !selected;
   $('organizePages').disabled = !n;
   $('cropNumber').disabled = !n;
+  $('watermark').disabled = !n;
   $('previewPaste').disabled = !selected || !hasClipboardImage();
   if (snipMode && !selected) stopSnip();
   if (!selected) {
@@ -247,7 +248,13 @@ $('empty').onclick = () => $('picker').click();
 $('picker').onchange = e => { add(e.target.files); e.target.value = ''; };
 $('download').onclick = save;
 function exportOptions() {
-  return { pageNumbers: $('includePageNumbers').checked, numberPosition: $('numberPosition').value, startNumber: 1 };
+  const text = $('watermarkText').value.trim();
+  const watermark = text ? {
+    text, size: Number($('watermarkSize').value), opacity: Number($('watermarkOpacity').value) / 100,
+    color: $('watermarkColor').value, rotation: Number($('watermarkRotation').value),
+    scope: $('watermarkScope').value, selectedIndex: state.selected
+  } : null;
+  return { pageNumbers: $('includePageNumbers').checked, numberPosition: $('numberPosition').value, startNumber: 1, watermark };
 }
 function openCropNumber() {
   const page = state.pages[state.selected], crop = page?.crop || {};
@@ -270,6 +277,19 @@ function applyCrop() {
 $('organizePages').onclick = () => { $('pageRanges').value = ''; $('organizeDialog').hidden = false; $('pageRanges').focus(); };
 $('organizeClose').onclick = closeOrganize;
 $('cropNumber').onclick = openCropNumber;
+$('watermark').onclick = () => { $('watermarkDialog').hidden = false; $('watermarkText').focus(); };
+$('watermarkClose').onclick = () => { $('watermarkDialog').hidden = true; };
+$('watermarkApply').onclick = () => {
+  const text = $('watermarkText').value.trim();
+  const size = Number($('watermarkSize').value), opacity = Number($('watermarkOpacity').value);
+  if (!text) { say('Enter watermark text first.', true); $('watermarkText').focus(); return; }
+  if (!Number.isFinite(size) || size < 12 || size > 96 || !Number.isFinite(opacity) || opacity < 5 || opacity > 100) {
+    say('Font size must be 12–96 and opacity 5–100%.', true); return;
+  }
+  $('watermarkDialog').hidden = true;
+  say('Watermark settings saved. They will be included in the downloaded PDF.');
+};
+$('watermarkDialog').addEventListener('click', e => { if (e.target === $('watermarkDialog')) $('watermarkDialog').hidden = true; });
 $('cropNumberClose').onclick = () => { $('cropNumberDialog').hidden = true; };
 $('cropNumberDone').onclick = () => { $('cropNumberDialog').hidden = true; };
 $('applyCrop').onclick = applyCrop;
