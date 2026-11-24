@@ -120,8 +120,17 @@ export async function renderPreview(page, canvas, area, zoom = 1) {
       });
     } else if (item.type === 'shape') {
       node.classList.add(item.shape === 'highlight' ? 'preview-highlight' : 'preview-rectangle');
-      node.style.background = item.shape === 'highlight' ? 'rgba(255,223,69,' + item.opacity + ')' : 'transparent';
+      const n=parseInt(item.color.slice(1),16);
+      node.style.background = item.shape === 'highlight' ? 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+item.opacity+')' : 'transparent';
       if (item.shape === 'rectangle') node.style.border = '2px solid ' + item.color;
+    } else if (item.type === 'path') {
+      const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.setAttribute('viewBox','0 0 1000 1000'); svg.setAttribute('preserveAspectRatio','none');
+      const line=document.createElementNS('http://www.w3.org/2000/svg','polyline');
+      line.setAttribute('points',item.points.map(pt=>(pt[0]*1000)+','+(pt[1]*1000)).join(' '));
+      line.setAttribute('fill','none'); line.setAttribute('stroke',item.color);
+      line.setAttribute('stroke-width','9'); line.setAttribute('stroke-linecap','round'); line.setAttribute('stroke-linejoin','round');
+      svg.append(line); node.append(svg);
     } else if (item.type === 'text') {
       node.classList.add('preview-text');
       node.textContent = item.text;

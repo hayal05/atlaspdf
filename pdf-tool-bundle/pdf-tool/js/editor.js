@@ -1,7 +1,7 @@
 // Page editor: place pictures and text on one page. Item positions are fractions (0-1)
 // of the page as displayed (after rotation), measured from the top-left corner.
 const $ = id => document.getElementById(id);
-let cur, sel, scale, vis, onDone, clipboardImage = null, annotationMode = null;
+let cur, sel, scale, vis, onDone, clipboardImage = null, annotationMode = null, annotationColor = '#ffdf45';
 
 export function setClipboardImage(image) { clipboardImage = image; }
 export function hasClipboardImage() { return !!clipboardImage; }
@@ -65,9 +65,16 @@ function mount(it) {
     d.append(im, rs);
   } else if (it.type === 'shape') {
     d.classList.add(it.shape === 'highlight' ? 'annotation-highlight' : 'annotation-rectangle');
-    d.style.background = it.shape === 'highlight' ? hexRgba(it.color, it.opacity) : 'transparent';
-    d.style.border = it.shape === 'rectangle' ? '2px solid ' + it.color : 'none';
     d.onpointerdown = e => drag(e, it, 'move');
+    styleShape(it);
+  } else if (it.type === 'path') {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 1000 1000'); svg.setAttribute('preserveAspectRatio','none');
+    const line = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+    line.setAttribute('points',it.points.map(pt => (pt[0]*1000)+','+(pt[1]*1000)).join(' '));
+    line.setAttribute('fill','none'); line.setAttribute('stroke',it.color);
+    line.setAttribute('stroke-width','9'); line.setAttribute('stroke-linecap','round'); line.setAttribute('stroke-linejoin','round');
+    svg.append(line); d.append(svg); d.onpointerdown = e => drag(e,it,'move');
   } else {
     const t = mk('div', 'txt', it.text); t.contentEditable = 'true';
     t.oninput = () => { it.text = t.innerText; };
@@ -79,10 +86,15 @@ function mount(it) {
 }
 
 function hexRgba(hex, opacity) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${opacity})`; }
+function styleShape(it) {
+  if (!it.el) return;
+  it.el.style.background = it.shape === 'highlight' ? hexRgba(it.color, it.opacity) : 'transparent';
+  it.el.style.border = it.shape === 'rectangle' ? '2px solid ' + it.color : 'none';
+}
 
 function place(it) {
   const d = it.el; d.style.left = it.x * 100 + '%'; d.style.top = it.y * 100 + '%';
-  if (it.type === 'image' || it.type === 'shape') { d.style.width = it.w * 100 + '%'; d.style.height = it.h * 100 + '%'; }
+  if (it.type === 'image' || it.type === 'shape' || it.type === 'path') { d.style.width = it.w * 100 + '%'; d.style.height = it.h * 100 + '%'; }
   else { d.firstChild.style.fontSize = it.size * scale + 'px'; d.firstChild.style.color = it.color; }
 }
 
@@ -91,9 +103,11 @@ function select(it) {
   cur.items.forEach(i => i.el && i.el.classList.toggle('sel', i === it));
   $('eimgctl').hidden = !(it && it.type === 'image');
   $('etxtctl').hidden = !(it && it.type === 'text');
+  $('eannctl').hidden = !(it && (it.type === 'shape' || it.type === 'path'));
   $('edel').hidden = !it;
   if (it?.type === 'image') $('eop').value = it.opacity;
   if (it?.type === 'text') { $('esz').value = it.size; $('ecol').value = it.color; }
+  if (it?.type === 'shape' || it?.type === 'path') $('eanncol').value = it.color;
 }
 
 function drag(e, it, mode) {
@@ -132,7 +146,7 @@ $('etxt').onclick = addText;
 $('edone').onclick = close;
 $('edel').onclick = () => { cur.items = cur.items.filter(i => i !== sel); sel.el.remove(); select(null); };
 function updateAnnotationButtons() {
-  for (const [id, mode] of [['ehighlight','highlight'],['erectangle','rectangle']]) {
+  for (const [id, mode] of [['ehighlight','highlight'],['erectangle','rectangle'],['efreehand','path']]) {
     const button = $(id); if (!button) continue;
     button.classList.toggle('active', annotationMode === mode);
     button.setAttribute('aria-pressed', String(annotationMode === mode));
@@ -140,14 +154,17 @@ function updateAnnotationButtons() {
 }
 function setAnnotationMode(mode) {
   annotationMode = annotationMode === mode ? null : mode;
+  if (annotationMode) annotationColor = mode === 'highlight' ? '#ffdf45' : mode === 'rectangle' ? '#e04444' : annotationColor;
+  $('eanncol').value = annotationColor;
   updateAnnotationButtons();
-  $('emsg').textContent = annotationMode ? 'Drag on the page to add a ' + annotationMode + '.' : '';
+  $('eannctl').hidden = !annotationMode && !(sel && (sel.type === 'shape' || sel.type === 'path'));
+  $('emsg').textContent = annotationMode ? (mode === 'path' ? 'Draw on the page to add freehand ink.' : 'Drag on the page to add a ' + annotationMode + '.') : '';
 }
 function drawAnnotation(e) {
   const rect = $('stage').getBoundingClientRect();
   const startX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
   const startY = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-  const it = { type:'shape', shape:annotationMode, color: annotationMode === 'highlight' ? '#ffdf45' : '#e04444', opacity: annotationMode === 'highlight' ? 0.34 : 1, x:startX, y:startY, w:0, h:0 };
+  const it = { type:'shape', shape:annotationMode, color: annotationColor, opacity: annotationMode === 'highlight' ? 0.34 : 1, x:startX, y:startY, w:0, h:0 };
   cur.items.push(it); mount(it); select(it);
   const move = ev => {
     const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
@@ -164,9 +181,46 @@ function drawAnnotation(e) {
 }
 $('ehighlight').onclick = () => setAnnotationMode('highlight');
 $('erectangle').onclick = () => setAnnotationMode('rectangle');
+$('efreehand').onclick = () => setAnnotationMode('path');
+function drawFreehand(e) {
+  const rect = $('stage').getBoundingClientRect();
+  const point = ev => [Math.max(0,Math.min(1,(ev.clientX-rect.left)/rect.width)),Math.max(0,Math.min(1,(ev.clientY-rect.top)/rect.height))];
+  const points = [point(e)];
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox','0 0 1000 1000'); svg.setAttribute('preserveAspectRatio','none');
+  svg.classList.add('drawing-preview');
+  const line = document.createElementNS('http://www.w3.org/2000/svg','polyline');
+  line.setAttribute('fill','none'); line.setAttribute('stroke',annotationColor);
+  line.setAttribute('stroke-width','9'); line.setAttribute('stroke-linecap','round'); line.setAttribute('stroke-linejoin','round');
+  svg.append(line); $('layer').append(svg);
+  const paint = () => line.setAttribute('points',points.map(pt=>(pt[0]*1000)+','+(pt[1]*1000)).join(' '));
+  paint();
+  const move = ev => { points.push(point(ev)); paint(); };
+  const finish = () => {
+    removeEventListener('pointermove',move); removeEventListener('pointerup',finish); removeEventListener('pointercancel',finish);
+    svg.remove();
+    if (points.length < 2) return;
+    const xs=points.map(pt=>pt[0]), ys=points.map(pt=>pt[1]);
+    const x=Math.min(...xs), y=Math.min(...ys), w=Math.max(...xs)-x, h=Math.max(...ys)-y;
+    if (w+h < 0.003) return;
+    const it={type:'path',x,y,w:Math.max(w,0.002),h:Math.max(h,0.002),color:annotationColor,
+      points:points.map(pt=>[(pt[0]-x)/Math.max(w,0.002),(pt[1]-y)/Math.max(h,0.002)])};
+    cur.items.push(it); mount(it); select(it);
+  };
+  addEventListener('pointermove',move); addEventListener('pointerup',finish,{once:true}); addEventListener('pointercancel',finish,{once:true});
+}
 $('layer').onpointerdown = e => {
-  if (annotationMode) { e.preventDefault(); drawAnnotation(e); }
+  if (annotationMode === 'path') { e.preventDefault(); e.stopPropagation(); drawFreehand(e); }
+  else if (annotationMode) { e.preventDefault(); drawAnnotation(e); }
   else if (e.target === $('layer')) select(null);
+};
+$('eanncol').oninput = e => {
+  annotationColor=e.target.value;
+  if (sel && (sel.type === 'shape' || sel.type === 'path')) {
+    sel.color=annotationColor;
+    if (sel.type === 'shape') styleShape(sel);
+    else sel.el.querySelector('polyline').setAttribute('stroke',annotationColor);
+  }
 };
 $('eop').oninput = e => { sel.opacity = +e.target.value; sel.el.firstChild.style.opacity = sel.opacity; };
 $('esz').oninput = e => { sel.size = Math.min(Math.max(+e.target.value || 12, 4), 300); place(sel); };
@@ -193,6 +247,14 @@ export async function drawItems(out, pg, p, font) {
       const img = it.mime === 'image/png' ? await out.embedPng(it.bytes) : await out.embedJpg(it.bytes);
       const [x, y] = map(it.x, it.y + it.h, R, W, H);
       pg.drawImage(img, { x, y, width: it.w * vw, height: it.h * vh, rotate: degrees(R), opacity: it.opacity });
+    } else if (it.type === 'path') {
+      const c=it.color, col=rgb(parseInt(c.slice(1,3),16)/255,parseInt(c.slice(3,5),16)/255,parseInt(c.slice(5,7),16)/255);
+      for (let i=1;i<it.points.length;i++) {
+        const a=it.points[i-1], b=it.points[i];
+        const [x1,y1]=map(it.x+a[0]*it.w,it.y+a[1]*it.h,R,W,H);
+        const [x2,y2]=map(it.x+b[0]*it.w,it.y+b[1]*it.h,R,W,H);
+        pg.drawLine({start:{x:x1,y:y1},end:{x:x2,y:y2},thickness:2.2,color:col});
+      }
     } else if (it.type === 'shape') {
       const c = it.color, col = rgb(parseInt(c.slice(1,3),16)/255,parseInt(c.slice(3,5),16)/255,parseInt(c.slice(5,7),16)/255);
       const [x,y] = map(it.x,it.y+it.h,R,W,H);
