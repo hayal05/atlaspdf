@@ -77,7 +77,7 @@ function mount(it) {
     svg.append(line); d.append(svg); d.onpointerdown = e => drag(e,it,'move');
   } else {
     const t = mk('div', 'txt', it.text); t.contentEditable = 'true';
-    t.style.fontWeight = it.bold ? '700' : '400'; t.style.fontStyle = it.italic ? 'italic' : 'normal'; t.style.textAlign = it.align || 'left';
+    t.style.fontWeight = it.bold ? '700' : '400'; t.style.fontStyle = it.italic ? 'italic' : 'normal'; t.style.fontFamily = it.fontFamily === 'Times' ? '"Times New Roman", Times, serif' : it.fontFamily === 'Courier' ? '"Courier New", Courier, monospace' : 'Arial, Helvetica, sans-serif'; t.style.textAlign = it.align || 'left';
     t.oninput = () => { it.text = t.innerText; };
     t.onfocus = () => select(it);
     const m = mk('i', 'mv', '✥'); m.onpointerdown = e => drag(e, it, 'move');
@@ -107,7 +107,7 @@ function select(it) {
   $('eannctl').hidden = !(it && (it.type === 'shape' || it.type === 'path'));
   $('edel').hidden = !it;
   if (it?.type === 'image') $('eop').value = it.opacity;
-  if (it?.type === 'text') { $('esz').value = it.size; $('ecol').value = it.color; $('etxtbold').classList.toggle('active', !!it.bold); $('etxtitalic').classList.toggle('active', !!it.italic); $('etxtbold').setAttribute('aria-pressed', String(!!it.bold)); $('etxtitalic').setAttribute('aria-pressed', String(!!it.italic)); $('etxtalign').value = it.align || 'left'; }
+  if (it?.type === 'text') { $('esz').value = it.size; $('ecol').value = it.color; $('etxtbold').classList.toggle('active', !!it.bold); $('etxtitalic').classList.toggle('active', !!it.italic); $('etxtbold').setAttribute('aria-pressed', String(!!it.bold)); $('etxtitalic').setAttribute('aria-pressed', String(!!it.italic)); $('etxtalign').value = it.align || 'left'; $('etxtfont').value = it.fontFamily || 'Helvetica'; }
   if (it?.type === 'shape' || it?.type === 'path') $('eanncol').value = it.color;
 }
 
@@ -136,7 +136,7 @@ async function addImage(file) {
 
 
 function addText() {
-  const it = { type: 'text', text: 'Text', size: 18, color: '#000000', x: 0.1, y: 0.1, w: 0.2, h: 0.04 };
+  const it = { type: 'text', text: 'Text', size: 18, color: '#000000', fontFamily: 'Helvetica', x: 0.1, y: 0.1, w: 0.2, h: 0.04 };
   cur.items.push(it); mount(it); select(it);
   const t = it.el.firstChild; t.focus(); getSelection().selectAllChildren(t);
 }
@@ -229,6 +229,7 @@ $('ecol').oninput = e => { if (sel?.type !== 'text') return; sel.color = e.targe
 $('etxtbold').onclick = () => { if (sel?.type !== 'text') return; sel.bold = !sel.bold; sel.el.firstChild.style.fontWeight = sel.bold ? '700' : '400'; select(sel); };
 $('etxtitalic').onclick = () => { if (sel?.type !== 'text') return; sel.italic = !sel.italic; sel.el.firstChild.style.fontStyle = sel.italic ? 'italic' : 'normal'; select(sel); };
 $('etxtalign').onchange = e => { if (sel?.type !== 'text') return; sel.align = e.target.value; sel.el.firstChild.style.textAlign = sel.align; };
+$('etxtfont').onchange = e => { if (sel?.type !== 'text') return; sel.fontFamily = e.target.value; sel.el.firstChild.style.fontFamily = sel.fontFamily === 'Times' ? '"Times New Roman", Times, serif' : sel.fontFamily === 'Courier' ? '"Courier New", Courier, monospace' : 'Arial, Helvetica, sans-serif'; };
 
 // Keeps items on the same spot of the page when the page is rotated 90 degrees clockwise.
 export async function rotateItems(p) {
@@ -269,7 +270,14 @@ export async function drawItems(out, pg, p, font) {
         borderWidth:it.shape === 'rectangle' ? 2 : 0 });
     } else {
       const c = it.color, col = rgb(parseInt(c.slice(1, 3), 16) / 255, parseInt(c.slice(3, 5), 16) / 255, parseInt(c.slice(5, 7), 16) / 255);
-      const textFont = await out.embedFont(it.bold && it.italic ? PDFLib.StandardFonts.HelveticaBoldOblique : it.bold ? PDFLib.StandardFonts.HelveticaBold : it.italic ? PDFLib.StandardFonts.HelveticaOblique : PDFLib.StandardFonts.Helvetica);
+      const family = it.fontFamily || 'Helvetica';
+      const style = it.bold && it.italic ? 'boldItalic' : it.bold ? 'bold' : it.italic ? 'italic' : 'normal';
+      const fontNames = {
+        Helvetica: { normal: 'Helvetica', bold: 'HelveticaBold', italic: 'HelveticaOblique', boldItalic: 'HelveticaBoldOblique' },
+        Times: { normal: 'TimesRoman', bold: 'TimesRomanBold', italic: 'TimesRomanItalic', boldItalic: 'TimesRomanBoldItalic' },
+        Courier: { normal: 'Courier', bold: 'CourierBold', italic: 'CourierOblique', boldItalic: 'CourierBoldOblique' }
+      };
+      const textFont = await out.embedFont(PDFLib.StandardFonts[fontNames[family]?.[style] || fontNames.Helvetica[style]]);
       it.text.split('\n').forEach((ln, i) => {
         const [x, y] = map(it.x, it.y + (0.93 + 1.2 * i) * it.size / vh, R, W, H);
         const line = clean(ln), width = textFont.widthOfTextAtSize(line, it.size);
