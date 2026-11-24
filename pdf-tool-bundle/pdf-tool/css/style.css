@@ -593,3 +593,12 @@ button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{
   min-height:0;
   flex:1 1 auto;
 }
+
+/* PDF annotation tools */
+#etools button.active{border-color:#365fe5;background:#edf2ff;color:#244bc5;box-shadow:inset 0 0 0 1px rgba(54,95,229,.12)}
+.item.annotation-highlight,.item.annotation-rectangle{cursor:move;min-width:2px;min-height:2px}
+.item.annotation-highlight{background:rgba(255,223,69,.34)}
+.item.annotation-rectangle{border:2px solid #e04444}
+.preview-highlight,.preview-rectangle{pointer-events:none}
+.preview-highlight{background:rgba(255,223,69,.34)}
+.preview-rectangle{border:2px solid #e04444}
