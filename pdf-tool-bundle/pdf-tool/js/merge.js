@@ -48,7 +48,7 @@ export async function exportPdf(pages, options = {}) {
     if (options.watermark?.text && (options.watermark.scope !== 'selected' || options.watermark.selectedIndex === out.getPageCount() - 1)) {
       font ||= await out.embedFont(PDFLib.StandardFonts.Helvetica);
       const box = pg.getCropBox();
-      const label = clean(options.watermark.text).slice(0, 80);
+      const label = [...options.watermark.text].map(ch => ch.charCodeAt(0) > 255 || (ch.charCodeAt(0) > 126 && ch.charCodeAt(0) < 161) ? '?' : ch).join('').slice(0, 80);
       const size = Math.max(12, Math.min(96, Number(options.watermark.size) || 36));
       const width = font.widthOfTextAtSize(label, size);
       const hex = options.watermark.color || '#777777';
