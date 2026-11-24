@@ -1,7 +1,7 @@
 // Page editor: place pictures and text on one page. Item positions are fractions (0-1)
 // of the page as displayed (after rotation), measured from the top-left corner.
 const $ = id => document.getElementById(id);
-let cur, sel, scale, vis, onDone, clipboardImage = null;
+let cur, sel, scale, vis, onDone, clipboardImage = null, annotationMode = null;
 
 export function setClipboardImage(image) { clipboardImage = image; }
 export function hasClipboardImage() { return !!clipboardImage; }
@@ -24,7 +24,7 @@ export async function pasteClipboardToPage(p) {
 }
 
 export async function openEditor(p, done) {
-  cur = p; p.items ||= []; sel = null; onDone = done;
+  cur = p; p.items ||= []; sel = null; onDone = done; annotationMode = null; updateAnnotationButtons();
   const pg = await p.file.doc.getPage(p.idx + 1), rot = (pg.rotate + p.rot) % 360;
   vis = pg.getViewport({ scale: 1, rotation: rot });
   const w = Math.max(200, Math.min(760, innerWidth - 32, (innerHeight - 130) * vis.width / vis.height));
@@ -49,6 +49,7 @@ function close() {
   }
   cur.items = cur.items.filter(it => it.type !== 'text' || it.text.trim());
   $('editor').hidden = true;
+  annotationMode = null; updateAnnotationButtons();
   onDone();
 }
 
@@ -62,6 +63,11 @@ function mount(it) {
     rs.onpointerdown = e => drag(e, it, 'size');
     d.onpointerdown = e => { if (e.target !== rs) drag(e, it, 'move'); };
     d.append(im, rs);
+  } else if (it.type === 'shape') {
+    d.classList.add(it.shape === 'highlight' ? 'annotation-highlight' : 'annotation-rectangle');
+    d.style.background = it.shape === 'highlight' ? hexRgba(it.color, it.opacity) : 'transparent';
+    d.style.border = it.shape === 'rectangle' ? '2px solid ' + it.color : 'none';
+    d.onpointerdown = e => drag(e, it, 'move');
   } else {
     const t = mk('div', 'txt', it.text); t.contentEditable = 'true';
     t.oninput = () => { it.text = t.innerText; };
@@ -72,9 +78,11 @@ function mount(it) {
   $('layer').append(d); place(it);
 }
 
+function hexRgba(hex, opacity) { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${opacity})`; }
+
 function place(it) {
   const d = it.el; d.style.left = it.x * 100 + '%'; d.style.top = it.y * 100 + '%';
-  if (it.type === 'image') { d.style.width = it.w * 100 + '%'; d.style.height = it.h * 100 + '%'; }
+  if (it.type === 'image' || it.type === 'shape') { d.style.width = it.w * 100 + '%'; d.style.height = it.h * 100 + '%'; }
   else { d.firstChild.style.fontSize = it.size * scale + 'px'; d.firstChild.style.color = it.color; }
 }
 
@@ -123,7 +131,43 @@ $('epick').onchange = e => { if (e.target.files[0]) addImage(e.target.files[0]);
 $('etxt').onclick = addText;
 $('edone').onclick = close;
 $('edel').onclick = () => { cur.items = cur.items.filter(i => i !== sel); sel.el.remove(); select(null); };
-$('layer').onpointerdown = e => { if (e.target === $('layer')) select(null); };
+function updateAnnotationButtons() {
+  for (const [id, mode] of [['ehighlight','highlight'],['erectangle','rectangle']]) {
+    const button = $(id); if (!button) continue;
+    button.classList.toggle('active', annotationMode === mode);
+    button.setAttribute('aria-pressed', String(annotationMode === mode));
+  }
+}
+function setAnnotationMode(mode) {
+  annotationMode = annotationMode === mode ? null : mode;
+  updateAnnotationButtons();
+  $('emsg').textContent = annotationMode ? 'Drag on the page to add a ' + annotationMode + '.' : '';
+}
+function drawAnnotation(e) {
+  const rect = $('stage').getBoundingClientRect();
+  const startX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  const startY = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+  const it = { type:'shape', shape:annotationMode, color: annotationMode === 'highlight' ? '#ffdf45' : '#e04444', opacity: annotationMode === 'highlight' ? 0.34 : 1, x:startX, y:startY, w:0, h:0 };
+  cur.items.push(it); mount(it); select(it);
+  const move = ev => {
+    const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
+    const y = Math.max(0, Math.min(1, (ev.clientY - rect.top) / rect.height));
+    it.x = Math.min(startX,x); it.y = Math.min(startY,y);
+    it.w = Math.abs(x-startX); it.h = Math.abs(y-startY);
+    place(it);
+  };
+  const finish = () => {
+    removeEventListener('pointermove',move); removeEventListener('pointerup',finish);
+    if (it.w < 0.006 || it.h < 0.006) { cur.items = cur.items.filter(item => item !== it); it.el.remove(); select(null); }
+  };
+  addEventListener('pointermove',move); addEventListener('pointerup',finish,{once:true});
+}
+$('ehighlight').onclick = () => setAnnotationMode('highlight');
+$('erectangle').onclick = () => setAnnotationMode('rectangle');
+$('layer').onpointerdown = e => {
+  if (annotationMode) { e.preventDefault(); drawAnnotation(e); }
+  else if (e.target === $('layer')) select(null);
+};
 $('eop').oninput = e => { sel.opacity = +e.target.value; sel.el.firstChild.style.opacity = sel.opacity; };
 $('esz').oninput = e => { sel.size = Math.min(Math.max(+e.target.value || 12, 4), 300); place(sel); };
 $('ecol').oninput = e => { sel.color = e.target.value; place(sel); };
@@ -149,6 +193,14 @@ export async function drawItems(out, pg, p, font) {
       const img = it.mime === 'image/png' ? await out.embedPng(it.bytes) : await out.embedJpg(it.bytes);
       const [x, y] = map(it.x, it.y + it.h, R, W, H);
       pg.drawImage(img, { x, y, width: it.w * vw, height: it.h * vh, rotate: degrees(R), opacity: it.opacity });
+    } else if (it.type === 'shape') {
+      const c = it.color, col = rgb(parseInt(c.slice(1,3),16)/255,parseInt(c.slice(3,5),16)/255,parseInt(c.slice(5,7),16)/255);
+      const [x,y] = map(it.x,it.y+it.h,R,W,H);
+      pg.drawRectangle({ x, y, width:it.w*vw, height:it.h*vh, rotate:degrees(R),
+        color:it.shape === 'highlight' ? col : undefined,
+        opacity:it.shape === 'highlight' ? it.opacity : 0,
+        borderColor:it.shape === 'rectangle' ? col : undefined,
+        borderWidth:it.shape === 'rectangle' ? 2 : 0 });
     } else {
       const c = it.color, col = rgb(parseInt(c.slice(1, 3), 16) / 255, parseInt(c.slice(3, 5), 16) / 255, parseInt(c.slice(5, 7), 16) / 255);
       it.text.split('\n').forEach((ln, i) => {
