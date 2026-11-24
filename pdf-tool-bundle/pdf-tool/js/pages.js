@@ -118,6 +118,10 @@ export async function renderPreview(page, canvas, area, zoom = 1) {
         document.addEventListener('pointerup', finish);
         document.addEventListener('pointercancel', finish);
       });
+    } else if (item.type === 'shape') {
+      node.classList.add(item.shape === 'highlight' ? 'preview-highlight' : 'preview-rectangle');
+      node.style.background = item.shape === 'highlight' ? 'rgba(255,223,69,' + item.opacity + ')' : 'transparent';
+      if (item.shape === 'rectangle') node.style.border = '2px solid ' + item.color;
     } else if (item.type === 'text') {
       node.classList.add('preview-text');
       node.textContent = item.text;
