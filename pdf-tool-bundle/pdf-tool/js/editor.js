@@ -273,7 +273,8 @@ export async function drawItems(out, pg, p, font) {
       it.text.split('\n').forEach((ln, i) => {
         const [x, y] = map(it.x, it.y + (0.93 + 1.2 * i) * it.size / vh, R, W, H);
         const line = clean(ln), width = textFont.widthOfTextAtSize(line, it.size);
-        const tx = it.align === 'center' ? x - width / 2 : it.align === 'right' ? x - width : x;
+        const boxWidth = it.w * vw;
+        const tx = it.align === 'center' ? x + (boxWidth - width) / 2 : it.align === 'right' ? x + boxWidth - width : x;
         pg.drawText(line, { x: tx, y, size: it.size, font: textFont, color: col, rotate: degrees(R) });
       });
     }
