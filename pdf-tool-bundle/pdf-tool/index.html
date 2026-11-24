@@ -46,7 +46,7 @@
       </aside>
       <section class="preview-panel" aria-label="Selected PDF page preview">
         <div class="preview-toolbar"><div><strong id="previewTitle">Page preview</strong><span id="previewMeta">Select a page</span></div><div class="preview-actions"><button id="previewSnip" class="tool-button" disabled title="Select an area of this page to copy">▧ Snip</button>
-          <button id="organizePages" class="tool-button" disabled title="Split, extract or remove page ranges">Organize</button><button id="cropNumber" class="tool-button" disabled title="Crop pages and add page numbers">Crop &amp; Number</button><button id="previewPaste" class="tool-button" disabled title="Paste the last snipped area onto this page">▧ Paste Snip</button><button id="previewEdit" class="tool-button" disabled title="Edit selected page">✎ Edit</button><button id="previewRotate" class="tool-button" disabled title="Rotate selected page">↻ Rotate</button><button id="previewRemove" class="tool-button danger-tool" disabled title="Remove selected page">✕</button></div></div>
+          <button id="organizePages" class="tool-button" disabled title="Split, extract or remove page ranges">Organize</button><button id="cropNumber" class="tool-button" disabled title="Crop pages and add page numbers">Crop &amp; Number</button><button id="watermark" class="tool-button" disabled title="Add a text watermark to exported pages">Watermark</button><button id="previewPaste" class="tool-button" disabled title="Paste the last snipped area onto this page">▧ Paste Snip</button><button id="previewEdit" class="tool-button" disabled title="Edit selected page">✎ Edit</button><button id="previewRotate" class="tool-button" disabled title="Rotate selected page">↻ Rotate</button><button id="previewRemove" class="tool-button danger-tool" disabled title="Remove selected page">✕</button></div></div>
         <div id="previewCanvasArea" class="preview-canvas-area"><div id="previewEmpty" class="preview-empty"><span>PDF</span><strong>Select a page to preview</strong></div><div id="previewPageStage" class="preview-page-stage" hidden><canvas id="previewCanvas"></canvas><div id="previewItems" class="preview-items" aria-hidden="true"></div></div></div>
         <div class="preview-zoom-controls" aria-label="Preview zoom controls"><button id="zoomOut" type="button" title="Zoom out" aria-label="Zoom out" disabled>−</button><span id="zoomLevel" aria-live="polite">100%</span><button id="zoomIn" type="button" title="Zoom in" aria-label="Zoom in" disabled>＋</button></div>
       </section>
@@ -85,6 +85,26 @@
         <select id="numberPosition"><option value="bottom-center">Bottom center</option><option value="bottom-left">Bottom left</option><option value="bottom-right">Bottom right</option><option value="top-center">Top center</option></select>
       </label>
       <div class="organize-actions"><button id="cropNumberDone" type="button">Done</button></div>
+    </div>
+  </section>
+
+
+  <section id="watermarkDialog" class="organize-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="watermarkTitle">
+    <div class="organize-card">
+      <div class="organize-heading"><h2 id="watermarkTitle">PDF watermark</h2><button id="watermarkClose" type="button" aria-label="Close">×</button></div>
+      <label class="organize-label" for="watermarkText">Watermark text</label>
+      <input id="watermarkText" type="text" maxlength="80" placeholder="e.g. CONFIDENTIAL" autocomplete="off">
+      <div class="crop-grid">
+        <label>Font size<input id="watermarkSize" type="number" min="12" max="96" value="36"></label>
+        <label>Opacity (%)<input id="watermarkOpacity" type="number" min="5" max="100" value="25"></label>
+        <label>Color<input id="watermarkColor" type="color" value="#777777"></label>
+        <label>Rotation<select id="watermarkRotation"><option value="-45">Diagonal</option><option value="0">Horizontal</option><option value="45">Diagonal (reverse)</option></select></label>
+      </div>
+      <label class="crop-scope">Apply watermark to
+        <select id="watermarkScope"><option value="all">All pages</option><option value="selected">Selected page only</option></select>
+      </label>
+      <p class="organize-hint">The watermark is added when you download the PDF. Your original files remain unchanged.</p>
+      <div class="organize-actions"><button id="watermarkApply" type="button">Apply watermark</button></div>
     </div>
   </section>
   <footer class="site-footer">
