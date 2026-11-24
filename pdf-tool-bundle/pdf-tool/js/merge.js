@@ -24,7 +24,7 @@ export async function loadFiles(files, progress) {
 }
 
 // Builds one PDF from the ordered page list.
-export async function exportPdf(pages) {
+export async function exportPdf(pages, options = {}) {
   const { PDFDocument, degrees } = PDFLib;
   const out = await PDFDocument.create(), src = new Map();
   let font;
@@ -33,8 +33,28 @@ export async function exportPdf(pages) {
     if (!src.has(p.file.id)) src.set(p.file.id, await PDFDocument.load(p.file.bytes));
     const [pg] = await out.copyPages(src.get(p.file.id), [p.idx]);
     if (p.rot) pg.setRotation(degrees((pg.getRotation().angle + p.rot) % 360));
+    if (p.crop) {
+      const { width, height } = pg.getSize();
+      const left = Math.max(0, Math.min(0.4, p.crop.left || 0));
+      const right = Math.max(0, Math.min(0.4, p.crop.right || 0));
+      const top = Math.max(0, Math.min(0.4, p.crop.top || 0));
+      const bottom = Math.max(0, Math.min(0.4, p.crop.bottom || 0));
+      if (left + right < 0.9 && top + bottom < 0.9) {
+        pg.setCropBox(left * width, bottom * height, width * (1 - left - right), height * (1 - top - bottom));
+      }
+    }
     out.addPage(pg);
     if (p.items?.length) { font ||= await out.embedFont(PDFLib.StandardFonts.Helvetica); await drawItems(out, pg, p, font); }
+    if (options.pageNumbers) {
+      font ||= await out.embedFont(PDFLib.StandardFonts.Helvetica);
+      const box = pg.getCropBox();
+      const label = String((options.startNumber || 1) + out.getPageCount() - 1);
+      const size = 10, labelWidth = font.widthOfTextAtSize(label, size);
+      const pos = options.numberPosition || 'bottom-center';
+      const x = pos.endsWith('left') ? box.x + 18 : pos.endsWith('right') ? box.x + box.width - labelWidth - 18 : box.x + (box.width - labelWidth) / 2;
+      const y = pos.startsWith('top') ? box.y + box.height - 24 : box.y + 12;
+      pg.drawText(label, { x, y, size, font, color: PDFLib.rgb(0.28, 0.32, 0.4) });
+    }
   }
   return out.save();
 }

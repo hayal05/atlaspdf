@@ -1,0 +1,7 @@
+.crop-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.crop-grid label,.crop-scope{display:flex;flex-direction:column;gap:5px;color:#42516a;font-size:11px;font-weight:700}
+.crop-grid input,.crop-scope select{width:100%;height:38px;padding:0 10px;border:1px solid #dce4f0;border-radius:8px;background:#fbfcfe;color:#17243a}
+.crop-scope{margin:12px 0}
+.crop-apply{width:100%;min-height:39px;border:1px solid #cddaf4;border-radius:9px;background:#f3f6ff;color:#315fe8;font-size:12px;font-weight:750}
+.crop-number-option{display:flex;align-items:center;gap:9px;margin:18px 0 12px;color:#35445b;font-size:12px;font-weight:700}
+.crop-number-option input{width:16px;height:16px;accent-color:#2d63e2}

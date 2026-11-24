@@ -8,6 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232d63e2'/%3E%3Cpath d='M28 17h29l17 17v49H28z' fill='white'/%3E%3Cpath d='M57 17v18h17M37 51h28M37 63h28' stroke='%232d63e2' stroke-width='5' fill='none'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/organize.css">
+<link rel="stylesheet" href="css/crop-number.css">
 </head>
 <body>
 <div id="busybar"></div>
@@ -45,7 +46,7 @@
       </aside>
       <section class="preview-panel" aria-label="Selected PDF page preview">
         <div class="preview-toolbar"><div><strong id="previewTitle">Page preview</strong><span id="previewMeta">Select a page</span></div><div class="preview-actions"><button id="previewSnip" class="tool-button" disabled title="Select an area of this page to copy">▧ Snip</button>
-          <button id="organizePages" class="tool-button" disabled title="Split, extract or remove page ranges">Organize</button><button id="previewPaste" class="tool-button" disabled title="Paste the last snipped area onto this page">▧ Paste Snip</button><button id="previewEdit" class="tool-button" disabled title="Edit selected page">✎ Edit</button><button id="previewRotate" class="tool-button" disabled title="Rotate selected page">↻ Rotate</button><button id="previewRemove" class="tool-button danger-tool" disabled title="Remove selected page">✕</button></div></div>
+          <button id="organizePages" class="tool-button" disabled title="Split, extract or remove page ranges">Organize</button><button id="cropNumber" class="tool-button" disabled title="Crop pages and add page numbers">Crop &amp; Number</button><button id="previewPaste" class="tool-button" disabled title="Paste the last snipped area onto this page">▧ Paste Snip</button><button id="previewEdit" class="tool-button" disabled title="Edit selected page">✎ Edit</button><button id="previewRotate" class="tool-button" disabled title="Rotate selected page">↻ Rotate</button><button id="previewRemove" class="tool-button danger-tool" disabled title="Remove selected page">✕</button></div></div>
         <div id="previewCanvasArea" class="preview-canvas-area"><div id="previewEmpty" class="preview-empty"><span>PDF</span><strong>Select a page to preview</strong></div><div id="previewPageStage" class="preview-page-stage" hidden><canvas id="previewCanvas"></canvas><div id="previewItems" class="preview-items" aria-hidden="true"></div></div></div>
         <div class="preview-zoom-controls" aria-label="Preview zoom controls"><button id="zoomOut" type="button" title="Zoom out" aria-label="Zoom out" disabled>−</button><span id="zoomLevel" aria-live="polite">100%</span><button id="zoomIn" type="button" title="Zoom in" aria-label="Zoom in" disabled>＋</button></div>
       </section>
@@ -62,6 +63,28 @@
         <button id="splitRanges" type="button">Split into files</button>
         <button id="removeRanges" type="button" class="organize-danger">Remove pages</button>
       </div>
+    </div>
+  </section>
+
+  <section id="cropNumberDialog" class="organize-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="cropNumberTitle">
+    <div class="organize-card">
+      <div class="organize-heading"><h2 id="cropNumberTitle">Crop &amp; number pages</h2><button id="cropNumberClose" type="button" aria-label="Close">×</button></div>
+      <p class="organize-hint">Set crop margins as percentages of each page. Cropping is applied to the exported PDF.</p>
+      <div class="crop-grid">
+        <label>Top (%)<input id="cropTop" type="number" min="0" max="40" step="0.5" value="0"></label>
+        <label>Bottom (%)<input id="cropBottom" type="number" min="0" max="40" step="0.5" value="0"></label>
+        <label>Left (%)<input id="cropLeft" type="number" min="0" max="40" step="0.5" value="0"></label>
+        <label>Right (%)<input id="cropRight" type="number" min="0" max="40" step="0.5" value="0"></label>
+      </div>
+      <label class="crop-scope">Apply crop to
+        <select id="cropScope"><option value="all">All pages</option><option value="selected">Selected page only</option></select>
+      </label>
+      <button id="applyCrop" type="button" class="crop-apply">Apply crop settings</button>
+      <label class="crop-number-option"><input id="includePageNumbers" type="checkbox"> Add page numbers to exported PDF</label>
+      <label class="crop-scope">Number position
+        <select id="numberPosition"><option value="bottom-center">Bottom center</option><option value="bottom-left">Bottom left</option><option value="bottom-right">Bottom right</option><option value="top-center">Top center</option></select>
+      </label>
+      <div class="organize-actions"><button id="cropNumberDone" type="button">Done</button></div>
     </div>
   </section>
   <footer class="site-footer">
