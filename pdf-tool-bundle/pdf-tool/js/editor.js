@@ -157,13 +157,14 @@ function setAnnotationMode(mode) {
   if (annotationMode) annotationColor = mode === 'highlight' ? '#ffdf45' : mode === 'rectangle' ? '#e04444' : annotationColor;
   $('eanncol').value = annotationColor;
   updateAnnotationButtons();
+  $('eannctl').hidden = !annotationMode && !(sel && (sel.type === 'shape' || sel.type === 'path'));
   $('emsg').textContent = annotationMode ? (mode === 'path' ? 'Draw on the page to add freehand ink.' : 'Drag on the page to add a ' + annotationMode + '.') : '';
 }
 function drawAnnotation(e) {
   const rect = $('stage').getBoundingClientRect();
   const startX = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
   const startY = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
-  const it = { type:'shape', shape:annotationMode, color: annotationMode === 'highlight' ? '#ffdf45' : '#e04444', opacity: annotationMode === 'highlight' ? 0.34 : 1, x:startX, y:startY, w:0, h:0 };
+  const it = { type:'shape', shape:annotationMode, color: annotationColor, opacity: annotationMode === 'highlight' ? 0.34 : 1, x:startX, y:startY, w:0, h:0 };
   cur.items.push(it); mount(it); select(it);
   const move = ev => {
     const x = Math.max(0, Math.min(1, (ev.clientX - rect.left) / rect.width));
