@@ -48,11 +48,10 @@ function randomOwnerPassword(){
 function download(bytes,name){const blob=new Blob([bytes],{type:'application/pdf'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 function openProtect(){
   file=null;picker.value='';$('protectFileName').textContent='Choose a PDF file';$('protectFileMeta').textContent='One PDF · processed locally on your device';
-  $('protectPassword').value='';$('protectConfirm').value='';strength('');status('');updateRun();dialog.hidden=false;
+  $('protectPassword').value='';$('protectConfirm').value='';strength('');status('');updateRun();dialog.hidden=false;document.body.classList.add('protect-workspace-open');
 }
-function closeProtect(){dialog.hidden=true;file=null;picker.value='';$('protectPassword').value='';$('protectConfirm').value='';status('');updateRun();}
+function closeProtect(){dialog.hidden=true;file=null;picker.value='';$('protectPassword').value='';$('protectConfirm').value='';status('');updateRun();document.body.classList.remove('protect-workspace-open');}
 $('protectClose').addEventListener('click',closeProtect);$('protectCancel').addEventListener('click',closeProtect);
-dialog.addEventListener('click',event=>{if(event.target===dialog)closeProtect();});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!dialog.hidden)closeProtect();});
 $('protectRun').addEventListener('click',async()=>{
   if(!file||$('protectRun').disabled)return;
