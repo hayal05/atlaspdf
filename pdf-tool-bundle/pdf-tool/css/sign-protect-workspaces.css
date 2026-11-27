@@ -1,0 +1,38 @@
+/* Sign and Protect are first-class pages, sharing the conversion workspace shell. */
+body.sign-workspace-open .workspace > :not(#signDialog),
+body.protect-workspace-open .workspace > :not(#protectDialog) { display:none !important; }
+.pdf-tool-page-workspace[hidden] { display:none !important; }
+.pdf-tool-page-workspace .conversion-workspace-grid { grid-template-columns:minmax(290px,390px) minmax(0,1fr); }
+.pdf-tool-page-workspace .conversion-settings-panel { gap:15px; }
+.pdf-tool-page-workspace .sign-file,
+.pdf-tool-page-workspace .protect-file { width:100%; box-sizing:border-box; }
+.pdf-tool-page-workspace .sign-options { margin-top:0; }
+.pdf-tool-page-workspace .sign-mode { margin:0; }
+.pdf-tool-page-workspace .sign-actions,
+.pdf-tool-page-workspace .protect-actions { display:flex; justify-content:stretch; gap:9px; margin-top:0; }
+.pdf-tool-page-workspace .sign-actions button,
+.pdf-tool-page-workspace .protect-actions button { flex:1; min-width:0; }
+.pdf-tool-page-workspace #signRun { color:#fff; border-color:#8054cf; background:linear-gradient(135deg,#9468e8,#7447c5); }
+.pdf-tool-page-workspace #signRun:hover:not(:disabled) { background:linear-gradient(135deg,#8054d5,#6338b2); }
+.pdf-tool-page-workspace #protectRun { color:#fff; border-color:#16845b; background:linear-gradient(135deg,#20a56f,#16845b); }
+.pdf-tool-page-workspace #protectRun:hover:not(:disabled) { background:linear-gradient(135deg,#168f60,#116f4b); }
+.pdf-tool-page-workspace .sign-note,
+.pdf-tool-page-workspace .protect-note { margin:0; }
+.pdf-tool-page-workspace .protect-privacy { margin:0; }
+.pdf-tool-page-workspace .protect-field { margin-top:0; }
+.pdf-tool-page-workspace .protect-field input { box-sizing:border-box; }
+.pdf-tool-page-workspace .sign-pad-wrap { background:linear-gradient(#fff 31px,#edf1f7 32px); }
+.pdf-tool-page-workspace .sign-pad-wrap[hidden],
+.pdf-tool-page-workspace .sign-type-panel[hidden] { display:none !important; }
+@media(max-width:850px) {
+  .pdf-tool-page-workspace .conversion-workspace-grid { grid-template-columns:minmax(0,1fr); }
+  .pdf-tool-page-workspace .conversion-preview-panel { min-height:440px; }
+}
+@media(max-width:560px) {
+  .pdf-tool-page-workspace .conversion-preview-panel { min-height:370px; }
+  .pdf-tool-page-workspace .conversion-preview-stage { min-height:300px; }
+  .pdf-tool-page-workspace .sign-options { grid-template-columns:1fr 1fr; }
+  .pdf-tool-page-workspace .sign-options label:first-child { grid-column:1/-1; }
+  .pdf-tool-page-workspace .sign-actions,
+  .pdf-tool-page-workspace .protect-actions { display:grid; grid-template-columns:1fr 1fr; }
+}
