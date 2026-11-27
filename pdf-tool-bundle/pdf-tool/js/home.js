@@ -32,6 +32,7 @@ document.querySelectorAll('[data-home-tool]').forEach(button => {
     const tool = button.dataset.homeTool;
     if (tool === 'unlock') { $('unlockTool').click(); return; }
     if (tool === 'word' || tool === 'image' || tool === 'pdf-image') { window.AtlasPDFOpenConverter?.(tool); return; }
+    if (tool === 'sign') { window.AtlasPDFOpenSign?.(); return; }
     pendingTool = tool === 'merge' ? null : tool;
     picker.multiple = tool === 'merge';
     picker.click();
