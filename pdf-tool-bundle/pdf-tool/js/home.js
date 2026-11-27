@@ -32,6 +32,7 @@ document.querySelectorAll('[data-home-tool]').forEach(button => {
     const tool = button.dataset.homeTool;
     if (tool === 'unlock') { $('unlockTool').click(); return; }
     if (tool === 'word' || tool === 'image' || tool === 'pdf-image' || tool === 'pdf-word') { window.AtlasPDFOpenConverter?.(tool); return; }
+    if (tool === 'ocr') { window.AtlasPDFOpenOCR?.(); return; }
     if (tool === 'sign') { window.AtlasPDFOpenSign?.(); return; }
     if (tool === 'protect') { window.AtlasPDFOpenProtect?.(); return; }
     pendingTool = tool === 'merge' ? null : tool;
