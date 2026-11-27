@@ -31,6 +31,8 @@ $('protectPassword').addEventListener('input',()=>{strength($('protectPassword')
 $('protectConfirm').addEventListener('input',updateRun);
 picker.addEventListener('change',async()=>{
   const selected=picker.files?.[0];picker.value='';if(!selected)return;
+  protectPreviewToken++;if(protectPreviewPdf){protectPreviewPdf.destroy();protectPreviewPdf=null;}
+  $('protectPreviewEmpty').hidden=false;$('protectPreviewCanvas').hidden=true;$('protectPreviewMeta').textContent=selected.name;$('protectPageCount').textContent='— / —';$('protectPrevPage').disabled=$('protectNextPage').disabled=true;
   if(selected.type!=='application/pdf'&&!/\.pdf$/i.test(selected.name)){file=null;$('protectFileName').textContent='Choose a PDF file';$('protectFileMeta').textContent='Please select a PDF document';status('Please choose a PDF file.',true);updateRun();return;}
   file=selected;$('protectFileName').textContent=selected.name;$('protectFileMeta').textContent=(selected.size/1048576).toFixed(2)+' MB · ready to encrypt';status('PDF selected. Set and confirm your password.');updateRun();await loadProtectPreview(selected);
 });
