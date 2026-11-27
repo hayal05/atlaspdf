@@ -19,6 +19,7 @@ function openOCR() {
   run.disabled = true;
   status('');
   dialog.hidden = false;
+  document.body.classList.add('ocr-workspace-open');
 }
 picker.addEventListener('change', () => {
   const selected = picker.files?.[0];
@@ -151,9 +152,9 @@ function close() {
   file = null;
   picker.value = '';
   status('');
+  document.body.classList.remove('ocr-workspace-open');
 }
 $('ocrClose').addEventListener('click', close);
 $('ocrCancel').addEventListener('click', close);
-dialog.addEventListener('click', event => { if (event.target === dialog) close(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && !dialog.hidden) close(); });
 window.AtlasPDFOpenOCR = openOCR;
