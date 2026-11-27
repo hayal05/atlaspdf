@@ -67,6 +67,7 @@ $('protectRun').addEventListener('click',async()=>{
     try{qpdf.FS.unlink(outputPath);}catch{}
     qpdf.FS.writeFile(inputPath,bytes);
     const ownerPassword=randomOwnerPassword();
+    await new Promise(resolve=>requestAnimationFrame(resolve));
     const code=qpdf.callMain(['--encrypt',password,ownerPassword,'256','--',inputPath,outputPath]);
     if(code!==0&&code!==3)throw new Error('The PDF encryption engine could not protect this file. Check that the PDF is valid and not already password-locked.');
     const protectedBytes=qpdf.FS.readFile(outputPath);
@@ -74,9 +75,12 @@ $('protectRun').addEventListener('click',async()=>{
     const outputName=file.name.replace(/\.pdf$/i,'')+'-protected.pdf';
     download(new Uint8Array(protectedBytes),outputName);
     status('AES-256 protected PDF created. Your download has started.');
-    try{qpdf.FS.unlink(inputPath);qpdf.FS.unlink(outputPath);}catch{}
     $('protectPassword').value='';$('protectConfirm').value='';strength('');
   }catch(error){console.error(error);status(error?.message||'Could not protect this PDF. Please try another file.',true);}
-  finally{$('protectRun').disabled=!file||$('protectPassword').value.length<8||$('protectPassword').value!==$('protectConfirm').value;$('protectCancel').disabled=false;$('protectClose').disabled=false;}
+  finally{
+    if(qpdf){try{qpdf.FS.unlink(inputPath);}catch{}try{qpdf.FS.unlink(outputPath);}catch{}}
+    $('protectRun').disabled=!file||$('protectPassword').value.length<8||$('protectPassword').value!==$('protectConfirm').value;
+    $('protectCancel').disabled=false;$('protectClose').disabled=false;
+  }
 });
 window.AtlasPDFOpenProtect=openProtect;
