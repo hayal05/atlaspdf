@@ -111,3 +111,22 @@ body.repair-workspace-open .top-actions{display:none}
  #ocrDialog .ocr-card,#repairDialog .repair-card{padding:16px;border-radius:12px}
  #ocrTitle,#repairTitle{font-size:21px}
 }
+
+/* Compact homepage welcome area and primary upload action. */
+.home-hero{padding:18px 20px 17px}
+.home-eyebrow{margin-bottom:5px;font-size:9px}
+.home-hero h1{font-size:clamp(21px,2.4vw,25px);line-height:1.15}
+.home-hero>p{margin:6px auto 11px;font-size:12px;line-height:1.45}
+.home-upload{min-height:40px;gap:7px;padding:0 16px;border-radius:9px;font-size:12px;box-shadow:0 4px 12px #2d63e21c}
+.home-upload>span{font-size:18px}
+.home-upload small{margin-left:2px;font-size:10px}
+.home-privacy{margin-top:7px;font-size:10px}
+@media(max-width:760px){
+  .home-hero{padding:15px 12px 14px}
+  .home-hero h1{font-size:21px}
+  .home-hero>p{margin:5px auto 9px;font-size:12px}
+  .home-upload{width:auto;max-width:100%;min-height:38px;flex-wrap:nowrap;gap:6px;padding:0 13px}
+  .home-upload small{width:auto;margin:0;font-size:9px}
+  .home-privacy{margin-top:6px;font-size:9px}
+}
+
