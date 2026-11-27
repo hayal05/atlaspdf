@@ -27,3 +27,6 @@
 .sign-actions button{min-height:38px}
 .sign-note{margin:11px 0 0;color:#8995a7;font-size:9px;line-height:1.45}
 @media(max-width:480px){.sign-card{padding:16px}.sign-options{grid-template-columns:1fr 1fr}.sign-options label:first-child{grid-column:1/-1}.sign-actions{display:grid;grid-template-columns:1fr 1fr}}
+
+/* Keep the new Sign PDF homepage icon colorful and distinct. */
+.home-tool-card:nth-child(10) .home-tool-icon{background:#f1eaff;color:#8656d8}
