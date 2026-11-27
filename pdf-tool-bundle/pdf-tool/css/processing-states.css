@@ -1,0 +1,133 @@
+/* AtlasPDF processing and result states — PR 4.
+   Visual feedback only: no processing logic, status text, or handlers changed. */
+
+#busybar {
+  height: 4px;
+  background: rgba(45, 99, 226, .10);
+}
+#busybar::after {
+  width: 38%;
+  border-radius: 0 999px 999px 0;
+  background: linear-gradient(90deg, #527ee8, #8b6ce0, #36a6c8);
+  box-shadow: 0 0 12px rgba(83, 119, 220, .28);
+}
+body.busy {
+  cursor: progress;
+}
+body.busy #download,
+body.busy .convert-actions button,
+body.busy .organize-actions button {
+  cursor: progress;
+}
+#msg {
+  z-index: 30;
+  max-width: min(520px, calc(100vw - 28px));
+  padding: 12px 16px;
+  border: 1px solid #dce5f5;
+  border-radius: 13px;
+  color: #344b70;
+  background: #fff;
+  box-shadow: 0 12px 34px rgba(26, 45, 79, .16);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+#msg.show {
+  display: block;
+  animation: atlas-message-in .2s ease-out both;
+}
+#msg:not(.err) {
+  border-color: #cfe5d9;
+  background: #f5fbf7;
+  color: #26724f;
+}
+#msg.err {
+  border-color: #f0cbd0;
+  background: #fff6f6;
+  color: #ad3948;
+}
+.unlock-status,
+.convert-status {
+  min-height: 0;
+  border-radius: 10px;
+  transition: background-color .16s ease, border-color .16s ease;
+}
+.unlock-status.active,
+.convert-status:not(:empty):not(.error) {
+  padding: 10px 12px;
+  border: 1px solid #d8e4fb;
+  background: #f3f7ff;
+  color: #45649e;
+  font-weight: 650;
+}
+.unlock-status.success,
+.convert-status.success {
+  padding: 10px 12px;
+  border: 1px solid #cce8d7;
+  background: #f1faf4;
+  color: #20744d;
+  font-weight: 750;
+}
+.unlock-status.error,
+.convert-status.error {
+  padding: 10px 12px;
+  border: 1px solid #f0cbd0;
+  background: #fff4f5;
+  color: #ad3948;
+  font-weight: 700;
+}
+.unlock-status.success::before,
+.convert-status.success::before {
+  content: "✓";
+  display: inline-grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: #dff3e7;
+  color: #20744d;
+  vertical-align: -4px;
+  font-size: 12px;
+  font-weight: 900;
+}
+.unlock-status.error::before,
+.convert-status.error::before {
+  content: "!";
+  display: inline-grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: #fde3e6;
+  color: #ad3948;
+  vertical-align: -4px;
+  font-size: 12px;
+  font-weight: 900;
+}
+button:disabled {
+  cursor: not-allowed;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(73, 113, 215, .25);
+  outline-offset: 2px;
+}
+@keyframes atlas-message-in {
+  from { opacity: 0; transform: translate(-50%, 7px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+@media (max-width: 640px) {
+  #msg {
+    bottom: max(14px, env(safe-area-inset-bottom));
+    padding: 11px 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #msg.show { animation: none; }
+  .unlock-status,
+  .convert-status { transition: none; }
+}
