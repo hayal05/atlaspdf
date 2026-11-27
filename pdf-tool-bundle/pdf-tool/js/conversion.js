@@ -130,7 +130,7 @@ async function wordToPdf(file) {
       jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
       pagebreak:{mode:['css','legacy']}
     }).from(stage).toPdf();
-    const blob=await worker.output('blob');
+    const blob=await worker.outputPdf('blob');
     return blob;
   } finally { stage.remove(); }
 }
