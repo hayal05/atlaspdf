@@ -1,9 +1,12 @@
+import * as signPdfjs from '../vendor/pdf.min.mjs';
+signPdfjs.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs', import.meta.url).href;
 const $ = id => document.getElementById(id);
 const dialog = $('signDialog');
 const picker = $('signPicker');
 const canvas = $('signCanvas');
 const ctx = canvas.getContext('2d');
 let file = null, drawing = false, hasInk = false, mode = 'draw';
+let signPreviewPdf = null, signPreviewPage = 1, signPreviewToken = 0;
 
 function status(message, error = false) {
   $('signStatus').textContent = message;
@@ -71,19 +74,53 @@ picker.addEventListener('change',async()=>{
     for(let page=1;page<=count;page++) $('signPage').add(new Option('Page '+page,String(page)));
     $('signFileMeta').textContent=(selected.size/1048576).toFixed(2)+' MB · '+count+' page'+(count===1?'':'s');
     status('PDF ready. Add your signature below.');
+    loadSignPreview(selected);
   } catch(error) {
     file=null; $('signFileMeta').textContent='Could not read this PDF'; status(error?.message||'Could not open this PDF. It may be encrypted or damaged.',true);
   }
   updateRun();
 });
+async function loadSignPreview(selected) {
+  const token=++signPreviewToken;
+  if(signPreviewPdf){try{await signPreviewPdf.destroy();}catch{}signPreviewPdf=null;}
+  $('signPreviewEmpty').hidden=false;$('signPreviewCanvas').hidden=true;
+  $('signPreviewEmpty').querySelector('strong').textContent='Preparing preview…';
+  $('signPreviewEmpty').querySelector('small').textContent=selected.name;
+  try{
+    const pdf=await signPdfjs.getDocument({data:new Uint8Array(await selected.arrayBuffer())}).promise;
+    if(token!==signPreviewToken){await pdf.destroy();return;}
+    signPreviewPdf=pdf;signPreviewPage=1;
+    $('signPreviewMeta').textContent=selected.name;
+    await renderSignPreviewPage();
+  }catch(error){
+    $('signPreviewEmpty').hidden=false;
+    $('signPreviewEmpty').querySelector('strong').textContent='Preview unavailable';
+    $('signPreviewEmpty').querySelector('small').textContent=error?.name==='PasswordException'?'This PDF is password-protected.':'The PDF could not be previewed.';
+  }
+}
+async function renderSignPreviewPage(){
+  if(!signPreviewPdf)return;
+  const page=await signPreviewPdf.getPage(signPreviewPage);
+  const canvas=$('signPreviewCanvas'),stage=canvas.parentElement,base=page.getViewport({scale:1});
+  const scale=Math.min((stage.clientWidth-48)/base.width,(stage.clientHeight-48)/base.height,1.5);
+  const viewport=page.getViewport({scale:Math.max(.2,scale)});
+  const context=canvas.getContext('2d');canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+  await page.render({canvasContext:context,viewport}).promise;
+  $('signPreviewEmpty').hidden=true;canvas.hidden=false;
+  $('signPageCount').textContent=`${signPreviewPage} / ${signPreviewPdf.numPages}`;
+  $('signPrevPage').disabled=signPreviewPage<=1;$('signNextPage').disabled=signPreviewPage>=signPreviewPdf.numPages;
+}
+$('signPrevPage').addEventListener('click',async()=>{if(signPreviewPdf&&signPreviewPage>1){signPreviewPage--;await renderSignPreviewPage();}});
+$('signNextPage').addEventListener('click',async()=>{if(signPreviewPdf&&signPreviewPage<signPreviewPdf.numPages){signPreviewPage++;await renderSignPreviewPage();}});
+window.addEventListener('resize',()=>{if(signPreviewPdf&&!dialog.hidden)renderSignPreviewPage();});
 function openSign(){
   file=null; picker.value=''; $('signFileName').textContent='Choose a PDF file'; $('signFileMeta').textContent='One PDF · processed locally on your device';
   $('signPage').innerHTML='<option value="all">All pages</option><option value="1">Page 1</option>';
-  $('signTypedText').value=''; setMode('draw'); status(''); updateRun(); dialog.hidden=false;
+  $('signTypedText').value=''; setMode('draw'); status(''); updateRun(); dialog.hidden=false; document.body.classList.add('sign-workspace-open'); $('signPreviewPanel').hidden=false; $('signPreviewEmpty').hidden=false; $('signPreviewCanvas').hidden=true; $('signPreviewMeta').textContent='Upload a PDF to preview its pages'; $('signPageCount').textContent='— / —'; $('signPrevPage').disabled=$('signNextPage').disabled=true;
 }
-function closeSign(){dialog.hidden=true;file=null;picker.value='';status('');updateRun();}
-$('signClose').addEventListener('click',closeSign); $('signCancel').addEventListener('click',closeSign);
-dialog.addEventListener('click',event=>{if(event.target===dialog)closeSign();});
+function closeSign(){dialog.hidden=true;file=null;picker.value='';status('');updateRun();document.body.classList.remove('sign-workspace-open');signPreviewToken++;if(signPreviewPdf){signPreviewPdf.destroy();signPreviewPdf=null;}}
+$('signClose').addEventListener('click',closeSign); $('signCancel').addEventListener('click',closeSign); $('signBack').addEventListener('click',closeSign);
+
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!dialog.hidden)closeSign();});
 function download(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 $('signRun').addEventListener('click',async()=>{
