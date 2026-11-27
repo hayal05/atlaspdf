@@ -251,7 +251,7 @@
       <div><p class="conversion-eyebrow">PDF WORKSPACE</p><h1 id="convertTitle">PDF to JPG</h1><p id="convertDescription" class="convert-description">Convert every page of a PDF into separate images.</p></div>
       <button id="convertClose" class="conversion-close" type="button" aria-label="Close workspace">×</button>
     </div>
-    <div class="conversion-workspace-grid">
+    <div id="conversionWorkspaceGrid" class="conversion-workspace-grid">
       <section class="conversion-settings-panel" aria-label="Conversion settings">
         <label id="convertDrop" class="convert-drop" for="convertPicker"><span class="convert-drop-icon">＋</span><strong id="convertDropTitle">Choose a PDF</strong><small id="convertDropHint">PDF files · one document at a time</small></label>
         <input id="convertPicker" type="file" hidden>
@@ -265,7 +265,7 @@
         <p id="convertStatus" class="convert-status" role="status" aria-live="polite"></p>
         <div class="convert-actions"><button id="convertCancel" type="button" class="button button-secondary">Back</button><button id="convertRun" type="button" class="button button-primary" disabled>Convert to images</button></div>
       </section>
-      <section class="conversion-preview-panel" aria-label="PDF page preview">
+      <section id="convertPreviewPanel" class="conversion-preview-panel" aria-label="PDF page preview">
         <div class="conversion-preview-heading"><div><strong>Document preview</strong><span id="convertPreviewMeta">Upload a PDF to preview its pages</span></div><div class="conversion-page-controls"><button id="convertPrevPage" type="button" disabled aria-label="Previous page">←</button><span id="convertPageCount">— / —</span><button id="convertNextPage" type="button" disabled aria-label="Next page">→</button></div></div>
         <div class="conversion-preview-stage"><div id="convertPreviewEmpty" class="conversion-preview-empty"><span>PDF</span><strong>Your document preview will appear here</strong><small>Choose a PDF to get started</small></div><canvas id="convertPreviewCanvas" hidden></canvas></div>
       </section>
