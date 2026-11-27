@@ -3,8 +3,9 @@ const QPDF_MODULE_URL = `https://esm.sh/@neslinesli93/qpdf-wasm@${QPDF_VERSION}`
 const QPDF_WASM_URL = `https://cdn.jsdelivr.net/npm/@neslinesli93/qpdf-wasm@${QPDF_VERSION}/dist/qpdf.wasm`;
 
 let qpdfPromise;
+let qpdfDiagnostics = '';
 
-async function getQpdf(onLog) {
+async function getQpdf() {
   if (!qpdfPromise) {
     qpdfPromise = (async () => {
       const imported = await import(QPDF_MODULE_URL);
@@ -15,8 +16,8 @@ async function getQpdf(onLog) {
       return createModule({
         noInitialRun: true,
         locateFile: path => path.endsWith('.wasm') ? QPDF_WASM_URL : path,
-        print: message => onLog?.(String(message)),
-        printErr: message => onLog?.(String(message))
+        print: message => { qpdfDiagnostics += String(message) + '\\n'; },
+        printErr: message => { qpdfDiagnostics += String(message) + '\\n'; }
       });
     })().catch(error => {
       qpdfPromise = null;
@@ -49,7 +50,7 @@ export async function unlockPdf(file, password, onProgress) {
     }
 
     qpdf.FS.writeFile(inputPath, bytes);
-    diagnostic = '';
+    qpdfDiagnostics = '';
     onProgress?.('Checking password and removing protection…');
     let exitCode;
     try {
@@ -61,8 +62,8 @@ export async function unlockPdf(file, password, onProgress) {
 
     let output;
     try { output = qpdf.FS.readFile(outputPath); } catch { output = null; }
-    if (exitCode !== 0 || !output?.length) {
-      const detail = diagnostic.toLowerCase();
+    if ((exitCode !== 0 && exitCode !== 3 && exitCode !== undefined) || !output?.length) {
+      const detail = qpdfDiagnostics.toLowerCase();
       if (detail.includes('invalid password') || detail.includes('password')) {
         throw new Error('The password is incorrect, or this PDF uses an unsupported encryption method.');
       }
