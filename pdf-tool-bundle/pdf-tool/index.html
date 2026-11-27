@@ -29,6 +29,7 @@
 <link rel="stylesheet" href="css/workspace-action-toolbar.css">
 <link rel="stylesheet" href="css/sign-pdf.css">
 <link rel="stylesheet" href="css/protect-pdf.css">
+<link rel="stylesheet" href="css/sign-protect-workspaces.css">
 </head>
 <body>
 <div id="busybar"></div>
@@ -177,40 +178,59 @@
 
 
 
-  <section id="signDialog" class="organize-dialog sign-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="signTitle">
-    <div class="organize-card sign-card">
-      <div class="organize-heading"><h2 id="signTitle">Sign PDF</h2><button id="signClose" type="button" aria-label="Close">×</button></div>
-      <p class="sign-description">Add a handwritten or typed signature, choose where it appears, and download your signed PDF.</p>
-      <label class="sign-file" for="signPicker"><span class="sign-file-icon">PDF</span><span><strong id="signFileName">Choose a PDF file</strong><small id="signFileMeta">One PDF · processed locally on your device</small></span><span class="sign-browse">Browse</span></label>
-      <input id="signPicker" type="file" accept="application/pdf,.pdf" hidden>
-      <div class="sign-mode" role="group" aria-label="Signature type"><button id="signDrawMode" type="button" class="active" aria-pressed="true">✎ Draw signature</button><button id="signTypeMode" type="button" aria-pressed="false">T Type signature</button></div>
-      <div id="signDrawPanel" class="sign-pad-wrap"><canvas id="signCanvas" width="900" height="260" aria-label="Draw your signature here"></canvas><div class="sign-pad-footer"><span>Draw with your mouse, finger or stylus</span><button id="signClear" type="button">Clear</button></div></div>
-      <div id="signTypePanel" class="sign-type-panel" hidden><label for="signTypedText">Your name</label><input id="signTypedText" type="text" maxlength="48" placeholder="Type your name"><p>Preview uses a cursive-style signature.</p></div>
-      <div class="sign-options">
-        <label>Apply to<select id="signPage"><option value="all">All pages</option><option value="1">Page 1</option></select></label>
-        <label>Position<select id="signPosition"><option value="bottom-right">Bottom right</option><option value="bottom-left">Bottom left</option><option value="bottom-center">Bottom center</option><option value="top-right">Top right</option></select></label>
-        <label>Size<select id="signSize"><option value="120">Small</option><option value="180" selected>Medium</option><option value="240">Large</option></select></label>
-      </div>
-      <p id="signStatus" class="sign-status" role="status" aria-live="polite"></p>
-      <div class="sign-actions"><button id="signCancel" type="button" class="button button-secondary">Cancel</button><button id="signRun" type="button" class="button button-primary" disabled>Sign &amp; Download PDF</button></div>
-      <p class="sign-note">This adds a visible signature image. It is not a certificate-based digital signature.</p>
+  <section id="signDialog" class="conversion-workspace pdf-tool-page-workspace sign-workspace" hidden aria-labelledby="signTitle">
+    <div class="conversion-workspace-header">
+      <button id="signBack" class="conversion-back" type="button"><span aria-hidden="true">←</span> All tools</button>
+      <div><p class="conversion-eyebrow">PDF WORKSPACE</p><h1 id="signTitle">Sign PDF</h1><p class="convert-description">Add a handwritten or typed signature to your document.</p></div>
+      <button id="signClose" class="conversion-close" type="button" aria-label="Close workspace">×</button>
+    </div>
+    <div class="conversion-workspace-grid">
+      <section class="conversion-settings-panel sign-workspace-settings" aria-label="Signature settings">
+        <label class="sign-file" for="signPicker"><span class="sign-file-icon">PDF</span><span><strong id="signFileName">Choose a PDF file</strong><small id="signFileMeta">One PDF · processed locally on your device</small></span><span class="sign-browse">Browse</span></label>
+        <input id="signPicker" type="file" accept="application/pdf,.pdf" hidden>
+        <div class="sign-mode" role="group" aria-label="Signature type"><button id="signDrawMode" type="button" class="active" aria-pressed="true">✎ Draw signature</button><button id="signTypeMode" type="button" aria-pressed="false">T Type signature</button></div>
+        <div id="signDrawPanel" class="sign-pad-wrap"><canvas id="signCanvas" width="900" height="260" aria-label="Draw your signature here"></canvas><div class="sign-pad-footer"><span>Draw with your mouse, finger or stylus</span><button id="signClear" type="button">Clear</button></div></div>
+        <div id="signTypePanel" class="sign-type-panel" hidden><label for="signTypedText">Your name</label><input id="signTypedText" type="text" maxlength="48" placeholder="Type your name"><p>Preview uses a cursive-style signature.</p></div>
+        <div class="sign-options">
+          <label>Apply to<select id="signPage"><option value="all">All pages</option><option value="1">Page 1</option></select></label>
+          <label>Position<select id="signPosition"><option value="bottom-right">Bottom right</option><option value="bottom-left">Bottom left</option><option value="bottom-center">Bottom center</option><option value="top-right">Top right</option></select></label>
+          <label>Size<select id="signSize"><option value="120">Small</option><option value="180" selected>Medium</option><option value="240">Large</option></select></label>
+        </div>
+        <div class="conversion-privacy"><span aria-hidden="true">✓</span><span><strong>Your files stay private</strong><small>Signature is applied locally in your browser.</small></span></div>
+        <p id="signStatus" class="sign-status" role="status" aria-live="polite"></p>
+        <div class="convert-actions sign-actions"><button id="signCancel" type="button" class="button button-secondary">Back</button><button id="signRun" type="button" class="button button-primary" disabled>Sign &amp; Download PDF</button></div>
+        <p class="sign-note">This adds a visible signature image. It is not a certificate-based digital signature.</p>
+      </section>
+      <section id="signPreviewPanel" class="conversion-preview-panel" aria-label="PDF page preview">
+        <div class="conversion-preview-heading"><div><strong>Document preview</strong><span id="signPreviewMeta">Upload a PDF to preview its pages</span></div><div class="conversion-page-controls"><button id="signPrevPage" type="button" disabled aria-label="Previous page">←</button><span id="signPageCount">— / —</span><button id="signNextPage" type="button" disabled aria-label="Next page">→</button></div></div>
+        <div class="conversion-preview-stage"><div id="signPreviewEmpty" class="conversion-preview-empty"><span>PDF</span><strong>Your document preview will appear here</strong><small>Choose a PDF to get started</small></div><canvas id="signPreviewCanvas" hidden></canvas></div>
+      </section>
     </div>
   </section>
 
-  <section id="protectDialog" class="organize-dialog protect-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="protectTitle">
-    <div class="organize-card protect-card">
-      <div class="organize-heading"><h2 id="protectTitle">Protect PDF</h2><button id="protectClose" type="button" aria-label="Close">×</button></div>
-      <p class="protect-description">Encrypt your PDF with AES-256. Anyone opening the protected copy will need the password you set.</p>
-      <label class="protect-file" for="protectPicker"><span class="protect-file-icon">PDF</span><span><strong id="protectFileName">Choose a PDF file</strong><small id="protectFileMeta">One PDF · processed locally on your device</small></span><span class="protect-browse">Browse</span></label>
-      <input id="protectPicker" type="file" accept="application/pdf,.pdf" hidden>
-      <div class="protect-field"><label for="protectPassword">Password</label><input id="protectPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="At least 8 characters"></div>
-      <div class="protect-field"><label for="protectConfirm">Confirm password</label><input id="protectConfirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Enter the password again"></div>
-      <div class="protect-strength"><span id="protectStrengthBar"></span></div>
-      <p id="protectStrengthText" class="protect-hint">Use a long, unique password. There is no password recovery.</p>
-      <p class="protect-privacy"><span aria-hidden="true">✓</span> AES-256 encryption runs in your browser. Your PDF and password are not uploaded.</p>
-      <p id="protectStatus" class="protect-status" role="status" aria-live="polite"></p>
-      <div class="protect-actions"><button id="protectCancel" type="button" class="button button-secondary">Cancel</button><button id="protectRun" type="button" class="button button-primary" disabled>Encrypt &amp; Download</button></div>
-      <p class="protect-note">Keep your password safe. If it is lost, AtlasPDF cannot recover the protected document.</p>
+  <section id="protectDialog" class="conversion-workspace pdf-tool-page-workspace protect-workspace" hidden aria-labelledby="protectTitle">
+    <div class="conversion-workspace-header">
+      <button id="protectBack" class="conversion-back" type="button"><span aria-hidden="true">←</span> All tools</button>
+      <div><p class="conversion-eyebrow">PDF WORKSPACE</p><h1 id="protectTitle">Protect PDF</h1><p class="convert-description">Encrypt your document with AES-256 password protection.</p></div>
+      <button id="protectClose" class="conversion-close" type="button" aria-label="Close workspace">×</button>
+    </div>
+    <div class="conversion-workspace-grid">
+      <section class="conversion-settings-panel protect-workspace-settings" aria-label="Encryption settings">
+        <label class="protect-file" for="protectPicker"><span class="protect-file-icon">PDF</span><span><strong id="protectFileName">Choose a PDF file</strong><small id="protectFileMeta">One PDF · processed locally on your device</small></span><span class="protect-browse">Browse</span></label>
+        <input id="protectPicker" type="file" accept="application/pdf,.pdf" hidden>
+        <div class="protect-field"><label for="protectPassword">Password</label><input id="protectPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="At least 8 characters"></div>
+        <div class="protect-field"><label for="protectConfirm">Confirm password</label><input id="protectConfirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Enter the password again"></div>
+        <div class="protect-strength"><span id="protectStrengthBar"></span></div>
+        <p id="protectStrengthText" class="protect-hint">Use a long, unique password. There is no password recovery.</p>
+        <p class="protect-privacy"><span aria-hidden="true">✓</span> AES-256 encryption runs in your browser. Your PDF and password are not uploaded.</p>
+        <p id="protectStatus" class="protect-status" role="status" aria-live="polite"></p>
+        <div class="convert-actions protect-actions"><button id="protectCancel" type="button" class="button button-secondary">Back</button><button id="protectRun" type="button" class="button button-primary" disabled>Encrypt &amp; Download</button></div>
+        <p class="protect-note">Keep your password safe. If it is lost, AtlasPDF cannot recover the protected document.</p>
+      </section>
+      <section id="protectPreviewPanel" class="conversion-preview-panel" aria-label="PDF page preview">
+        <div class="conversion-preview-heading"><div><strong>Document preview</strong><span id="protectPreviewMeta">Upload a PDF to preview its pages</span></div><div class="conversion-page-controls"><button id="protectPrevPage" type="button" disabled aria-label="Previous page">←</button><span id="protectPageCount">— / —</span><button id="protectNextPage" type="button" disabled aria-label="Next page">→</button></div></div>
+        <div class="conversion-preview-stage"><div id="protectPreviewEmpty" class="conversion-preview-empty"><span>PDF</span><strong>Your document preview will appear here</strong><small>Choose a PDF to get started</small></div><canvas id="protectPreviewCanvas" hidden></canvas></div>
+      </section>
     </div>
   </section>
 
