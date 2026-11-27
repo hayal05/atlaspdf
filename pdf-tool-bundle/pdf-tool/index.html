@@ -79,6 +79,28 @@
       <button class="home-tool-card" type="button" data-home-tool="repair"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><path d="M8 13h8M8 16h5"/><path d="m15.5 18.5 1.5 1.5 3-3"/></svg></span><strong>Repair PDF</strong><span>Rebuild and save PDFs with recoverable structure issues.</span><b>Repair a PDF <i aria-hidden="true">→</i></b></button>
     </div>
   </section>
+    <section id="conversionWorkspace" class="conversion-workspace" hidden aria-labelledby="conversionWorkspaceTitle">
+      <div class="conversion-workspace-heading">
+        <div class="conversion-file-heading"><button id="conversionBack" class="conversion-back" type="button" aria-label="Back to tools">←</button><div><span class="conversion-eyebrow">PDF WORKSPACE</span><h2 id="conversionWorkspaceTitle">PDF to JPG</h2><p id="conversionWorkspaceFile">Choose a PDF to begin</p></div></div>
+        <div class="conversion-toolbar"><button id="conversionChoose" class="button button-secondary" type="button">＋ Choose PDF</button><button id="conversionRunTop" class="button button-primary" type="button" disabled>Convert</button></div>
+      </div>
+      <div class="conversion-workspace-grid">
+        <section class="conversion-preview-panel" aria-label="PDF page preview">
+          <div class="conversion-preview-toolbar"><strong>Document preview</strong><div class="conversion-page-controls"><button id="conversionPrevPage" type="button" disabled aria-label="Previous page">←</button><span id="conversionPageLabel">No document</span><button id="conversionNextPage" type="button" disabled aria-label="Next page">→</button></div></div>
+          <div id="conversionPreviewStage" class="conversion-preview-stage"><div id="conversionPreviewEmpty" class="conversion-preview-empty"><span>PDF</span><strong>Your document preview will appear here</strong><small>Upload a PDF to see its pages</small></div><canvas id="conversionPreviewCanvas" hidden></canvas></div>
+        </section>
+        <aside class="conversion-settings-panel">
+          <div class="conversion-settings-heading"><span class="conversion-settings-icon">✦</span><div><h3 id="conversionSettingsTitle">Image settings</h3><p id="conversionSettingsDescription">Choose how your pages should be exported.</p></div></div>
+          <label id="conversionFormatField" class="conversion-setting-field">Image format<select id="workspacePdfImageFormat"><option value="jpg">JPG</option><option value="png">PNG</option></select></label>
+          <label id="conversionScaleField" class="conversion-setting-field">Resolution<select id="workspacePdfImageScale"><option value="1">Standard (1×)</option><option value="1.5">High (1.5×)</option><option value="2" selected>Very high (2×)</option><option value="3">Maximum (3×)</option></select></label>
+          <div id="conversionWordInfo" class="conversion-word-info" hidden><strong>Editable Word document</strong><p>Selectable text is extracted page by page. Scanned or image-only PDFs need OCR first.</p></div>
+          <div class="conversion-privacy-note"><span>✓</span><p>Your PDF stays on your device and is processed locally in your browser.</p></div>
+          <p id="conversionWorkspaceStatus" class="conversion-workspace-status" role="status" aria-live="polite">Choose a PDF to begin.</p>
+          <button id="conversionRun" class="button button-primary conversion-run-button" type="button" disabled>Convert to images</button>
+        </aside>
+      </div>
+      <input id="conversionWorkspacePicker" type="file" accept="application/pdf,.pdf" hidden>
+    </section>
     <section id="uploadZone" class="upload-zone" aria-label="Upload PDF files">
     <div class="upload-symbol" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 32V8m0 0-9 9m9-9 9 9M9 29v10h30V29" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div class="upload-copy"><h2>Drop PDF files here</h2></div>
