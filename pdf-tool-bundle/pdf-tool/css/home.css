@@ -2,7 +2,7 @@
 .home-hub{padding:18px 0 34px}.home-hub[hidden]{display:none}
 .home-hero{padding:clamp(28px,5vw,58px) 24px 30px;text-align:center;background:linear-gradient(135deg,#f0f5ff 0%,#fff 72%);border:1px solid #e1eafa;border-radius:20px}
 .home-eyebrow{display:inline-block;margin-bottom:10px;color:var(--blue);font-size:10px;font-weight:800;letter-spacing:1.7px}
-.home-hero h1{max-width:720px;margin:0 auto;color:#18243a;font-size:clamp(28px,4.6vw,43px);line-height:1.12;letter-spacing:-1.5px}
+.home-hero h1{max-width:460px;margin:0 auto;color:#18243a;font-size:clamp(23px,2.8vw,29px);line-height:1.2;letter-spacing:-.7px}
 .home-hero>p{max-width:590px;margin:13px auto 22px;color:#718096;font-size:15px}
 .home-upload{min-height:54px;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:0 23px;border:1px solid var(--blue);border-radius:10px;background:var(--blue);color:#fff;font-size:14px;font-weight:750;box-shadow:0 7px 17px #2d63e229}
 .home-upload>span{font-size:22px;line-height:1}.home-upload small{margin-left:4px;color:#dce7ff;font-size:11px;font-weight:500}.home-upload:hover{background:var(--blue-dark)}
@@ -18,5 +18,5 @@
 .home-tool-card:focus-visible{outline:3px solid rgba(54,95,229,.28);outline-offset:3px}
 .home-empty .workspace{padding-top:20px}.home-empty #uploadZone,.home-empty .documents-section>.section-heading,.home-empty #empty{display:none!important}.home-empty .documents-section{margin-top:0}.home-empty .top-actions>#add,.home-empty .top-actions>.quality-control,.home-empty .top-actions>#download{display:none}
 @media(max-width:1050px){.home-tools{grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;padding:0}}
-@media(max-width:760px){.home-hero{padding:34px 17px 25px}.home-hero>p{font-size:13px}.home-upload{width:100%;max-width:320px;flex-wrap:wrap;gap:6px}.home-upload small{width:100%;margin:0 0 0 28px}.home-tools-heading{margin-top:24px}.home-tools{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.home-tool-card{min-height:150px;padding:13px 11px}}
+@media(max-width:760px){.home-hero{padding:28px 17px 23px}.home-hero h1{font-size:23px;letter-spacing:-.45px}.home-hero>p{font-size:13px}.home-upload{width:100%;max-width:320px;flex-wrap:wrap;gap:6px}.home-upload small{width:100%;margin:0 0 0 28px}.home-tools-heading{margin-top:24px}.home-tools{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.home-tool-card{min-height:150px;padding:13px 11px}}
 @media(prefers-reduced-motion:reduce){.home-tool-card,.home-tool-card b i{transition:none!important}}
