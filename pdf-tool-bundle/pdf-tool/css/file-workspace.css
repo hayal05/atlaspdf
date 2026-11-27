@@ -1,0 +1,197 @@
+/* AtlasPDF file workspace refinement — PR 3.
+   Refines the uploaded-page library and file-state surfaces only.
+   The homepage hero and tools grid remain untouched. */
+
+.documents-section {
+  margin-top: 24px;
+}
+
+.empty-state {
+  min-height: 220px;
+  padding: 28px 18px;
+  border: 1px solid #e2e9f4;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(74, 119, 226, .07), transparent 58%),
+    #fff;
+  box-shadow: 0 5px 22px rgba(28, 47, 82, .04);
+}
+
+.empty-file {
+  width: 48px;
+  height: 54px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #eaf1ff, #f2edff);
+  color: #4c68c5;
+  box-shadow: 0 5px 13px rgba(65, 94, 177, .09);
+}
+
+.empty-state strong {
+  margin-top: 2px;
+  color: #30415f;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.empty-state span:last-child {
+  max-width: 290px;
+  color: #8a98ad;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+/* Page library: distinguish page tiles, selection and drag/drop feedback. */
+.page-sidebar {
+  background: linear-gradient(180deg, #fff 0%, #fbfcff 100%);
+}
+
+.page-list {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd6e8 transparent;
+}
+
+.page-card {
+  position: relative;
+  padding: 8px;
+  border-color: #e6ebf3;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(28, 47, 82, .025);
+}
+
+.page-card:hover {
+  border-color: #b9c9eb;
+  background: #f9fbff;
+  box-shadow: 0 5px 13px rgba(44, 76, 135, .07);
+  transform: translateY(-1px);
+}
+
+.page-card.sel {
+  border-color: #6d8fe0;
+  background: linear-gradient(155deg, #f0f5ff, #faf8ff);
+  box-shadow: 0 0 0 2px rgba(65, 104, 196, .12), 0 5px 14px rgba(44, 76, 135, .06);
+}
+
+.page-card.drag {
+  opacity: .48;
+  transform: scale(.97);
+}
+
+.page-card.over {
+  outline: 2px dashed #6888d4;
+  outline-offset: 2px;
+  background: #f0f5ff;
+}
+
+.page-thumb {
+  border: 1px solid #edf0f6;
+  border-radius: 9px;
+  background: linear-gradient(145deg, #f2f5fa, #e9eef7);
+}
+
+.page-thumb canvas {
+  border-radius: 2px;
+  box-shadow: 0 2px 7px rgba(23, 36, 58, .14);
+}
+
+.page-label {
+  margin: 8px 2px 7px;
+  color: #536580;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.page-tools {
+  gap: 5px;
+}
+
+.page-tools button {
+  min-width: 0;
+  height: 29px;
+  border-color: #e3e9f2;
+  border-radius: 8px;
+  background: #f9faff;
+  color: #63738d;
+  font-size: 11px;
+  font-weight: 700;
+  transition: background .15s, border-color .15s, color .15s;
+}
+
+.page-tools button:hover {
+  border-color: #c5d4f0;
+  background: #edf3ff;
+  color: #3f64b4;
+}
+
+.page-card :focus-visible,
+.page-tools button:focus-visible {
+  outline: 3px solid rgba(57, 105, 214, .28);
+  outline-offset: 2px;
+}
+
+/* Keep page navigation usable without a sideways-scrolling strip on phones. */
+@media (max-width: 640px) {
+  .documents-section {
+    margin-top: 18px;
+  }
+
+  .empty-state {
+    min-height: 190px;
+    padding: 22px 14px;
+  }
+
+  .page-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    height: auto;
+    max-height: 310px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .page-card {
+    min-width: 0;
+    padding: 6px;
+  }
+
+  .page-thumb {
+    height: 104px;
+  }
+
+  .page-thumb canvas {
+    max-height: 96px;
+  }
+
+  .page-label {
+    font-size: 9px;
+  }
+
+  .page-tools button {
+    height: 27px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .page-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: 340px;
+  }
+
+  .page-thumb {
+    height: 118px;
+  }
+
+  .page-thumb canvas {
+    max-height: 110px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-card,
+  .page-tools button {
+    transition: none !important;
+  }
+}
