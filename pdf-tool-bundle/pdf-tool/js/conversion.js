@@ -49,6 +49,9 @@ function openConverter(type) {
   run.disabled = true;
   setStatus('');
   dialog.hidden = false;
+  const hasPdfPreview = type === 'pdf-image' || type === 'pdf-word';
+  $('convertPreviewPanel').hidden = !hasPdfPreview;
+  $('conversionWorkspaceGrid').classList.toggle('single-panel', !hasPdfPreview);
   document.body.classList.add('conversion-workspace-open');
   $('convertPreviewEmpty').hidden = false;
   $('convertPreviewCanvas').hidden = true;
