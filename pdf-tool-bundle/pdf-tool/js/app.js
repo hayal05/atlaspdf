@@ -44,6 +44,7 @@ async function refresh() {
   const selected = state.pages[state.selected];
   $('previewEdit').disabled = $('previewRotate').disabled = $('previewRemove').disabled = !selected;
   $('previewSnip').disabled = !selected;
+  $('previewUnlock').disabled = !selected || busy;
   $('organizePages').disabled = !n;
   $('cropNumber').disabled = !n;
   $('watermark').disabled = !n;
@@ -248,6 +249,34 @@ $('uploadZone').onclick = e => { if (!e.target.closest('button')) $('picker').cl
 $('empty').onclick = () => $('picker').click();
 $('picker').onchange = e => { add(e.target.files); e.target.value = ''; };
 $('download').onclick = save;
+
+async function unlockLoadedPdf() {
+  const selected = state.pages[state.selected];
+  if (!selected || busy) return;
+  const source = selected.file;
+  const file = new File([source.bytes], source.name, { type: 'application/pdf' });
+  setBusy(true);
+  $('previewUnlock').disabled = true;
+  $('previewUnlock').textContent = 'Unlocking…';
+  say('Automatically unlocking the uploaded PDF…', false, 12000);
+  try {
+    const blob = await unlockPdf(file, message => {
+      $('info').textContent = message;
+    });
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    download(bytes, `${source.name.replace(/\\.pdf$/i, '')}-unlocked.pdf`);
+    say('PDF unlocked. Your download has started.', false, 9000);
+  } catch (error) {
+    console.error(error);
+    say(error.message || 'Could not unlock this PDF.', true, 10000);
+  } finally {
+    setBusy(false);
+    $('previewUnlock').textContent = '🔓 Unlock';
+    refresh();
+  }
+}
+$('previewUnlock').onclick = unlockLoadedPdf;
+
 
 function closeUnlock() {
   $('unlockDialog').hidden = true;
