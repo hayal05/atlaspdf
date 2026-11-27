@@ -1,8 +1,11 @@
+import * as protectPdfjs from '../vendor/pdf.min.mjs';
+protectPdfjs.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs', import.meta.url).href;
 const $ = id => document.getElementById(id);
 const dialog = $('protectDialog');
 const picker = $('protectPicker');
 let file = null;
 let qpdfPromise = null;
+let protectPreviewPdf = null, protectPreviewPage = 1, protectPreviewToken = 0;
 
 function status(message, error = false) {
   $('protectStatus').textContent = message;
@@ -26,10 +29,10 @@ function updateRun() {
 }
 $('protectPassword').addEventListener('input',()=>{strength($('protectPassword').value);updateRun();});
 $('protectConfirm').addEventListener('input',updateRun);
-picker.addEventListener('change',()=>{
+picker.addEventListener('change',async()=>{
   const selected=picker.files?.[0];picker.value='';if(!selected)return;
   if(selected.type!=='application/pdf'&&!/\.pdf$/i.test(selected.name)){file=null;$('protectFileName').textContent='Choose a PDF file';$('protectFileMeta').textContent='Please select a PDF document';status('Please choose a PDF file.',true);updateRun();return;}
-  file=selected;$('protectFileName').textContent=selected.name;$('protectFileMeta').textContent=(selected.size/1048576).toFixed(2)+' MB · ready to encrypt';status('PDF selected. Set and confirm your password.');updateRun();
+  file=selected;$('protectFileName').textContent=selected.name;$('protectFileMeta').textContent=(selected.size/1048576).toFixed(2)+' MB · ready to encrypt';status('PDF selected. Set and confirm your password.');updateRun();await loadProtectPreview(selected);
 });
 async function loadQpdf(){
   if(!qpdfPromise){
@@ -46,13 +49,44 @@ function randomOwnerPassword(){
   return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
 }
 function download(bytes,name){const blob=new Blob([bytes],{type:'application/pdf'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+async function loadProtectPreview(selected){
+  const token=++protectPreviewToken;
+  if(protectPreviewPdf){try{await protectPreviewPdf.destroy();}catch{}protectPreviewPdf=null;}
+  $('protectPreviewEmpty').hidden=false;$('protectPreviewCanvas').hidden=true;
+  $('protectPreviewEmpty').querySelector('strong').textContent='Preparing preview…';
+  $('protectPreviewEmpty').querySelector('small').textContent=selected.name;
+  try{
+    const pdf=await protectPdfjs.getDocument({data:new Uint8Array(await selected.arrayBuffer())}).promise;
+    if(token!==protectPreviewToken){await pdf.destroy();return;}
+    protectPreviewPdf=pdf;protectPreviewPage=1;$('protectPreviewMeta').textContent=selected.name;await renderProtectPreviewPage();
+  }catch(error){
+    $('protectPreviewEmpty').hidden=false;
+    $('protectPreviewEmpty').querySelector('strong').textContent='Preview unavailable';
+    $('protectPreviewEmpty').querySelector('small').textContent=error?.name==='PasswordException'?'This PDF is password-protected.':'The PDF could not be previewed.';
+  }
+}
+async function renderProtectPreviewPage(){
+  if(!protectPreviewPdf)return;
+  const page=await protectPreviewPdf.getPage(protectPreviewPage);
+  const canvas=$('protectPreviewCanvas'),stage=canvas.parentElement,base=page.getViewport({scale:1});
+  const scale=Math.min((stage.clientWidth-48)/base.width,(stage.clientHeight-48)/base.height,1.5);
+  const viewport=page.getViewport({scale:Math.max(.2,scale)});
+  const context=canvas.getContext('2d');canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);
+  await page.render({canvasContext:context,viewport}).promise;
+  $('protectPreviewEmpty').hidden=true;canvas.hidden=false;
+  $('protectPageCount').textContent=`${protectPreviewPage} / ${protectPreviewPdf.numPages}`;
+  $('protectPrevPage').disabled=protectPreviewPage<=1;$('protectNextPage').disabled=protectPreviewPage>=protectPreviewPdf.numPages;
+}
+$('protectPrevPage').addEventListener('click',async()=>{if(protectPreviewPdf&&protectPreviewPage>1){protectPreviewPage--;await renderProtectPreviewPage();}});
+$('protectNextPage').addEventListener('click',async()=>{if(protectPreviewPdf&&protectPreviewPage<protectPreviewPdf.numPages){protectPreviewPage++;await renderProtectPreviewPage();}});
+window.addEventListener('resize',()=>{if(protectPreviewPdf&&!dialog.hidden)renderProtectPreviewPage();});
 function openProtect(){
   file=null;picker.value='';$('protectFileName').textContent='Choose a PDF file';$('protectFileMeta').textContent='One PDF · processed locally on your device';
-  $('protectPassword').value='';$('protectConfirm').value='';strength('');status('');updateRun();dialog.hidden=false;
+  $('protectPassword').value='';$('protectConfirm').value='';strength('');status('');updateRun();dialog.hidden=false;document.body.classList.add('protect-workspace-open');$('protectPreviewPanel').hidden=false;$('protectPreviewEmpty').hidden=false;$('protectPreviewCanvas').hidden=true;$('protectPreviewMeta').textContent='Upload a PDF to preview its pages';$('protectPageCount').textContent='— / —';$('protectPrevPage').disabled=$('protectNextPage').disabled=true;
 }
-function closeProtect(){dialog.hidden=true;file=null;picker.value='';$('protectPassword').value='';$('protectConfirm').value='';status('');updateRun();}
-$('protectClose').addEventListener('click',closeProtect);$('protectCancel').addEventListener('click',closeProtect);
-dialog.addEventListener('click',event=>{if(event.target===dialog)closeProtect();});
+function closeProtect(){dialog.hidden=true;file=null;picker.value='';$('protectPassword').value='';$('protectConfirm').value='';status('');updateRun();document.body.classList.remove('protect-workspace-open');protectPreviewToken++;if(protectPreviewPdf){protectPreviewPdf.destroy();protectPreviewPdf=null;}}
+$('protectClose').addEventListener('click',closeProtect);$('protectCancel').addEventListener('click',closeProtect);$('protectBack').addEventListener('click',closeProtect);
+
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!dialog.hidden)closeProtect();});
 $('protectRun').addEventListener('click',async()=>{
   if(!file||$('protectRun').disabled)return;
