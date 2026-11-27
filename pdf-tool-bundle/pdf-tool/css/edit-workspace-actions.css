@@ -1,0 +1,209 @@
+/* PR 3 — Edit PDF workspace action refinement.
+   Keep the existing editor controls and annotation behavior intact.
+   This stylesheet is scoped to the full-screen editor only. */
+
+#etools {
+  gap: 8px;
+  row-gap: 9px;
+}
+
+#etools #eimg,
+#etools #etxt,
+#etools #ehighlight,
+#etools #erectangle,
+#etools #efreehand,
+#etools #edel,
+#etools #edone,
+#etools #etxtctl button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Add content: blue and teal. */
+#etools #eimg {
+  color: #245bc8;
+  border-color: #cbd9fb;
+  background: #edf3ff;
+}
+#etools #eimg:hover:not(:disabled) {
+  color: #1949ad;
+  border-color: #a9c1f4;
+  background: #e1ebff;
+}
+#etools #etxt {
+  color: #087d70;
+  border-color: #bde8df;
+  background: #eaf9f5;
+}
+#etools #etxt:hover:not(:disabled) {
+  color: #06675d;
+  border-color: #8ed7ca;
+  background: #dcf5ee;
+}
+
+/* Annotation tools: each action has a distinct but related tint. */
+#etools #ehighlight {
+  color: #98620a;
+  border-color: #f0dfad;
+  background: #fff8df;
+}
+#etools #ehighlight:hover:not(:disabled),
+#etools #ehighlight.active,
+#etools #ehighlight[aria-pressed="true"] {
+  color: #805006;
+  border-color: #e8cb79;
+  background: #fff0bd;
+}
+#etools #erectangle {
+  color: #a33c67;
+  border-color: #f0cddd;
+  background: #fff0f6;
+}
+#etools #erectangle:hover:not(:disabled),
+#etools #erectangle.active,
+#etools #erectangle[aria-pressed="true"] {
+  color: #85294f;
+  border-color: #e5a9c3;
+  background: #ffe3ef;
+}
+#etools #efreehand {
+  color: #7042bd;
+  border-color: #dfd0f8;
+  background: #f5efff;
+}
+#etools #efreehand:hover:not(:disabled),
+#etools #efreehand.active,
+#etools #efreehand[aria-pressed="true"] {
+  color: #59309d;
+  border-color: #c8b0ef;
+  background: #eee4ff;
+}
+
+/* Selection-dependent delete action is clearly destructive. */
+#etools #edel {
+  color: #bd3445;
+  border-color: #f0cbd1;
+  background: #fff1f3;
+}
+#etools #edel:hover:not(:disabled) {
+  color: #9f2636;
+  border-color: #e6aab4;
+  background: #ffe5e9;
+}
+
+/* Done is the editor's primary completion action. */
+#etools #edone {
+  min-width: 92px;
+  margin-left: auto;
+  color: #fff;
+  border-color: #16845b;
+  background: linear-gradient(135deg, #20a56f, #16845b);
+  box-shadow: 0 5px 13px rgba(22, 132, 91, .18);
+}
+#etools #edone:hover:not(:disabled) {
+  color: #fff;
+  border-color: #116f4b;
+  background: linear-gradient(135deg, #168f60, #116f4b);
+  box-shadow: 0 7px 16px rgba(22, 132, 91, .22);
+}
+
+/* Formatting controls remain compact, but their purpose stays visible. */
+#etools #etxtctl button {
+  min-width: 34px;
+  min-height: 32px;
+  padding: 0 9px;
+  color: #52627a;
+  border-color: #dfe6f0;
+  background: #fff;
+}
+#etools #etxtctl button:hover:not(:disabled),
+#etools #etxtctl button[aria-pressed="true"] {
+  color: #245bc8;
+  border-color: #b8caf0;
+  background: #edf3ff;
+}
+#etools #eannctl,
+#etools #eimgctl,
+#etools #etxtctl {
+  align-items: center;
+  gap: 8px;
+  padding: 5px 9px;
+  border: 1px solid #e5eaf2;
+  border-radius: 10px;
+  background: #f8faff;
+}
+#etools #eannctl label,
+#etools #eimgctl label,
+#etools #etxtctl label {
+  white-space: nowrap;
+}
+#etools #emsg {
+  max-width: min(260px, 30vw);
+  color: #9f2636;
+  overflow-wrap: anywhere;
+}
+
+#etools button:focus-visible {
+  outline: 3px solid rgba(54, 95, 229, .25);
+  outline-offset: 2px;
+}
+#etools button:disabled {
+  opacity: .48;
+  filter: saturate(.55);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+@media (max-width: 850px) {
+  #etools {
+    align-items: center;
+  }
+  #etools #edone {
+    margin-left: 0;
+  }
+}
+@media (max-width: 640px) {
+  #etools {
+    justify-content: flex-start;
+    gap: 6px;
+    row-gap: 7px;
+  }
+  #etools #eimg,
+  #etools #etxt,
+  #etools #ehighlight,
+  #etools #erectangle,
+  #etools #efreehand,
+  #etools #edel,
+  #etools #edone {
+    min-height: 35px;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+  #etools #edone {
+    margin-left: auto;
+  }
+  #etools #eannctl,
+  #etools #eimgctl,
+  #etools #etxtctl {
+    max-width: 100%;
+    flex-wrap: wrap;
+  }
+  #etools #emsg {
+    max-width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  #etools button {
+    transition: none !important;
+  }
+}
