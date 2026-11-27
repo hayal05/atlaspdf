@@ -16,6 +16,7 @@ function openRepair() {
   run.disabled = true;
   setStatus('');
   dialog.hidden = false;
+  document.body.classList.add('repair-workspace-open');
 }
 picker.addEventListener('change', () => {
   const selected = picker.files?.[0];
@@ -112,9 +113,9 @@ function close() {
   file = null;
   picker.value = '';
   setStatus('');
+  document.body.classList.remove('repair-workspace-open');
 }
 $('repairClose').addEventListener('click', close);
 $('repairCancel').addEventListener('click', close);
-dialog.addEventListener('click', event => { if (event.target === dialog) close(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && !dialog.hidden) close(); });
 window.AtlasPDFOpenRepair = openRepair;
