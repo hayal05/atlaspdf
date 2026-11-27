@@ -33,6 +33,7 @@ document.querySelectorAll('[data-home-tool]').forEach(button => {
     if (tool === 'unlock') { $('unlockTool').click(); return; }
     if (tool === 'word' || tool === 'image' || tool === 'pdf-image') { window.AtlasPDFOpenConverter?.(tool); return; }
     if (tool === 'sign') { window.AtlasPDFOpenSign?.(); return; }
+    if (tool === 'protect') { window.AtlasPDFOpenProtect?.(); return; }
     pendingTool = tool === 'merge' ? null : tool;
     picker.multiple = tool === 'merge';
     picker.click();
