@@ -189,7 +189,7 @@ async function pdfToWord(file) {
       if (pageNumber > 1) children.push(new docxModule.Paragraph({ children: [new docxModule.PageBreak()] }));
       for (const line of lines) {
         line.sort((a,b) => (a.transform?.[4] ?? 0) - (b.transform?.[4] ?? 0));
-        const text = line.map(item => item.str).join(' ').replace(/\\s+/g, ' ').trim();
+        const text = line.map(item => item.str).join(' ').replace(/\s+/g, ' ').trim();
         if (text) children.push(new docxModule.Paragraph({ children: [new docxModule.TextRun({ text, font: 'Arial', size: 22 })], spacing: { after: 100 } }));
       }
       page.cleanup?.();
@@ -200,7 +200,7 @@ async function pdfToWord(file) {
     setStatus('Building editable Word document…');
     const document = new docxModule.Document({
       creator: 'AtlasPDF',
-      title: file.name.replace(/\\.pdf$/i, ''),
+      title: file.name.replace(/\.pdf$/i, ''),
       sections: [{ properties: { page: { margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 } } }, children }]
     });
     return await docxModule.Packer.toBlob(document);
@@ -274,7 +274,7 @@ run.addEventListener('click', async () => {
       setStatus(`${pages} page image${pages === 1 ? '' : 's'} created. Your ZIP download has started.`);
     } else if (mode === 'pdf-word') {
       const blob = await pdfToWord(file);
-      downloadBlob(blob, file.name.replace(/\\.pdf$/i, '') + '.docx');
+      downloadBlob(blob, file.name.replace(/\.pdf$/i, '') + '.docx');
       setStatus('Editable Word document created. Your download has started.');
     } else {
       const blob=mode==='word'?await wordToPdf(file):await imagesToPdf();
