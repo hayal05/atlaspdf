@@ -79,11 +79,10 @@ picker.addEventListener('change',async()=>{
 function openSign(){
   file=null; picker.value=''; $('signFileName').textContent='Choose a PDF file'; $('signFileMeta').textContent='One PDF · processed locally on your device';
   $('signPage').innerHTML='<option value="all">All pages</option><option value="1">Page 1</option>';
-  $('signTypedText').value=''; setMode('draw'); status(''); updateRun(); dialog.hidden=false;
+  $('signTypedText').value=''; setMode('draw'); status(''); updateRun(); dialog.hidden=false; document.body.classList.add('sign-workspace-open');
 }
-function closeSign(){dialog.hidden=true;file=null;picker.value='';status('');updateRun();}
+function closeSign(){dialog.hidden=true;file=null;picker.value='';status('');updateRun();document.body.classList.remove('sign-workspace-open');}
 $('signClose').addEventListener('click',closeSign); $('signCancel').addEventListener('click',closeSign);
-dialog.addEventListener('click',event=>{if(event.target===dialog)closeSign();});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!dialog.hidden)closeSign();});
 function download(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
 $('signRun').addEventListener('click',async()=>{
