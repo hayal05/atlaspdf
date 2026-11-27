@@ -2,7 +2,7 @@
    Workspace-only styling. The homepage tools grid is deliberately excluded. */
 
 /* Consistent, tactile feedback for controls throughout the document workspace. */
-.workspace button,
+.documents-section button,
 #editor button,
 .organize-dialog button {
   -webkit-tap-highlight-color: transparent;
@@ -14,12 +14,12 @@
     transform .16s ease,
     opacity .16s ease;
 }
-.workspace button:not(:disabled):active,
+.documents-section button:not(:disabled):active,
 #editor button:not(:disabled):active,
 .organize-dialog button:not(:disabled):active {
   transform: translateY(1px) scale(.985);
 }
-.workspace button:disabled,
+.documents-section button:disabled,
 #editor button:disabled,
 .organize-dialog button:disabled {
   transform: none;
@@ -128,7 +128,7 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .workspace button,
+  .documents-section button,
   #editor button,
   .organize-dialog button,
   .page-card,
@@ -136,7 +136,7 @@
   .preview-actions .tool-button {
     transition: none !important;
   }
-  .workspace button:not(:disabled):active,
+  .documents-section button:not(:disabled):active,
   #editor button:not(:disabled):active,
   .organize-dialog button:not(:disabled):active {
     transform: none;
