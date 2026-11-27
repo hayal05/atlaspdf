@@ -7,6 +7,7 @@
 <title>AtlasPDF — Your PDF workspace</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%232d63e2'/%3E%3Cpath d='M28 17h29l17 17v49H28z' fill='white'/%3E%3Cpath d='M57 17v18h17M37 51h28M37 63h28' stroke='%232d63e2' stroke-width='5' fill='none'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/home.css">
 <link rel="stylesheet" href="css/organize.css">
 <link rel="stylesheet" href="css/crop-number.css">
 </head>
@@ -31,6 +32,24 @@
 </header>
 <input type="file" id="picker" accept="application/pdf,.pdf" multiple hidden>
 <main class="workspace">
+  <section id="homeHub" class="home-hub" aria-labelledby="homeTitle">
+    <div class="home-hero">
+      <span class="home-eyebrow">YOUR PDF WORKSPACE</span>
+      <h1 id="homeTitle">Everything you need to work with PDFs.</h1>
+      <p>Simple tools to merge, edit, unlock and organize your documents — all in one place.</p>
+      <button class="home-upload" type="button" data-home-tool="merge"><span aria-hidden="true">＋</span> Select PDF files <small>or choose a tool below</small></button>
+      <div class="home-privacy"><span aria-hidden="true">✓</span> Files are processed locally in your browser</div>
+    </div>
+    <div class="home-tools-heading"><div><h2>All PDF tools</h2><p>Choose what you want to do</p></div></div>
+    <div class="home-tools">
+      <button class="home-tool-card" type="button" data-home-tool="merge"><span class="home-tool-icon">⇄</span><strong>Merge PDF</strong><span>Combine multiple PDF files into one.</span><b>Choose files <i>→</i></b></button>
+      <button class="home-tool-card" type="button" data-home-tool="unlock"><span class="home-tool-icon">♙</span><strong>Unlock PDF</strong><span>Remove supported PDF restrictions automatically.</span><b>Unlock a PDF <i>→</i></b></button>
+      <button class="home-tool-card" type="button" data-home-tool="edit"><span class="home-tool-icon">✎</span><strong>Edit PDF</strong><span>Add text, pictures, highlights and drawings.</span><b>Edit a PDF <i>→</i></b></button>
+      <button class="home-tool-card" type="button" data-home-tool="organize"><span class="home-tool-icon">▤</span><strong>Organize PDF</strong><span>Reorder, rotate, extract or remove pages.</span><b>Organize pages <i>→</i></b></button>
+      <button class="home-tool-card" type="button" data-home-tool="split"><span class="home-tool-icon">✂</span><strong>Split PDF</strong><span>Separate selected page ranges into files.</span><b>Split a PDF <i>→</i></b></button>
+      <button class="home-tool-card" type="button" data-home-tool="compress"><span class="home-tool-icon">⇩</span><strong>Compress PDF</strong><span>Choose an output size and quality when exporting.</span><b>Reduce file size <i>→</i></b></button>
+    </div>
+  </section>
     <section id="uploadZone" class="upload-zone" aria-label="Upload PDF files">
     <div class="upload-symbol" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 32V8m0 0-9 9m9-9 9 9M9 29v10h30V29" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div class="upload-copy"><h2>Drop PDF files here</h2></div>
@@ -146,5 +165,6 @@
 <div id="msg" role="status" aria-live="polite"></div>
 <script src="vendor/pdf-lib.min.js"></script>
 <script type="module" src="js/app.js"></script>
+<script type="module" src="js/home.js"></script>
 </body>
 </html>
