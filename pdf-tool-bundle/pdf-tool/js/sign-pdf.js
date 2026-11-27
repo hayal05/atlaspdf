@@ -64,6 +64,8 @@ $('signTypedText').addEventListener('input',renderTyped);
 $('signClear').addEventListener('click',clearPad);
 picker.addEventListener('change',async()=>{
   const selected=picker.files?.[0]; picker.value=''; if(!selected)return;
+  signPreviewToken++; if(signPreviewPdf){signPreviewPdf.destroy();signPreviewPdf=null;}
+  $('signPreviewEmpty').hidden=false;$('signPreviewCanvas').hidden=true;$('signPreviewMeta').textContent=selected.name;$('signPageCount').textContent='— / —';$('signPrevPage').disabled=$('signNextPage').disabled=true;
   if(selected.type!=='application/pdf'&&!/\.pdf$/i.test(selected.name)){file=null;$('signFileName').textContent='Choose a PDF file';$('signFileMeta').textContent='Please select a PDF document';status('Please choose a PDF file.',true);updateRun();return;}
   file=selected; $('signFileName').textContent=selected.name; $('signFileMeta').textContent=(selected.size/1048576).toFixed(2)+' MB · checking pages…';
   $('signRun').disabled=true; status('Checking PDF pages…');
