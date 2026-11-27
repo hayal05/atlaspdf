@@ -16,7 +16,7 @@ async function getQpdf() {
       return createModule({
         noInitialRun: true,
         locateFile: path => path.endsWith('.wasm') ? QPDF_WASM_URL : path,
-        print: message => { qpdfDiagnostics += String(message) + '\\n'; },
+        print: message => { qpdfDiagnostics += String(message) + '\n'; },
         printErr: message => { qpdfDiagnostics += String(message) + '\\n'; }
       });
     })().catch(error => {
@@ -37,8 +37,7 @@ export async function unlockPdf(file, password, onProgress) {
   }
 
   onProgress?.('Loading secure PDF engine…');
-  let diagnostic = '';
-  const qpdf = await getQpdf(message => { diagnostic += message + '\n'; });
+  const qpdf = await getQpdf();
   const inputPath = '/atlaspdf-unlock-input.pdf';
   const outputPath = '/atlaspdf-unlocked-output.pdf';
 
