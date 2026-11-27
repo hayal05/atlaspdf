@@ -1,0 +1,31 @@
+/* All-in-one tool hub. Keeps the existing AtlasPDF blue-and-white palette. */
+.home-hub{padding:18px 0 34px}
+.home-hub[hidden]{display:none}
+.home-hero{padding:clamp(28px,5vw,58px) 24px 30px;text-align:center;background:linear-gradient(135deg,#f0f5ff 0%,#fff 72%);border:1px solid #e1eafa;border-radius:20px}
+.home-eyebrow{display:inline-block;margin-bottom:10px;color:var(--blue);font-size:10px;font-weight:800;letter-spacing:1.7px}
+.home-hero h1{max-width:720px;margin:0 auto;color:#18243a;font-size:clamp(28px,4.6vw,43px);line-height:1.12;letter-spacing:-1.5px}
+.home-hero>p{max-width:590px;margin:13px auto 22px;color:#718096;font-size:15px}
+.home-upload{min-height:54px;display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:0 23px;border:1px solid var(--blue);border-radius:10px;background:var(--blue);color:#fff;font-size:14px;font-weight:750;box-shadow:0 7px 17px #2d63e229}
+.home-upload>span{font-size:22px;line-height:1}
+.home-upload small{margin-left:4px;color:#dce7ff;font-size:11px;font-weight:500}
+.home-upload:hover{background:var(--blue-dark)}
+.home-privacy{margin-top:13px;color:#75859b;font-size:11px}
+.home-privacy span{display:inline-grid;place-items:center;width:16px;height:16px;margin-right:4px;border-radius:50%;background:#e4f4eb;color:#16845b;font-size:10px;font-weight:800}
+.home-tools-heading{display:flex;align-items:flex-end;justify-content:space-between;margin:30px 0 13px}
+.home-tools-heading h2{margin:0;font-size:19px;letter-spacing:-.35px}
+.home-tools-heading p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.home-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.home-tool-card{min-width:0;min-height:174px;display:flex;flex-direction:column;align-items:flex-start;padding:19px 18px 16px;border:1px solid var(--line);border-radius:13px;background:#fff;color:var(--text);text-align:left;box-shadow:0 4px 16px rgba(29,53,87,.025);transition:border-color .16s,transform .16s,box-shadow .16s}
+.home-tool-card:hover{transform:translateY(-2px);border-color:#b9cbea;box-shadow:0 9px 23px rgba(29,53,87,.07)}
+.home-tool-icon{width:38px;height:38px;display:grid;place-items:center;margin-bottom:13px;border-radius:11px;background:var(--blue-soft);color:var(--blue);font-size:22px;font-weight:700}
+.home-tool-card strong{font-size:14px;font-weight:750}
+.home-tool-card>span:not(.home-tool-icon){margin-top:5px;color:var(--muted);font-size:12px;line-height:1.5}
+.home-tool-card b{display:flex;align-items:center;gap:7px;margin-top:auto;padding-top:13px;color:var(--blue);font-size:11px;font-weight:750}
+.home-tool-card b i{font-size:15px;font-style:normal;transition:transform .16s}
+.home-tool-card:hover b i{transform:translateX(3px)}
+.home-empty .workspace{padding-top:20px}
+.home-empty #uploadZone,.home-empty .documents-section>.section-heading,.home-empty #empty{display:none!important}
+.home-empty .documents-section{margin-top:0}
+.home-empty .top-actions>#add,.home-empty .top-actions>.quality-control,.home-empty .top-actions>#download{display:none}
+@media(max-width:760px){.home-tools{grid-template-columns:repeat(2,minmax(0,1fr))}.home-tool-card{min-height:166px;padding:16px}.home-hero{padding:34px 17px 25px}.home-hero>p{font-size:13px}.home-upload{width:100%;max-width:320px;flex-wrap:wrap;gap:6px}.home-upload small{width:100%;margin:0 0 0 28px}}
+@media(max-width:390px){.home-tools{gap:9px}.home-tool-card{padding:13px;min-height:170px}}
