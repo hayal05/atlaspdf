@@ -5,8 +5,10 @@ const picker = $('picker');
 let pendingTool = null;
 
 function syncHome() {
-  const empty = !!workspace?.hidden;
+  const conversion = $('conversionWorkspace');
+  const empty = !!workspace?.hidden && !!conversion?.hidden;
   document.body.classList.toggle('home-empty', empty);
+  document.body.classList.toggle('conversion-workspace-active', !!conversion && !conversion.hidden);
   if (hub) hub.hidden = !empty;
 }
 const observer = new MutationObserver(() => {
@@ -23,6 +25,8 @@ const observer = new MutationObserver(() => {
   }
 });
 observer.observe(workspace, { attributes: true, attributeFilter: ['hidden'] });
+const conversionWorkspace = $('conversionWorkspace');
+if (conversionWorkspace) new MutationObserver(syncHome).observe(conversionWorkspace, { attributes: true, attributeFilter: ['hidden'] });
 syncHome();
 // Release the first-paint guard only after the initial layout state is applied.
 document.documentElement.classList.add('atlas-ui-ready');
