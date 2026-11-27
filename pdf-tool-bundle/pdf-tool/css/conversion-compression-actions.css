@@ -1,0 +1,104 @@
+/* PR 4 — Conversion and compression action refinement.
+   Scoped to conversion dialogs and output-quality controls; homepage cards/layout stay unchanged. */
+
+.convert-card .convert-drop {
+  border-color: #bfd0f4;
+  background: linear-gradient(135deg, #eef4ff, #fbfcff);
+  color: #285fc5;
+  transition: border-color .16s ease, background .16s ease, box-shadow .16s ease;
+}
+.convert-card .convert-drop:hover,
+.convert-card .convert-drop:focus-within {
+  border-color: #91ace9;
+  background: linear-gradient(135deg, #e7efff, #fff);
+  box-shadow: 0 0 0 4px rgba(45, 99, 226, .08);
+}
+.convert-drop-icon {
+  color: #245bc8;
+  background: #e3ecff;
+  font-weight: 800;
+}
+.convert-drop strong { color: #344d79; }
+.convert-drop small { color: #7788a3; }
+
+.convert-file-controls button {
+  width: auto;
+  min-width: 31px;
+  height: 29px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid #dce5f2;
+  border-radius: 8px;
+  background: #f7f9fd;
+  color: #52647f;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.convert-file-controls button[aria-label^="Move"] {
+  color: #285fc3;
+  border-color: #d0ddf7;
+  background: #eff4ff;
+}
+.convert-file-controls button[aria-label^="Remove"] {
+  color: #bd3445;
+  border-color: #f0cbd1;
+  background: #fff1f3;
+}
+.convert-file-controls button:hover:not(:disabled) {
+  filter: brightness(.97);
+  transform: translateY(-1px);
+}
+.convert-file-controls button:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+.convert-actions #convertRun {
+  color: #fff;
+  border-color: #16845b;
+  background: linear-gradient(135deg, #20a56f, #16845b);
+  box-shadow: 0 5px 14px rgba(22, 132, 91, .16);
+}
+.convert-actions #convertRun:hover:not(:disabled) {
+  background: linear-gradient(135deg, #168f60, #116f4b);
+}
+.convert-actions #convertCancel {
+  color: #53647c;
+  border-color: #dce4ef;
+  background: #f7f9fc;
+}
+.convert-actions button:disabled { opacity: .48; }
+
+.quality-control > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.quality-control > span::before {
+  content: "⚙";
+  color: #647ca8;
+  font-size: 13px;
+}
+.quality-control select {
+  border-color: #cbdafa;
+  background: #f5f8ff;
+  color: #31558f;
+  font-weight: 700;
+}
+.quality-control select:focus-visible {
+  outline: 3px solid rgba(45, 99, 226, .18);
+  border-color: #8ca9e8;
+}
+
+@media (max-width: 640px) {
+  .convert-file-controls { gap: 3px; }
+  .convert-file-controls button { min-height: 30px; padding-inline: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .convert-card .convert-drop,
+  .convert-file-controls button { transition: none; }
+}
