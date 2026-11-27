@@ -1,3 +1,6 @@
+import * as pdfjs from '../vendor/pdf.min.mjs';
+pdfjs.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs', import.meta.url).href;
+
 const $ = id => document.getElementById(id);
 const dialog = $('convertDialog');
 const picker = $('convertPicker');
@@ -17,17 +20,29 @@ function openConverter(type) {
   files = [];
   picker.value = '';
   picker.multiple = type === 'image';
-  picker.accept = type === 'word' ? '.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'image/*';
-  $('convertTitle').textContent = type === 'word' ? 'Word to PDF' : 'Image to PDF';
+  picker.accept = type === 'word'
+    ? '.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    : type === 'pdf-image' ? '.pdf,application/pdf' : 'image/*';
+  $('convertTitle').textContent = type === 'word' ? 'Word to PDF' : type === 'image' ? 'Image to PDF' : 'PDF to JPG';
   $('convertDescription').textContent = type === 'word'
     ? 'Select a .docx document and convert it into a PDF.'
-    : 'Select JPG, PNG or other common images. Each image becomes a page in one PDF.';
-  $('convertDropTitle').textContent = type === 'word' ? 'Choose a Word document' : 'Choose images';
-  $('convertDropHint').textContent = type === 'word' ? 'DOCX files · one document at a time' : 'JPG, PNG, WEBP, GIF and BMP · multiple files';
-  $('convertNote').hidden = type !== 'word';
+    : type === 'image'
+      ? 'Select JPG, PNG or other common images. Each image becomes a page in one PDF.'
+      : 'Convert every page of a PDF into a separate JPG or PNG image. All pages are delivered together in a ZIP file.';
+  $('convertDropTitle').textContent = type === 'word' ? 'Choose a Word document' : type === 'image' ? 'Choose images' : 'Choose a PDF';
+  $('convertDropHint').textContent = type === 'word'
+    ? 'DOCX files · one document at a time'
+    : type === 'image'
+      ? 'JPG, PNG, WEBP, GIF and BMP · multiple files'
+      : 'PDF files · one document at a time';
+  $('convertNote').hidden = type !== 'word' && type !== 'pdf-image';
+  $('convertNote').textContent = type === 'word'
+    ? 'Word conversion supports .docx files. Legacy .doc files are not supported.'
+    : 'Your PDF is processed locally in your browser. Each page becomes a separate image in one ZIP archive.';
+  $('pdfImageOptions').hidden = type !== 'pdf-image';
   list.hidden = type !== 'image';
   list.replaceChildren();
-  run.textContent = type === 'word' ? 'Convert to PDF' : 'Create PDF';
+  run.textContent = type === 'word' ? 'Convert to PDF' : type === 'image' ? 'Create PDF' : 'Convert to images';
   run.disabled = true;
   setStatus('');
   dialog.hidden = false;
@@ -66,6 +81,13 @@ picker.addEventListener('change', () => {
     const file = selected[0];
     if (!file) return;
     if (!/\.docx$/i.test(file.name)) { files=[]; run.disabled=true; setStatus('Please choose a modern Word .docx file. Legacy .doc files are not supported.',true); return; }
+    files=[file]; run.disabled=false; $('convertDropTitle').textContent=file.name; setStatus('');
+  } else if (mode === 'pdf-image') {
+    const file = selected[0];
+    if (!file) return;
+    if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') {
+      files=[]; run.disabled=true; setStatus('Please choose a PDF document.',true); return;
+    }
     files=[file]; run.disabled=false; $('convertDropTitle').textContent=file.name; setStatus('');
   } else {
     const valid = selected.filter(file => imageTypes.has(file.type));
@@ -134,18 +156,75 @@ async function wordToPdf(file) {
     return blob;
   } finally { stage.remove(); }
 }
+async function pdfToImages(file) {
+  const format = $('pdfImageFormat').value;
+  const scale = Number($('pdfImageScale').value);
+  const mime = format === 'jpg' ? 'image/jpeg' : 'image/png';
+  setStatus('Reading PDF…');
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
+  let documentPdf;
+  try {
+    documentPdf = await loadingTask.promise;
+    const zipModule = await import('https://esm.sh/jszip@3.10.1');
+    const JSZip = zipModule.default || zipModule;
+    const zip = new JSZip();
+    for (let pageNumber = 1; pageNumber <= documentPdf.numPages; pageNumber++) {
+      setStatus(`Rendering page ${pageNumber} of ${documentPdf.numPages}…`);
+      const page = await documentPdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale });
+      const width = Math.ceil(viewport.width);
+      const height = Math.ceil(viewport.height);
+      if (width > 16000 || height > 16000 || width * height > 100000000) {
+        throw new Error(`Page ${pageNumber} is too large at this resolution. Choose a lower resolution and try again.`);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d', { alpha: false });
+      if (!context) throw new Error('Your browser could not create an image canvas.');
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, width, height);
+      await page.render({ canvasContext: context, viewport, background: '#ffffff' }).promise;
+      const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob(value => value ? resolve(value) : reject(new Error(`Page ${pageNumber} could not be exported as an image.`)), mime, 0.92);
+      });
+      zip.file(`page-${String(pageNumber).padStart(3, '0')}.${format}`, blob);
+      canvas.width = 0;
+      canvas.height = 0;
+      page.cleanup?.();
+    }
+    setStatus('Packing images into a ZIP file…');
+    const archive = await zip.generateAsync(
+      { type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 5 } },
+      metadata => setStatus(`Creating ZIP archive… ${Math.round(metadata.percent)}%`)
+    );
+    const baseName = file.name.replace(/\.pdf$/i, '').replace(/[^a-z0-9_-]+/gi, '-').replace(/^-+|-+$/g, '') || 'document';
+    downloadBlob(archive, `${baseName}-${format}-pages.zip`);
+    return documentPdf.numPages;
+  } catch (error) {
+    if (error?.name === 'PasswordException') throw new Error('This PDF is password-protected and cannot be opened for conversion.');
+    throw error;
+  } finally {
+    try { await documentPdf?.destroy(); } catch {}
+  }
+}
 run.addEventListener('click', async () => {
   if(!files.length || run.disabled) return;
   run.disabled=true; $('convertCancel').disabled=true; $('convertClose').disabled=true;
   try {
     const file=files[0];
-    const blob=mode==='word'?await wordToPdf(file):await imagesToPdf();
-    const name=mode==='word'?file.name.replace(/\.docx$/i,'')+'.pdf':'images-to-pdf.pdf';
-    downloadBlob(blob,name);
-    setStatus('PDF created. Your download has started.');
+    if (mode === 'pdf-image') {
+      const pages = await pdfToImages(file);
+      setStatus(`${pages} page image${pages === 1 ? '' : 's'} created. Your ZIP download has started.`);
+    } else {
+      const blob=mode==='word'?await wordToPdf(file):await imagesToPdf();
+      const name=mode==='word'?file.name.replace(/\.docx$/i,'')+'.pdf':'images-to-pdf.pdf';
+      downloadBlob(blob,name);
+      setStatus('PDF created. Your download has started.');
+    }
   } catch(error) {
     console.error(error);
-    setStatus(error.message || 'Could not convert these files. Please try again.',true);
+    setStatus(error.message || 'Could not convert this document. Please try again.',true);
   } finally {
     run.disabled=false; $('convertCancel').disabled=false; $('convertClose').disabled=false;
   }
