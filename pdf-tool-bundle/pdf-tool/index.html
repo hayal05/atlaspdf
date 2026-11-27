@@ -66,6 +66,7 @@
       <button class="home-tool-card" type="button" data-home-tool="compress"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10l3 3v10l-3 3H7l-3-3V7l3-3Z"/><path d="M9 9h6m-6 3h6m-6 3h3"/></svg></span><strong>Compress PDF</strong><span>Choose an output size and quality when exporting.</span><b>Reduce file size <i aria-hidden="true">→</i></b></button>
       <button class="home-tool-card" type="button" data-home-tool="word"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M8 13l2 6 2-5 2 5 2-6"/></svg></span><strong>Word to PDF</strong><span>Convert Word documents into PDF files.</span><b>Convert document <i aria-hidden="true">→</i></b></button>
       <button class="home-tool-card" type="button" data-home-tool="image"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg></span><strong>Image to PDF</strong><span>Turn JPG and PNG images into one PDF.</span><b>Convert images <i aria-hidden="true">→</i></b></button>
+      <button class="home-tool-card" type="button" data-home-tool="pdf-image"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><rect x="8.5" y="12" width="8" height="6" rx="1"/><circle cx="11" cy="14" r=".8"/><path d="m9 18 2.5-2 1.5 1 1.5-1.5 2 2.5"/></svg></span><strong>PDF to JPG</strong><span>Convert every PDF page into JPG or PNG images.</span><b>Convert to images <i aria-hidden="true">→</i></b></button>
     </div>
   </section>
     <section id="uploadZone" class="upload-zone" aria-label="Upload PDF files">
@@ -170,6 +171,14 @@
       <label id="convertDrop" class="convert-drop" for="convertPicker"><span class="convert-drop-icon">＋</span><strong id="convertDropTitle">Choose files</strong><small id="convertDropHint">Files stay on your device</small></label>
       <input id="convertPicker" type="file" hidden>
       <ol id="convertFileList" class="convert-file-list" aria-label="Selected images" hidden></ol>
+      <div id="pdfImageOptions" class="convert-options" hidden>
+        <label for="pdfImageFormat">Image format
+          <select id="pdfImageFormat"><option value="jpg">JPG</option><option value="png">PNG</option></select>
+        </label>
+        <label for="pdfImageScale">Resolution
+          <select id="pdfImageScale"><option value="1">Standard (1×)</option><option value="1.5">High (1.5×)</option><option value="2" selected>Very high (2×)</option><option value="3">Maximum (3×)</option></select>
+        </label>
+      </div>
       <p id="convertStatus" class="convert-status" role="status" aria-live="polite"></p>
       <div class="convert-actions"><button id="convertCancel" type="button" class="button button-secondary">Cancel</button><button id="convertRun" type="button" class="button button-primary" disabled>Convert to PDF</button></div>
       <p id="convertNote" class="convert-note">Word conversion supports .docx files. Legacy .doc files are not supported.</p>
