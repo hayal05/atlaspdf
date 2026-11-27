@@ -275,7 +275,7 @@ $('unlockPicker').onchange = async () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${file.name.replace(/\\.pdf$/i, '')}-unlocked.pdf`;
+    link.download = `${file.name.replace(/\.pdf$/i, '')}-unlocked.pdf`;
     document.body.append(link);
     link.click();
     link.remove();
