@@ -59,12 +59,22 @@ $('signDrawMode').addEventListener('click',()=>setMode('draw'));
 $('signTypeMode').addEventListener('click',()=>setMode('type'));
 $('signTypedText').addEventListener('input',renderTyped);
 $('signClear').addEventListener('click',clearPad);
-picker.addEventListener('change',()=>{
+picker.addEventListener('change',async()=>{
   const selected=picker.files?.[0]; picker.value=''; if(!selected)return;
   if(selected.type!=='application/pdf'&&!/\.pdf$/i.test(selected.name)){file=null;$('signFileName').textContent='Choose a PDF file';$('signFileMeta').textContent='Please select a PDF document';status('Please choose a PDF file.',true);updateRun();return;}
-  file=selected; $('signFileName').textContent=selected.name; $('signFileMeta').textContent=(selected.size/1048576).toFixed(2)+' MB · ready to sign';
-  $('signPage').innerHTML='<option value="all">All pages</option><option value="1">Page 1</option>';
-  status('PDF selected. Add your signature below.'); updateRun();
+  file=selected; $('signFileName').textContent=selected.name; $('signFileMeta').textContent=(selected.size/1048576).toFixed(2)+' MB · checking pages…';
+  $('signRun').disabled=true; status('Checking PDF pages…');
+  try {
+    const pdf=await window.PDFLib.PDFDocument.load(await selected.arrayBuffer());
+    const count=pdf.getPageCount();
+    $('signPage').replaceChildren(new Option('All pages','all'));
+    for(let page=1;page<=count;page++) $('signPage').add(new Option('Page '+page,String(page)));
+    $('signFileMeta').textContent=(selected.size/1048576).toFixed(2)+' MB · '+count+' page'+(count===1?'':'s');
+    status('PDF ready. Add your signature below.');
+  } catch(error) {
+    file=null; $('signFileMeta').textContent='Could not read this PDF'; status(error?.message||'Could not open this PDF. It may be encrypted or damaged.',true);
+  }
+  updateRun();
 });
 function openSign(){
   file=null; picker.value=''; $('signFileName').textContent='Choose a PDF file'; $('signFileMeta').textContent='One PDF · processed locally on your device';
