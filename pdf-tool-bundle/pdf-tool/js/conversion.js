@@ -15,34 +15,104 @@ function setStatus(message, error = false) {
   $('convertStatus').textContent = message;
   $('convertStatus').className = 'convert-status' + (error ? ' error' : '');
 }
+const workspace = $('conversionWorkspace');
+const workspacePicker = $('conversionWorkspacePicker');
+const previewCanvas = $('conversionPreviewCanvas');
+let previewPdf = null;
+let previewPage = 1;
+let pageMode = false;
+function setWorkspaceStatus(message,error=false){
+  const node=$('conversionWorkspaceStatus');
+  node.textContent=message;
+  node.className='conversion-workspace-status'+(error?' error':'');
+}
+async function renderWorkspacePage(){
+  if(!previewPdf) return;
+  const page=await previewPdf.getPage(previewPage);
+  const viewport=page.getViewport({scale:Math.min(1.25,Math.max(.65,(window.innerWidth-390)/900))});
+  const ratio=window.devicePixelRatio||1;
+  previewCanvas.width=Math.ceil(viewport.width*ratio);
+  previewCanvas.height=Math.ceil(viewport.height*ratio);
+  previewCanvas.style.width=viewport.width+'px';
+  previewCanvas.style.height=viewport.height+'px';
+  const context=previewCanvas.getContext('2d');
+  context.setTransform(ratio,0,0,ratio,0,0);
+  await page.render({canvasContext:context,viewport}).promise;
+  previewCanvas.hidden=false;
+  $('conversionPreviewEmpty').hidden=true;
+  $('conversionPageLabel').textContent=`Page ${previewPage} of ${previewPdf.numPages}`;
+  $('conversionPrevPage').disabled=previewPage<=1;
+  $('conversionNextPage').disabled=previewPage>=previewPdf.numPages;
+  page.cleanup?.();
+}
+async function loadWorkspacePreview(file){
+  try{
+    await previewPdf?.destroy();
+    previewPdf=null; previewPage=1;
+    const task=pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())});
+    previewPdf=await task.promise;
+    $('conversionPageLabel').textContent=`Page 1 of ${previewPdf.numPages}`;
+    $('conversionPrevPage').disabled=true;
+    $('conversionNextPage').disabled=previewPdf.numPages<=1;
+    await renderWorkspacePage();
+  }catch(error){
+    setWorkspaceStatus(error?.name==='PasswordException'?'This PDF is password-protected and cannot be previewed.':(error.message||'Could not preview this PDF.'),true);
+  }
+}
+function closeWorkspace(){
+  workspace.hidden=true;
+  document.body.classList.remove('conversion-workspace-active');
+  previewPdf?.destroy().catch(()=>{});
+  previewPdf=null; files=[]; picker.value=''; workspacePicker.value='';
+  previewCanvas.hidden=true; $('conversionPreviewEmpty').hidden=false;
+  $('conversionPreviewEmpty').querySelector('strong').textContent='Your document preview will appear here';
+  $('conversionPreviewEmpty').querySelector('small').textContent='Upload a PDF to see its pages';
+  $('conversionPageLabel').textContent='No document';
+  setWorkspaceStatus('Choose a PDF to begin.');
+}
 function openConverter(type) {
   mode = type;
   files = [];
   picker.value = '';
+  pageMode = type === 'pdf-image' || type === 'pdf-word';
+  if(pageMode){
+    dialog.hidden=true;
+    workspace.hidden=false;
+    $('conversionWorkspaceTitle').textContent=type==='pdf-image'?'PDF to JPG':'PDF to Word';
+    $('conversionSettingsTitle').textContent=type==='pdf-image'?'Image settings':'Word conversion';
+    $('conversionSettingsDescription').textContent=type==='pdf-image'?'Choose how your pages should be exported.':'Create an editable Word document from selectable PDF text.';
+    $('conversionFormatField').hidden=type!=='pdf-image';
+    $('conversionScaleField').hidden=type!=='pdf-image';
+    $('conversionWordInfo').hidden=type!=='pdf-word';
+    $('conversionRun').textContent=type==='pdf-image'?'Convert to images':'Convert to Word';
+    $('conversionRunTop').textContent=type==='pdf-image'?'Convert to images':'Convert to Word';
+    $('conversionWorkspaceFile').textContent='Choose a PDF to begin';
+    $('conversionRun').disabled=true;
+    $('conversionRunTop').disabled=true;
+    $('conversionPageLabel').textContent='No document';
+    $('conversionPrevPage').disabled=true;$('conversionNextPage').disabled=true;
+    previewCanvas.hidden=true;$('conversionPreviewEmpty').hidden=false;
+    setWorkspaceStatus('Choose a PDF to begin.');
+    workspacePicker.value='';
+    workspacePicker.click();
+    return;
+  }
   picker.multiple = type === 'image';
   picker.accept = type === 'word'
     ? '.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    : (type === 'pdf-image' || type === 'pdf-word') ? '.pdf,application/pdf' : 'image/*';
-  $('convertTitle').textContent = type === 'word' ? 'Word to PDF' : type === 'image' ? 'Image to PDF' : type === 'pdf-word' ? 'PDF to Word' : 'PDF to JPG';
+    : 'image/*';
+  $('convertTitle').textContent = type === 'word' ? 'Word to PDF' : 'Image to PDF';
   $('convertDescription').textContent = type === 'word'
     ? 'Select a .docx document and convert it into a PDF.'
-    : type === 'image'
-      ? 'Select JPG, PNG or other common images. Each image becomes a page in one PDF.'
-      : type === 'pdf-word' ? 'Extract selectable text from a PDF and create an editable Word document. Scanned pages need OCR.' : 'Convert every page of a PDF into a separate JPG or PNG image. All pages are delivered together in a ZIP file.';
-  $('convertDropTitle').textContent = type === 'word' ? 'Choose a Word document' : type === 'image' ? 'Choose images' : 'Choose a PDF';
-  $('convertDropHint').textContent = type === 'word'
-    ? 'DOCX files · one document at a time'
-    : type === 'image'
-      ? 'JPG, PNG, WEBP, GIF and BMP · multiple files'
-      : 'PDF files · one document at a time';
-  $('convertNote').hidden = type !== 'word' && type !== 'pdf-image' && type !== 'pdf-word';
-  $('convertNote').textContent = type === 'word'
-    ? 'Word conversion supports .docx files. Legacy .doc files are not supported.'
-    : type === 'pdf-word' ? 'Works with selectable text. Scanned/image-only PDFs need OCR, which is not included in this tool.' : 'Your PDF is processed locally in your browser. Each page becomes a separate image in one ZIP archive.';
-  $('pdfImageOptions').hidden = type !== 'pdf-image';
+    : 'Select JPG, PNG or other common images. Each image becomes a page in one PDF.';
+  $('convertDropTitle').textContent = type === 'word' ? 'Choose a Word document' : 'Choose images';
+  $('convertDropHint').textContent = type === 'word' ? 'DOCX files · one document at a time' : 'JPG, PNG, WEBP, GIF and BMP · multiple files';
+  $('convertNote').hidden = type !== 'word';
+  $('convertNote').textContent='Word conversion supports .docx files. Legacy .doc files are not supported.';
+  $('pdfImageOptions').hidden=true;
   list.hidden = type !== 'image';
   list.replaceChildren();
-  run.textContent = type === 'word' ? 'Convert to PDF' : type === 'image' ? 'Create PDF' : type === 'pdf-word' ? 'Convert to Word' : 'Convert to images';
+  run.textContent = type === 'word' ? 'Convert to PDF' : 'Create PDF';
   run.disabled = true;
   setStatus('');
   dialog.hidden = false;
@@ -266,16 +336,19 @@ async function pdfToImages(file) {
 }
 run.addEventListener('click', async () => {
   if(!files.length || run.disabled) return;
-  run.disabled=true; $('convertCancel').disabled=true; $('convertClose').disabled=true;
+  if(pageMode){$('conversionRun').disabled=true;$('conversionRunTop').disabled=true;setWorkspaceStatus('Preparing your document…');}
+  else {run.disabled=true; $('convertCancel').disabled=true; $('convertClose').disabled=true;}
   try {
     const file=files[0];
     if (mode === 'pdf-image') {
+      const format=$('workspacePdfImageFormat').value; const scale=$('workspacePdfImageScale').value;
+      $('pdfImageFormat').value=format; $('pdfImageScale').value=scale;
       const pages = await pdfToImages(file);
-      setStatus(`${pages} page image${pages === 1 ? '' : 's'} created. Your ZIP download has started.`);
+      if(pageMode)setWorkspaceStatus(`${pages} page images created. Your ZIP download has started.`); else setStatus(`${pages} page image${pages === 1 ? '' : 's'} created. Your ZIP download has started.`);
     } else if (mode === 'pdf-word') {
       const blob = await pdfToWord(file);
       downloadBlob(blob, file.name.replace(/\.pdf$/i, '') + '.docx');
-      setStatus('Editable Word document created. Your download has started.');
+      if(pageMode)setWorkspaceStatus('Editable Word document created. Your download has started.'); else setStatus('Editable Word document created. Your download has started.');
     } else {
       const blob=mode==='word'?await wordToPdf(file):await imagesToPdf();
       const name=mode==='word'?file.name.replace(/\.docx$/i,'')+'.pdf':'images-to-pdf.pdf';
@@ -284,12 +357,26 @@ run.addEventListener('click', async () => {
     }
   } catch(error) {
     console.error(error);
-    setStatus(error.message || 'Could not convert this document. Please try again.',true);
+    if(pageMode)setWorkspaceStatus(error.message || 'Could not convert this document. Please try again.',true); else setStatus(error.message || 'Could not convert this document. Please try again.',true);
   } finally {
-    run.disabled=false; $('convertCancel').disabled=false; $('convertClose').disabled=false;
+    if(pageMode){$('conversionRun').disabled=false;$('conversionRunTop').disabled=false;} else {run.disabled=false; $('convertCancel').disabled=false; $('convertClose').disabled=false;}
   }
 });
 function closeDialog(){ dialog.hidden=true; files=[]; picker.value=''; setStatus(''); }
+$('conversionChoose').addEventListener('click',()=>workspacePicker.click());
+$('conversionRun').addEventListener('click',()=>run.click());
+$('conversionRunTop').addEventListener('click',()=>run.click());
+$('conversionBack').addEventListener('click',closeWorkspace);
+workspacePicker.addEventListener('change',async()=>{
+  const file=workspacePicker.files?.[0]; workspacePicker.value=''; if(!file)return;
+  if(file.type!=='application/pdf'&&!/\\.pdf$/i.test(file.name)){setWorkspaceStatus('Please choose a PDF document.',true);return;}
+  files=[file]; $('conversionWorkspaceFile').textContent=file.name;
+  $('conversionRun').disabled=false;$('conversionRunTop').disabled=false;
+  setWorkspaceStatus('Loading page preview…'); await loadWorkspacePreview(file);
+  if(previewPdf)setWorkspaceStatus(`${previewPdf.numPages} page${previewPdf.numPages===1?'':'s'} ready to convert.`);
+});
+$('conversionPrevPage').addEventListener('click',async()=>{if(previewPdf&&previewPage>1){previewPage--;await renderWorkspacePage();}});
+$('conversionNextPage').addEventListener('click',async()=>{if(previewPdf&&previewPage<previewPdf.numPages){previewPage++;await renderWorkspacePage();}});
 $('convertClose').addEventListener('click',closeDialog);
 $('convertCancel').addEventListener('click',closeDialog);
 dialog.addEventListener('click',event=>{if(event.target===dialog)closeDialog();});
