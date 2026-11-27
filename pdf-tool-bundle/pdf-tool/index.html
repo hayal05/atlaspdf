@@ -75,6 +75,8 @@
       <button class="home-tool-card" type="button" data-home-tool="pdf-word"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M8 13l1.2 6 2.1-4.5 2.1 4.5 1.2-6"/></svg></span><strong>PDF to Word</strong><span>Extract selectable PDF text into an editable DOCX file.</span><b>Convert to Word <i aria-hidden="true">→</i></b></button>
     
       <button class="home-tool-card" type="button" data-home-tool="ocr"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><path d="M8.5 13h7M8.5 16h4M8.5 19h6"/></svg></span><strong>OCR PDF</strong><span>Make scanned PDF pages searchable and selectable.</span><b>Run OCR <i aria-hidden="true">→</i></b></button>
+
+      <button class="home-tool-card" type="button" data-home-tool="repair"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><path d="M8 13h8M8 16h5"/><path d="m15.5 18.5 1.5 1.5 3-3"/></svg></span><strong>Repair PDF</strong><span>Rebuild and save PDFs with recoverable structure issues.</span><b>Repair a PDF <i aria-hidden="true">→</i></b></button>
     </div>
   </section>
     <section id="uploadZone" class="upload-zone" aria-label="Upload PDF files">
@@ -243,6 +245,19 @@
       <p class="ocr-note">Best for scanned or image-only PDFs. English recognition is available in this first version. Existing PDF content is retained; OCR adds a searchable text layer.</p>
     </div>
   </section>
+
+  <section id="repairDialog" class="organize-dialog repair-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="repairTitle">
+    <div class="organize-card repair-card">
+      <div class="organize-heading"><h2 id="repairTitle">Repair PDF</h2><button id="repairClose" type="button" aria-label="Close">×</button></div>
+      <p class="repair-description">Try to rebuild a damaged or malformed PDF and save a fresh copy. Your original file is never changed.</p>
+      <label class="repair-file" for="repairPicker"><span class="repair-file-icon">PDF</span><span><strong id="repairFileName">Choose a PDF to repair</strong><small id="repairFileMeta">One PDF · processed locally on your device</small></span><span class="repair-browse">Browse</span></label>
+      <input id="repairPicker" type="file" accept="application/pdf,.pdf" hidden>
+      <div class="repair-info"><span aria-hidden="true">✓</span><span>Rebuilds the PDF document structure and writes a fresh file. No upload required.</span></div>
+      <p id="repairStatus" class="repair-status" role="status" aria-live="polite"></p>
+      <div class="repair-actions"><button id="repairCancel" type="button" class="button button-secondary">Cancel</button><button id="repairRun" type="button" class="button button-primary" disabled>Repair &amp; Download</button></div>
+      <p class="repair-note">Can help with some structural and cross-reference issues. Severely corrupted, encrypted, or incomplete files may not be recoverable. This tool does not reconstruct missing page content.</p>
+    </div>
+  </section>
   <footer class="site-footer">
     <span>AtlasPDF</span>
     
@@ -269,5 +284,6 @@
 <script type="module" src="js/sign-pdf.js"></script>
 <script type="module" src="js/protect-pdf.js"></script>
 <script type="module" src="js/ocr-pdf.js"></script>
+<script type="module" src="js/repair-pdf.js"></script>
 </body>
 </html>
