@@ -12,6 +12,7 @@ let files = [];
 const imageTypes = new Set(['image/jpeg','image/png','image/webp','image/gif','image/bmp']);
 
 function setStatus(message, error = false) {
+  if(pageMode){setWorkspaceStatus(message,error);return;}
   $('convertStatus').textContent = message;
   $('convertStatus').className = 'convert-status' + (error ? ' error' : '');
 }
@@ -335,7 +336,7 @@ async function pdfToImages(file) {
   }
 }
 run.addEventListener('click', async () => {
-  if(!files.length || run.disabled) return;
+  if(!files.length || (pageMode ? $('conversionRun').disabled : run.disabled)) return;
   if(pageMode){$('conversionRun').disabled=true;$('conversionRunTop').disabled=true;setWorkspaceStatus('Preparing your document…');}
   else {run.disabled=true; $('convertCancel').disabled=true; $('convertClose').disabled=true;}
   try {
@@ -371,7 +372,7 @@ workspacePicker.addEventListener('change',async()=>{
   const file=workspacePicker.files?.[0]; workspacePicker.value=''; if(!file)return;
   if(file.type!=='application/pdf'&&!/\\.pdf$/i.test(file.name)){setWorkspaceStatus('Please choose a PDF document.',true);return;}
   files=[file]; $('conversionWorkspaceFile').textContent=file.name;
-  $('conversionRun').disabled=false;$('conversionRunTop').disabled=false;
+  $('conversionRun').disabled=false;$('conversionRunTop').disabled=false;run.disabled=false;
   setWorkspaceStatus('Loading page preview…'); await loadWorkspacePreview(file);
   if(previewPdf)setWorkspaceStatus(`${previewPdf.numPages} page${previewPdf.numPages===1?'':'s'} ready to convert.`);
 });
