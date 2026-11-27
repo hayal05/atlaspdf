@@ -24,6 +24,8 @@ const observer = new MutationObserver(() => {
 });
 observer.observe(workspace, { attributes: true, attributeFilter: ['hidden'] });
 syncHome();
+// Release the first-paint guard only after the initial layout state is applied.
+document.documentElement.classList.add('atlas-ui-ready');
 
 document.querySelectorAll('[data-home-tool]').forEach(button => {
   button.addEventListener('click', () => {
