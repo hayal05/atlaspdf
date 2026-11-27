@@ -77,7 +77,7 @@ function mount(it) {
     svg.append(line); d.append(svg); d.onpointerdown = e => drag(e,it,'move');
   } else {
     const t = mk('div', 'txt', it.text); t.contentEditable = 'true';
-    t.style.fontWeight = it.bold ? '700' : '400'; t.style.fontStyle = it.italic ? 'italic' : 'normal'; t.style.fontFamily = it.fontFamily === 'Times' ? '"Times New Roman", Times, serif' : it.fontFamily === 'Courier' ? '"Courier New", Courier, monospace' : 'Arial, Helvetica, sans-serif'; t.style.textAlign = it.align || 'left';
+    t.style.fontWeight = it.bold ? '700' : '400'; t.style.fontStyle = it.italic ? 'italic' : 'normal'; t.style.textDecoration = [it.underline ? 'underline' : '', it.strikethrough ? 'line-through' : ''].filter(Boolean).join(' ') || 'none'; t.style.fontFamily = it.fontFamily === 'Times' ? '"Times New Roman", Times, serif' : it.fontFamily === 'Courier' ? '"Courier New", Courier, monospace' : 'Arial, Helvetica, sans-serif'; t.style.textAlign = it.align || 'left';
     t.oninput = () => { it.text = t.innerText; };
     t.onfocus = () => select(it);
     const m = mk('i', 'mv', '✥'); m.onpointerdown = e => drag(e, it, 'move');
@@ -107,7 +107,7 @@ function select(it) {
   $('eannctl').hidden = !(it && (it.type === 'shape' || it.type === 'path'));
   $('edel').hidden = !it;
   if (it?.type === 'image') $('eop').value = it.opacity;
-  if (it?.type === 'text') { $('esz').value = it.size; $('ecol').value = it.color; $('etxtbold').classList.toggle('active', !!it.bold); $('etxtitalic').classList.toggle('active', !!it.italic); $('etxtbold').setAttribute('aria-pressed', String(!!it.bold)); $('etxtitalic').setAttribute('aria-pressed', String(!!it.italic)); $('etxtalign').value = it.align || 'left'; $('etxtfont').value = it.fontFamily || 'Helvetica'; }
+  if (it?.type === 'text') { $('esz').value = it.size; $('ecol').value = it.color; $('etxtbold').classList.toggle('active', !!it.bold); $('etxtitalic').classList.toggle('active', !!it.italic); $('etxtbold').setAttribute('aria-pressed', String(!!it.bold)); $('etxtitalic').setAttribute('aria-pressed', String(!!it.italic)); $('etxtunderline').classList.toggle('active', !!it.underline); $('etxtstrike').classList.toggle('active', !!it.strikethrough); $('etxtunderline').setAttribute('aria-pressed', String(!!it.underline)); $('etxtstrike').setAttribute('aria-pressed', String(!!it.strikethrough)); $('etxtalign').value = it.align || 'left'; $('etxtfont').value = it.fontFamily || 'Helvetica'; }
   if (it?.type === 'shape' || it?.type === 'path') $('eanncol').value = it.color;
 }
 
@@ -230,6 +230,8 @@ $('etxtbold').onclick = () => { if (sel?.type !== 'text') return; sel.bold = !se
 $('etxtitalic').onclick = () => { if (sel?.type !== 'text') return; sel.italic = !sel.italic; sel.el.firstChild.style.fontStyle = sel.italic ? 'italic' : 'normal'; select(sel); };
 $('etxtalign').onchange = e => { if (sel?.type !== 'text') return; sel.align = e.target.value; sel.el.firstChild.style.textAlign = sel.align; };
 $('etxtfont').onchange = e => { if (sel?.type !== 'text') return; sel.fontFamily = e.target.value; sel.el.firstChild.style.fontFamily = sel.fontFamily === 'Times' ? '"Times New Roman", Times, serif' : sel.fontFamily === 'Courier' ? '"Courier New", Courier, monospace' : 'Arial, Helvetica, sans-serif'; };
+$('etxtunderline').onclick = () => { if (sel?.type !== 'text') return; sel.underline = !sel.underline; sel.el.firstChild.style.textDecoration = [sel.underline ? 'underline' : '', sel.strikethrough ? 'line-through' : ''].filter(Boolean).join(' ') || 'none'; select(sel); };
+$('etxtstrike').onclick = () => { if (sel?.type !== 'text') return; sel.strikethrough = !sel.strikethrough; sel.el.firstChild.style.textDecoration = [sel.underline ? 'underline' : '', sel.strikethrough ? 'line-through' : ''].filter(Boolean).join(' ') || 'none'; select(sel); };
 
 // Keeps items on the same spot of the page when the page is rotated 90 degrees clockwise.
 export async function rotateItems(p) {
@@ -284,6 +286,15 @@ export async function drawItems(out, pg, p, font) {
         const boxWidth = it.w * vw;
         const tx = it.align === 'center' ? x + (boxWidth - width) / 2 : it.align === 'right' ? x + boxWidth - width : x;
         pg.drawText(line, { x: tx, y, size: it.size, font: textFont, color: col, rotate: degrees(R) });
+        const alignOffset = it.align === 'center' ? (boxWidth - width) / 2 : it.align === 'right' ? boxWidth - width : 0;
+        const lineU = it.x + alignOffset / vw, lineW = width / vw;
+        const baselineV = it.y + (0.93 + 1.2 * i) * it.size / vh;
+        const decoration = (v, thickness) => {
+          const [sx, sy] = map(lineU, v, R, W, H), [ex, ey] = map(lineU + lineW, v, R, W, H);
+          pg.drawLine({ start: { x: sx, y: sy }, end: { x: ex, y: ey }, thickness, color: col });
+        };
+        if (it.underline && line.length) decoration(baselineV + 0.12 * it.size / vh, Math.max(0.5, it.size * 0.045));
+        if (it.strikethrough && line.length) decoration(baselineV - 0.34 * it.size / vh, Math.max(0.5, it.size * 0.045));
       });
     }
   }
