@@ -2,6 +2,7 @@ import { loadFiles, exportPdf, download } from './merge.js';
 import { renderGrid, renderPreview } from './pages.js';
 import { compress } from './compress.js';
 import { openEditor, rotateItems, setClipboardImage, hasClipboardImage, pasteClipboardToPage } from './editor.js';
+import { unlockPdf } from './unlock.js';
 
 const $ = id => document.getElementById(id);
 const state = { pages: [], selected: -1, zoom: 1 };
@@ -247,6 +248,64 @@ $('uploadZone').onclick = e => { if (!e.target.closest('button')) $('picker').cl
 $('empty').onclick = () => $('picker').click();
 $('picker').onchange = e => { add(e.target.files); e.target.value = ''; };
 $('download').onclick = save;
+
+function closeUnlock() {
+  $('unlockDialog').hidden = true;
+  $('unlockPassword').value = '';
+  $('unlockStatus').textContent = '';
+  updateUnlockFile();
+}
+function updateUnlockFile() {
+  const file = $('unlockPicker').files[0];
+  $('unlockFileName').textContent = file ? file.name : 'Choose a PDF file';
+  $('unlockFileMeta').textContent = file ? `${(file.size / 1048576).toFixed(2)} MB · Ready to unlock` : 'Select one password-protected PDF';
+  $('unlockSubmit').disabled = !file || !$('unlockPassword').value || busy;
+}
+$('unlockTool').onclick = () => { $('unlockDialog').hidden = false; $('unlockPicker').focus(); };
+$('unlockClose').onclick = closeUnlock;
+$('unlockDialog').addEventListener('click', e => { if (e.target === $('unlockDialog')) closeUnlock(); });
+$('unlockPicker').onchange = updateUnlockFile;
+$('unlockPasswordToggle').onclick = () => {
+  const field = $('unlockPassword'), reveal = field.type === 'password';
+  field.type = reveal ? 'text' : 'password';
+  $('unlockPasswordToggle').textContent = reveal ? 'Hide' : 'Show';
+  $('unlockPasswordToggle').setAttribute('aria-label', reveal ? 'Hide password' : 'Show password');
+};
+$('unlockPassword').addEventListener('input', () => {
+  $('unlockSubmit').disabled = !$('unlockPicker').files[0] || !$('unlockPassword').value || busy;
+});
+$('unlockSubmit').onclick = async () => {
+  const file = $('unlockPicker').files[0], password = $('unlockPassword').value;
+  if (!file || !password || busy) return;
+  setBusy(true);
+  $('unlockSubmit').disabled = true;
+  $('unlockStatus').className = 'unlock-status active';
+  $('unlockStatus').textContent = 'Preparing…';
+  try {
+    const blob = await unlockPdf(file, password, message => { $('unlockStatus').textContent = message; });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${file.name.replace(/\.pdf$/i, '')}-unlocked.pdf`;
+    document.body.append(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+    $('unlockStatus').className = 'unlock-status success';
+    $('unlockStatus').textContent = 'PDF unlocked. Your download has started.';
+    say('PDF unlocked successfully.');
+    setTimeout(closeUnlock, 1400);
+  } catch (error) {
+    console.error(error);
+    $('unlockStatus').className = 'unlock-status error';
+    $('unlockStatus').textContent = error.message || 'Could not unlock this PDF.';
+  } finally {
+    setBusy(false);
+    updateUnlockFile();
+    $('unlockSubmit').disabled = !$('unlockPicker').files[0] || !$('unlockPassword').value;
+  }
+};
+
 function exportOptions() {
   const text = $('watermarkText').value.trim();
   const watermark = text ? {
