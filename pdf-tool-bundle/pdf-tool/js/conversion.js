@@ -22,27 +22,27 @@ function openConverter(type) {
   picker.multiple = type === 'image';
   picker.accept = type === 'word'
     ? '.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    : type === 'pdf-image' ? '.pdf,application/pdf' : 'image/*';
-  $('convertTitle').textContent = type === 'word' ? 'Word to PDF' : type === 'image' ? 'Image to PDF' : 'PDF to JPG';
+    : (type === 'pdf-image' || type === 'pdf-word') ? '.pdf,application/pdf' : 'image/*';
+  $('convertTitle').textContent = type === 'word' ? 'Word to PDF' : type === 'image' ? 'Image to PDF' : type === 'pdf-word' ? 'PDF to Word' : 'PDF to JPG';
   $('convertDescription').textContent = type === 'word'
     ? 'Select a .docx document and convert it into a PDF.'
     : type === 'image'
       ? 'Select JPG, PNG or other common images. Each image becomes a page in one PDF.'
-      : 'Convert every page of a PDF into a separate JPG or PNG image. All pages are delivered together in a ZIP file.';
+      : type === 'pdf-word' ? 'Extract selectable text from a PDF and create an editable Word document. Scanned pages need OCR.' : 'Convert every page of a PDF into a separate JPG or PNG image. All pages are delivered together in a ZIP file.';
   $('convertDropTitle').textContent = type === 'word' ? 'Choose a Word document' : type === 'image' ? 'Choose images' : 'Choose a PDF';
   $('convertDropHint').textContent = type === 'word'
     ? 'DOCX files · one document at a time'
     : type === 'image'
       ? 'JPG, PNG, WEBP, GIF and BMP · multiple files'
       : 'PDF files · one document at a time';
-  $('convertNote').hidden = type !== 'word' && type !== 'pdf-image';
+  $('convertNote').hidden = type !== 'word' && type !== 'pdf-image' && type !== 'pdf-word';
   $('convertNote').textContent = type === 'word'
     ? 'Word conversion supports .docx files. Legacy .doc files are not supported.'
-    : 'Your PDF is processed locally in your browser. Each page becomes a separate image in one ZIP archive.';
+    : type === 'pdf-word' ? 'Works with selectable text. Scanned/image-only PDFs need OCR, which is not included in this tool.' : 'Your PDF is processed locally in your browser. Each page becomes a separate image in one ZIP archive.';
   $('pdfImageOptions').hidden = type !== 'pdf-image';
   list.hidden = type !== 'image';
   list.replaceChildren();
-  run.textContent = type === 'word' ? 'Convert to PDF' : type === 'image' ? 'Create PDF' : 'Convert to images';
+  run.textContent = type === 'word' ? 'Convert to PDF' : type === 'image' ? 'Create PDF' : type === 'pdf-word' ? 'Convert to Word' : 'Convert to images';
   run.disabled = true;
   setStatus('');
   dialog.hidden = false;
@@ -82,7 +82,7 @@ picker.addEventListener('change', () => {
     if (!file) return;
     if (!/\.docx$/i.test(file.name)) { files=[]; run.disabled=true; setStatus('Please choose a modern Word .docx file. Legacy .doc files are not supported.',true); return; }
     files=[file]; run.disabled=false; $('convertDropTitle').textContent=file.name; setStatus('');
-  } else if (mode === 'pdf-image') {
+  } else if (mode === 'pdf-image' || mode === 'pdf-word') {
     const file = selected[0];
     if (!file) return;
     if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') {
@@ -156,6 +156,62 @@ async function wordToPdf(file) {
     return blob;
   } finally { stage.remove(); }
 }
+
+async function pdfToWord(file) {
+  setStatus('Reading PDF text…');
+  const loadingTask = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
+  let pdf;
+  try {
+    pdf = await loadingTask.promise;
+    const docxModule = await import('https://esm.sh/docx@9.5.1');
+    const children = [];
+    let extractedCharacters = 0;
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+      setStatus(`Extracting text from page ${pageNumber} of ${pdf.numPages}…`);
+      const page = await pdf.getPage(pageNumber);
+      const content = await page.getTextContent();
+      const lines = [];
+      let current = [];
+      let lastY = null;
+      for (const item of content.items) {
+        if (!item.str || !item.str.trim()) continue;
+        const y = item.transform?.[5] ?? 0;
+        if (lastY !== null && Math.abs(y - lastY) > 3 && current.length) {
+          lines.push(current);
+          current = [];
+        }
+        current.push(item);
+        lastY = y;
+        extractedCharacters += item.str.length;
+        if (item.hasEOL) { lines.push(current); current = []; lastY = null; }
+      }
+      if (current.length) lines.push(current);
+      if (pageNumber > 1) children.push(new docxModule.Paragraph({ children: [new docxModule.PageBreak()] }));
+      for (const line of lines) {
+        line.sort((a,b) => (a.transform?.[4] ?? 0) - (b.transform?.[4] ?? 0));
+        const text = line.map(item => item.str).join(' ').replace(/\\s+/g, ' ').trim();
+        if (text) children.push(new docxModule.Paragraph({ children: [new docxModule.TextRun({ text, font: 'Arial', size: 22 })], spacing: { after: 100 } }));
+      }
+      page.cleanup?.();
+    }
+    if (!extractedCharacters || !children.length) {
+      throw new Error('No selectable text was found. This may be a scanned PDF; use OCR to convert image-only pages.');
+    }
+    setStatus('Building editable Word document…');
+    const document = new docxModule.Document({
+      creator: 'AtlasPDF',
+      title: file.name.replace(/\\.pdf$/i, ''),
+      sections: [{ properties: { page: { margin: { top: 1080, right: 1080, bottom: 1080, left: 1080 } } }, children }]
+    });
+    return await docxModule.Packer.toBlob(document);
+  } catch (error) {
+    if (error?.name === 'PasswordException') throw new Error('This PDF is password-protected and cannot be converted.');
+    throw error;
+  } finally {
+    try { await pdf?.destroy(); } catch {}
+  }
+}
+
 async function pdfToImages(file) {
   const format = $('pdfImageFormat').value;
   const scale = Number($('pdfImageScale').value);
@@ -216,6 +272,10 @@ run.addEventListener('click', async () => {
     if (mode === 'pdf-image') {
       const pages = await pdfToImages(file);
       setStatus(`${pages} page image${pages === 1 ? '' : 's'} created. Your ZIP download has started.`);
+    } else if (mode === 'pdf-word') {
+      const blob = await pdfToWord(file);
+      downloadBlob(blob, file.name.replace(/\\.pdf$/i, '') + '.docx');
+      setStatus('Editable Word document created. Your download has started.');
     } else {
       const blob=mode==='word'?await wordToPdf(file):await imagesToPdf();
       const name=mode==='word'?file.name.replace(/\.docx$/i,'')+'.pdf':'images-to-pdf.pdf';
