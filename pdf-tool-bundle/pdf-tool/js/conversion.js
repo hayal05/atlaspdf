@@ -40,7 +40,7 @@ function renderFiles() {
     name.textContent = file.name;
     const controls = document.createElement('span');
     controls.className = 'convert-file-controls';
-    for (const [label, delta] of [['↑',-1],['↓',1]]) {
+    for (const [label, delta] of [['↑ Move up',-1],['↓ Move down',1]]) {
       const button = document.createElement('button');
       button.type = 'button'; button.textContent = label;
       button.setAttribute('aria-label', (delta < 0 ? 'Move up ' : 'Move down ') + file.name);
@@ -52,7 +52,7 @@ function renderFiles() {
       controls.append(button);
     }
     const remove = document.createElement('button');
-    remove.type = 'button'; remove.textContent = '×'; remove.setAttribute('aria-label','Remove '+file.name);
+    remove.type = 'button'; remove.textContent = '× Remove'; remove.setAttribute('aria-label','Remove '+file.name);
     remove.addEventListener('click', () => { files.splice(index,1); renderFiles(); run.disabled = !files.length; });
     controls.append(remove);
     item.append(name, controls); list.append(item);
