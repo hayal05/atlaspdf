@@ -264,7 +264,7 @@ async function unlockLoadedPdf() {
       $('info').textContent = message;
     });
     const bytes = new Uint8Array(await blob.arrayBuffer());
-    download(bytes, `${source.name.replace(/\\.pdf$/i, '')}-unlocked.pdf`);
+    download(bytes, `${source.name.replace(/\.pdf$/i, '')}-unlocked.pdf`);
     say('PDF unlocked. Your download has started.', false, 9000);
   } catch (error) {
     console.error(error);
