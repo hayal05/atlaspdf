@@ -104,3 +104,6 @@ body.conversion-workspace-open .workspace { padding-top:24px; }
   .conversion-preview-stage { min-height:310px; padding:12px; }
   .conversion-preview-heading { align-items:flex-start; padding:11px; }
 }
+
+.conversion-workspace-grid.single-panel { grid-template-columns:minmax(0,640px); justify-content:center; }
+.conversion-preview-panel[hidden] { display:none !important; }
