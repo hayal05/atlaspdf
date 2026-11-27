@@ -51,3 +51,11 @@
 .word-print-stage h1,.word-print-stage h2,.word-print-stage h3{break-after:avoid}
 .word-print-stage p{orphans:3;widows:3}
 @media(max-width:640px){.convert-card{padding:18px}.convert-actions{display:grid;grid-template-columns:1fr 1fr}}
+
+/* PDF-to-image conversion options and the ninth homepage tool accent. */
+.home-tool-card:nth-child(9) .home-tool-icon{background:#fff4e8;color:#d97706}
+.convert-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 4px}
+.convert-options[hidden]{display:none}
+.convert-options label{display:grid;gap:6px;color:#52627a;font-size:11px;font-weight:700}
+.convert-options select{width:100%;min-height:38px;padding:0 10px;border:1px solid #dce4ef;border-radius:8px;background:#fff;color:#34445c;font:inherit;font-weight:500}
+@media(max-width:420px){.convert-options{grid-template-columns:1fr}}
