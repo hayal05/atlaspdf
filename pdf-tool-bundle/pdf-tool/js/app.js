@@ -258,7 +258,7 @@ function updateUnlockFile() {
   const file = $('unlockPicker').files[0];
   $('unlockFileName').textContent = file ? file.name : 'Choose a PDF file';
   $('unlockFileMeta').textContent = file ? `${(file.size / 1048576).toFixed(2)} MB · Ready to unlock` : 'Select one password-protected PDF';
-  $('unlockSubmit').disabled = !file || busy;
+  $('unlockSubmit').disabled = !file || !$('unlockPassword').value || busy;
 }
 $('unlockTool').onclick = () => { $('unlockDialog').hidden = false; $('unlockPicker').focus(); };
 $('unlockClose').onclick = closeUnlock;
