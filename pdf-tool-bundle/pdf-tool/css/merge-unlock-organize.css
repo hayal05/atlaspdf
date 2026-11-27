@@ -1,0 +1,169 @@
+/* PR 2 — Merge, Unlock and Organize workspace action polish.
+   These selectors are deliberately limited to document/workspace controls. */
+
+/* Merge workflow: distinguish adding source files from exporting the result. */
+.topbar .top-actions #add {
+  color: #245bc8;
+  border-color: #cbd9fb;
+  background: #edf3ff;
+}
+.topbar .top-actions #add:hover:not(:disabled) {
+  color: #1949ad;
+  border-color: #a9c1f4;
+  background: #e1ebff;
+}
+.topbar .top-actions #download {
+  color: #fff;
+  border-color: #16845b;
+  background: linear-gradient(135deg, #20a56f, #16845b);
+  box-shadow: 0 5px 14px rgba(22, 132, 91, .18);
+}
+.topbar .top-actions #download:hover:not(:disabled) {
+  background: linear-gradient(135deg, #168f60, #116f4b);
+  box-shadow: 0 8px 18px rgba(22, 132, 91, .23);
+}
+
+/* Add-PDF utility stays compact but now carries a readable label. */
+.sidebar-add {
+  min-width: 82px;
+  min-height: 32px;
+  padding: 0 9px;
+  border: 1px solid #cbdafa;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+/* Unlock actions use a warm orange treatment in both entry points. */
+#unlockTool,
+#previewUnlock {
+  color: #b75c08;
+  border-color: #f1d0aa;
+  background: #fff2e5;
+}
+#unlockTool:hover:not(:disabled),
+#previewUnlock:hover:not(:disabled) {
+  color: #914804;
+  border-color: #e8b77e;
+  background: #ffe9d3;
+}
+#unlockTool > span {
+  font-size: 15px;
+  line-height: 1;
+}
+.unlock-card .unlock-file {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 15px;
+  border: 1.5px dashed #edc18f;
+  background: linear-gradient(135deg, #fff5e9, #fffdf9);
+  cursor: pointer;
+}
+.unlock-card .unlock-file:hover {
+  border-color: #df9d54;
+  background: linear-gradient(135deg, #ffedd9, #fffaf4);
+  box-shadow: 0 0 0 4px rgba(232, 121, 38, .09);
+}
+.unlock-card .unlock-file-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 46px;
+  flex: 0 0 auto;
+  color: #c36b17;
+  background: #ffead4;
+  font-size: 10px;
+  font-weight: 850;
+}
+.unlock-card .unlock-browse {
+  margin-left: auto;
+  padding: 7px 11px;
+  border: 1px solid #f0cfaa;
+  border-radius: 8px;
+  color: #a9570c;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+.unlock-card .unlock-status.active {
+  color: #9b5b17;
+  background: #fff5e9;
+}
+.unlock-card .unlock-status.success {
+  color: #14734e;
+  background: #eaf7f0;
+}
+.unlock-card .unlock-status.error {
+  color: #b33443;
+  background: #fff0f1;
+}
+
+/* Organize actions: clear operation-specific color and icon + text. */
+#organizePages::before {
+  content: "▤";
+  font-size: 14px;
+  line-height: 1;
+}
+#extractRanges::before {
+  content: "↗";
+  font-size: 15px;
+  line-height: 1;
+}
+#splitRanges::before {
+  content: "⇉";
+  font-size: 15px;
+  line-height: 1;
+}
+#removeRanges::before {
+  content: "−";
+  font-size: 17px;
+  line-height: 1;
+}
+#extractRanges,
+#splitRanges {
+  color: #245bc8;
+  border-color: #cbd9fb;
+  background: #edf3ff;
+}
+#extractRanges:hover:not(:disabled),
+#splitRanges:hover:not(:disabled) {
+  color: #1949ad;
+  border-color: #a9c1f4;
+  background: #e1ebff;
+}
+#removeRanges {
+  color: #bd3445;
+  border-color: #f0cbd1;
+  background: #fff1f3;
+}
+#removeRanges:hover:not(:disabled) {
+  color: #9f2636;
+  border-color: #e6aab4;
+  background: #ffe5e9;
+}
+
+/* The selected-page remove action is intentionally explicit and destructive. */
+#previewRemove {
+  padding-inline: 10px;
+  color: #bd3445;
+  border-color: #f0cbd1;
+  background: #fff1f3;
+}
+#previewRemove:hover:not(:disabled) {
+  color: #9f2636;
+  border-color: #e6aab4;
+  background: #ffe5e9;
+}
+
+/* Small-screen workspace: retain labels; allow action rows to wrap naturally. */
+@media (max-width: 760px) {
+  .sidebar-add {
+    min-width: 76px;
+    min-height: 34px;
+  }
+  #previewRemove {
+    padding-inline: 8px;
+  }
+}
