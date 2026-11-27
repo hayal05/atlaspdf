@@ -1,0 +1,66 @@
+/* Workspace action toolbar refinement.
+   Applies only to the page-preview workspace toolbar, never the site header
+   or homepage tool grid. Keep action labels, icons and existing color coding. */
+.preview-toolbar{
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  align-items:start;
+  justify-content:initial;
+  gap:10px;
+  padding:12px 14px;
+}
+.preview-toolbar > div:first-child{
+  width:100%;
+  min-width:0;
+}
+.preview-toolbar strong{
+  max-width:100%;
+}
+.preview-actions{
+  width:100%;
+  min-width:0;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:0;
+}
+.preview-actions .tool-button{
+  flex:0 0 auto;
+  min-height:32px;
+  height:32px;
+  padding:0 10px;
+  gap:6px;
+  border-radius:8px;
+  font-size:11px;
+  line-height:1;
+}
+@media(max-width:760px){
+  .preview-toolbar{
+    align-items:flex-start;
+    flex-direction:initial;
+    gap:9px;
+    padding:10px 12px;
+  }
+  .preview-actions{
+    width:100%;
+    justify-content:flex-start;
+    gap:6px;
+  }
+  .preview-actions .tool-button{
+    min-height:34px;
+    height:34px;
+    padding-inline:9px;
+  }
+}
+@media(max-width:420px){
+  .preview-toolbar{padding:9px 10px}
+  .preview-actions{gap:5px}
+  .preview-actions .tool-button{
+    min-height:33px;
+    height:33px;
+    padding-inline:8px;
+    font-size:10px;
+  }
+}
