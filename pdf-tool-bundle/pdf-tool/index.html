@@ -23,6 +23,7 @@
 <link rel="stylesheet" href="css/merge-unlock-organize.css">
 <link rel="stylesheet" href="css/edit-workspace-actions.css">
 <link rel="stylesheet" href="css/conversion-compression-actions.css">
+<link rel="stylesheet" href="css/conversion-workspace.css">
 <link rel="stylesheet" href="css/responsive-consistency-audit.css">
 <link rel="stylesheet" href="css/compact-top-action-tools.css">
 <link rel="stylesheet" href="css/workspace-action-toolbar.css">
@@ -174,26 +175,7 @@
     </div>
   </section>
 
-  <section id="convertDialog" class="organize-dialog convert-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="convertTitle">
-    <div class="organize-card convert-card">
-      <div class="organize-heading"><h2 id="convertTitle">Convert to PDF</h2><button id="convertClose" type="button" aria-label="Close">×</button></div>
-      <p id="convertDescription" class="convert-description">Choose files to create a PDF.</p>
-      <label id="convertDrop" class="convert-drop" for="convertPicker"><span class="convert-drop-icon">＋</span><strong id="convertDropTitle">Choose files</strong><small id="convertDropHint">Files stay on your device</small></label>
-      <input id="convertPicker" type="file" hidden>
-      <ol id="convertFileList" class="convert-file-list" aria-label="Selected images" hidden></ol>
-      <div id="pdfImageOptions" class="convert-options" hidden>
-        <label for="pdfImageFormat">Image format
-          <select id="pdfImageFormat"><option value="jpg">JPG</option><option value="png">PNG</option></select>
-        </label>
-        <label for="pdfImageScale">Resolution
-          <select id="pdfImageScale"><option value="1">Standard (1×)</option><option value="1.5">High (1.5×)</option><option value="2" selected>Very high (2×)</option><option value="3">Maximum (3×)</option></select>
-        </label>
-      </div>
-      <p id="convertStatus" class="convert-status" role="status" aria-live="polite"></p>
-      <div class="convert-actions"><button id="convertCancel" type="button" class="button button-secondary">Cancel</button><button id="convertRun" type="button" class="button button-primary" disabled>Convert to PDF</button></div>
-      <p id="convertNote" class="convert-note">Word conversion supports .docx files. Legacy .doc files are not supported.</p>
-    </div>
-  </section>
+
 
   <section id="signDialog" class="organize-dialog sign-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="signTitle">
     <div class="organize-card sign-card">
@@ -263,6 +245,32 @@
     
     <span class="developer-credit">Developed by <strong>Hayelom M.</strong> <span aria-label="Copyright">©</span> 2026</span>
   </footer>
+  <section id="convertDialog" class="conversion-workspace" hidden aria-labelledby="convertTitle">
+    <div class="conversion-workspace-header">
+      <button id="convertBack" class="conversion-back" type="button"><span aria-hidden="true">←</span> All tools</button>
+      <div><p class="conversion-eyebrow">PDF WORKSPACE</p><h1 id="convertTitle">PDF to JPG</h1><p id="convertDescription" class="convert-description">Convert every page of a PDF into separate images.</p></div>
+      <button id="convertClose" class="conversion-close" type="button" aria-label="Close workspace">×</button>
+    </div>
+    <div id="conversionWorkspaceGrid" class="conversion-workspace-grid">
+      <section class="conversion-settings-panel" aria-label="Conversion settings">
+        <label id="convertDrop" class="convert-drop" for="convertPicker"><span class="convert-drop-icon">＋</span><strong id="convertDropTitle">Choose a PDF</strong><small id="convertDropHint">PDF files · one document at a time</small></label>
+        <input id="convertPicker" type="file" hidden>
+        <ol id="convertFileList" class="convert-file-list" aria-label="Selected images" hidden></ol>
+        <div id="pdfImageOptions" class="convert-options" hidden>
+          <label for="pdfImageFormat">Image format<select id="pdfImageFormat"><option value="jpg">JPG</option><option value="png">PNG</option></select></label>
+          <label for="pdfImageScale">Resolution<select id="pdfImageScale"><option value="1">Standard (1×)</option><option value="1.5">High (1.5×)</option><option value="2" selected>Very high (2×)</option><option value="3">Maximum (3×)</option></select></label>
+        </div>
+        <p id="convertNote" class="convert-note">Your PDF is processed locally in your browser.</p>
+        <div class="conversion-privacy"><span aria-hidden="true">✓</span><span><strong>Your files stay private</strong><small>Conversion runs locally in your browser.</small></span></div>
+        <p id="convertStatus" class="convert-status" role="status" aria-live="polite"></p>
+        <div class="convert-actions"><button id="convertCancel" type="button" class="button button-secondary">Back</button><button id="convertRun" type="button" class="button button-primary" disabled>Convert to images</button></div>
+      </section>
+      <section id="convertPreviewPanel" class="conversion-preview-panel" aria-label="PDF page preview">
+        <div class="conversion-preview-heading"><div><strong>Document preview</strong><span id="convertPreviewMeta">Upload a PDF to preview its pages</span></div><div class="conversion-page-controls"><button id="convertPrevPage" type="button" disabled aria-label="Previous page">←</button><span id="convertPageCount">— / —</span><button id="convertNextPage" type="button" disabled aria-label="Next page">→</button></div></div>
+        <div class="conversion-preview-stage"><div id="convertPreviewEmpty" class="conversion-preview-empty"><span>PDF</span><strong>Your document preview will appear here</strong><small>Choose a PDF to get started</small></div><canvas id="convertPreviewCanvas" hidden></canvas></div>
+      </section>
+    </div>
+  </section>
 </main>
 <div id="editor" hidden>
   <div id="etools">
