@@ -8,6 +8,9 @@ const list = $('convertFileList');
 const run = $('convertRun');
 let mode = 'word';
 let files = [];
+let previewPdf = null;
+let previewPage = 1;
+let previewToken = 0;
 
 const imageTypes = new Set(['image/jpeg','image/png','image/webp','image/gif','image/bmp']);
 
@@ -46,6 +49,15 @@ function openConverter(type) {
   run.disabled = true;
   setStatus('');
   dialog.hidden = false;
+  document.body.classList.add('conversion-workspace-open');
+  $('convertPreviewEmpty').hidden = false;
+  $('convertPreviewCanvas').hidden = true;
+  $('convertPreviewMeta').textContent = 'Upload a PDF to preview its pages';
+  $('convertPageCount').textContent = '— / —';
+  $('convertPrevPage').disabled = $('convertNextPage').disabled = true;
+  $('convertPreviewEmpty').querySelector('strong').textContent = 'Your document preview will appear here';
+  $('convertPreviewEmpty').querySelector('small').textContent = 'Choose a PDF to get started';
+  if (previewPdf) { previewPdf.destroy(); previewPdf = null; }
 }
 function renderFiles() {
   list.replaceChildren();
@@ -75,7 +87,7 @@ function renderFiles() {
   run.disabled = !files.length;
   $('convertDropTitle').textContent = files.length ? 'Add more images' : 'Choose images';
 }
-picker.addEventListener('change', () => {
+picker.addEventListener('change', async () => {
   const selected = [...picker.files];
   if (mode === 'word') {
     const file = selected[0];
@@ -97,7 +109,52 @@ picker.addEventListener('change', () => {
     setStatus(rejected ? `${rejected} unsupported file(s) skipped. Use JPG, PNG, WEBP, GIF or BMP.` : '');
   }
   picker.value = '';
+  if ((mode === 'pdf-image' || mode === 'pdf-word') && files[0]) await loadPreview(files[0]);
 });
+
+async function loadPreview(file) {
+  const token = ++previewToken;
+  if (previewPdf) { try { await previewPdf.destroy(); } catch {} previewPdf = null; }
+  $('convertPreviewEmpty').hidden = false;
+  $('convertPreviewCanvas').hidden = true;
+  $('convertPreviewEmpty').querySelector('strong').textContent = 'Preparing preview…';
+  $('convertPreviewEmpty').querySelector('small').textContent = file.name;
+  try {
+    const task = pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
+    const pdf = await task.promise;
+    if (token !== previewToken) { await pdf.destroy(); return; }
+    previewPdf = pdf;
+    previewPage = 1;
+    $('convertPreviewMeta').textContent = file.name;
+    await renderPreviewPage();
+  } catch (error) {
+    $('convertPreviewEmpty').hidden = false;
+    $('convertPreviewEmpty').querySelector('strong').textContent = 'Preview unavailable';
+    $('convertPreviewEmpty').querySelector('small').textContent = error?.name === 'PasswordException' ? 'This PDF is password-protected.' : 'The PDF could not be previewed.';
+  }
+}
+async function renderPreviewPage() {
+  if (!previewPdf) return;
+  const page = await previewPdf.getPage(previewPage);
+  const canvas = $('convertPreviewCanvas');
+  const stage = canvas.parentElement;
+  const base = page.getViewport({ scale: 1 });
+  const scale = Math.min((stage.clientWidth - 48) / base.width, (stage.clientHeight - 48) / base.height, 1.5);
+  const viewport = page.getViewport({ scale: Math.max(.2, scale) });
+  const context = canvas.getContext('2d');
+  canvas.width = Math.ceil(viewport.width);
+  canvas.height = Math.ceil(viewport.height);
+  await page.render({ canvasContext: context, viewport }).promise;
+  $('convertPreviewEmpty').hidden = true;
+  canvas.hidden = false;
+  $('convertPageCount').textContent = `${previewPage} / ${previewPdf.numPages}`;
+  $('convertPrevPage').disabled = previewPage <= 1;
+  $('convertNextPage').disabled = previewPage >= previewPdf.numPages;
+}
+$('convertPrevPage').addEventListener('click', async () => { if (previewPdf && previewPage > 1) { previewPage--; await renderPreviewPage(); } });
+$('convertNextPage').addEventListener('click', async () => { if (previewPdf && previewPage < previewPdf.numPages) { previewPage++; await renderPreviewPage(); } });
+window.addEventListener('resize', () => { if (previewPdf && !dialog.hidden) renderPreviewPage(); });
+
 function downloadBlob(blob, name) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -289,9 +346,10 @@ run.addEventListener('click', async () => {
     run.disabled=false; $('convertCancel').disabled=false; $('convertClose').disabled=false;
   }
 });
-function closeDialog(){ dialog.hidden=true; files=[]; picker.value=''; setStatus(''); }
+function closeDialog(){ dialog.hidden=true; files=[]; picker.value=''; setStatus(''); document.body.classList.remove('conversion-workspace-open'); previewToken++; if (previewPdf) { previewPdf.destroy(); previewPdf = null; } }
 $('convertClose').addEventListener('click',closeDialog);
+$('convertBack').addEventListener('click',closeDialog);
 $('convertCancel').addEventListener('click',closeDialog);
-dialog.addEventListener('click',event=>{if(event.target===dialog)closeDialog();});
+
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!dialog.hidden)closeDialog();});
 window.AtlasPDFOpenConverter=openConverter;
