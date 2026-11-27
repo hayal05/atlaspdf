@@ -1,0 +1,119 @@
+/* PR 5 — final responsive and visual consistency audit.
+   Keep the existing layouts and homepage grid; prevent toolbars from forcing
+   horizontal overflow and make keyboard/touch states consistent. */
+
+:where(.tool-button, .sidebar-add, .organize-actions button,
+  .convert-actions button, .convert-file-controls button,
+  #etools button, .preview-zoom-controls button,
+  .crop-apply, .unlock-browse):focus-visible {
+  outline: 3px solid rgba(45, 99, 226, .22);
+  outline-offset: 2px;
+}
+
+:where(.tool-button, .sidebar-add, .organize-actions button,
+  .convert-actions button, #etools button, .crop-apply) {
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.preview-actions {
+  min-width: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.preview-toolbar {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.preview-toolbar > div:first-child {
+  min-width: 0;
+}
+.preview-toolbar strong {
+  overflow-wrap: anywhere;
+}
+
+#etools {
+  min-width: 0;
+  max-width: 100%;
+}
+#etools > * {
+  min-width: 0;
+}
+#etools #edone {
+  flex: 0 0 auto;
+}
+
+.convert-file-list li {
+  min-width: 0;
+}
+.convert-file-list li > span:first-child {
+  overflow-wrap: anywhere;
+}
+.convert-file-controls {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 760px) {
+  .preview-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .preview-toolbar > div:first-child {
+    width: 100%;
+  }
+  .preview-actions {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 6px;
+  }
+  .preview-actions .tool-button {
+    min-height: 38px;
+  }
+  .preview-canvas-area {
+    min-width: 0;
+  }
+  #etools {
+    padding: 9px 10px;
+  }
+  #etools .editor-title {
+    flex: 1 0 100%;
+    margin: 0 0 2px;
+  }
+  #etools #edone {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 420px) {
+  .preview-actions .tool-button {
+    min-height: 36px;
+    padding-inline: 8px;
+    font-size: 10px;
+  }
+  .convert-card {
+    width: calc(100vw - 20px);
+    padding: 15px;
+  }
+  .convert-actions {
+    gap: 7px;
+  }
+  .convert-actions button {
+    min-width: 0;
+    padding-inline: 9px;
+    font-size: 11px;
+  }
+  .convert-file-controls button {
+    min-width: 28px;
+    padding-inline: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.tool-button, .sidebar-add, .organize-actions button,
+    .convert-actions button, .convert-file-controls button,
+    #etools button, .preview-zoom-controls button, .crop-apply) {
+    transition: none !important;
+  }
+}
