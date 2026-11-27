@@ -20,6 +20,8 @@
 <link rel="stylesheet" href="css/crop-number.css">
 <link rel="stylesheet" href="css/design-system.css">
 <link rel="stylesheet" href="css/action-colors.css">
+<link rel="stylesheet" href="css/merge-unlock-organize.css">
+<link rel="stylesheet" href="css/action-colors.css">
 </head>
 <body>
 <div id="busybar"></div>
@@ -73,13 +75,13 @@
     <div id="empty" class="empty-state"><span class="empty-file" aria-hidden="true">PDF</span><strong>No documents added yet</strong></div>
     <div id="documentWorkspace" class="document-workspace" hidden>
       <aside class="page-sidebar">
-        <div class="sidebar-heading"><div class="sidebar-title"><strong>Pages</strong><span id="pageCount"></span></div><button id="addMore" class="sidebar-add" type="button" title="Add another PDF" aria-label="Add another PDF">＋</button></div>
+        <div class="sidebar-heading"><div class="sidebar-title"><strong>Pages</strong><span id="pageCount"></span></div><button id="addMore" class="sidebar-add" type="button" title="Add another PDF" aria-label="Add another PDF">＋ Add PDF</button></div>
         <div id="grid" class="page-list"></div>
       </aside>
       <section class="preview-panel" aria-label="Selected PDF page preview">
         <div class="preview-toolbar"><div><strong id="previewTitle">Page preview</strong><span id="previewMeta">Select a page</span></div><div class="preview-actions"><button id="previewSnip" class="tool-button" disabled title="Select an area of this page to copy">▧ Snip</button>
           <button id="previewUnlock" class="tool-button" disabled title="Automatically unlock this uploaded PDF and download a copy">🔓 Unlock</button>
-          <button id="organizePages" class="tool-button" disabled title="Split, extract or remove page ranges">Organize</button><button id="cropNumber" class="tool-button" disabled title="Crop pages and add page numbers">Crop &amp; Number</button><button id="watermark" class="tool-button" disabled title="Add a text watermark to exported pages">Watermark</button><button id="previewPaste" class="tool-button" disabled title="Paste the last snipped area onto this page">▧ Paste Snip</button><button id="previewEdit" class="tool-button" disabled title="Edit selected page">✎ Edit</button><button id="previewRotate" class="tool-button" disabled title="Rotate selected page">↻ Rotate</button><button id="previewRemove" class="tool-button danger-tool" disabled title="Remove selected page">✕</button></div></div>
+          <button id="organizePages" class="tool-button" disabled title="Split, extract or remove page ranges">Organize</button><button id="cropNumber" class="tool-button" disabled title="Crop pages and add page numbers">Crop &amp; Number</button><button id="watermark" class="tool-button" disabled title="Add a text watermark to exported pages">Watermark</button><button id="previewPaste" class="tool-button" disabled title="Paste the last snipped area onto this page">▧ Paste Snip</button><button id="previewEdit" class="tool-button" disabled title="Edit selected page">✎ Edit</button><button id="previewRotate" class="tool-button" disabled title="Rotate selected page">↻ Rotate</button><button id="previewRemove" class="tool-button danger-tool" disabled title="Remove selected page">✕ Remove</button></div></div>
         <div id="previewCanvasArea" class="preview-canvas-area"><div id="previewEmpty" class="preview-empty"><span>PDF</span><strong>Select a page to preview</strong></div><div id="previewPageStage" class="preview-page-stage" hidden><canvas id="previewCanvas"></canvas><div id="previewItems" class="preview-items" aria-hidden="true"></div></div></div>
         <div class="preview-zoom-controls" aria-label="Preview zoom controls"><button id="zoomOut" type="button" title="Zoom out" aria-label="Zoom out" disabled>−</button><span id="zoomLevel" aria-live="polite">100%</span><button id="zoomIn" type="button" title="Zoom in" aria-label="Zoom in" disabled>＋</button></div>
       </section>
