@@ -1,0 +1,457 @@
+/* AtlasPDF shared design system — PR 1
+   Shared tokens and reusable interaction styles for tool workspaces.
+   Intentionally does not style or change the homepage tool grid. */
+
+:root {
+  --atlas-blue: #3867e8;
+  --atlas-blue-strong: #2854ca;
+  --atlas-blue-soft: #edf2ff;
+  --atlas-violet: #8056d8;
+  --atlas-violet-soft: #f2edff;
+  --atlas-teal: #1596a8;
+  --atlas-teal-soft: #e8f8fa;
+  --atlas-green: #16845b;
+  --atlas-green-soft: #eaf7f0;
+  --atlas-orange: #e87926;
+  --atlas-orange-soft: #fff2e8;
+  --atlas-red: #c43d4b;
+  --atlas-red-soft: #fff0f1;
+  --atlas-ink: #17243a;
+  --atlas-muted: #718096;
+  --atlas-line: #e4eaf3;
+  --atlas-panel: #ffffff;
+  --atlas-panel-soft: #f8faff;
+  --atlas-radius-sm: 9px;
+  --atlas-radius-md: 13px;
+  --atlas-radius-lg: 18px;
+  --atlas-shadow-sm: 0 3px 12px rgba(28, 47, 82, .055);
+  --atlas-shadow-md: 0 12px 34px rgba(28, 47, 82, .10);
+  --atlas-focus: 0 0 0 4px rgba(56, 103, 232, .13);
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+button, select, input, textarea, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(button, input, select, textarea, a):focus-visible {
+  outline: 3px solid rgba(56, 103, 232, .28);
+  outline-offset: 2px;
+}
+
+:where(button, select, input, textarea) {
+  accent-color: var(--atlas-blue);
+}
+
+/* Shared action hierarchy used inside tool workspaces and dialogs. */
+.button,
+.tool-button,
+.sidebar-add,
+.preview-zoom-controls button,
+#etools button,
+.organize-actions button,
+.organize-heading button,
+.convert-file-controls button,
+.crop-apply {
+  transition:
+    color .16s ease,
+    background-color .16s ease,
+    border-color .16s ease,
+    box-shadow .16s ease,
+    transform .16s ease;
+}
+
+.button {
+  min-height: 42px;
+  border-radius: 11px;
+  font-weight: 750;
+}
+
+.button-primary {
+  background: linear-gradient(135deg, #4778f0, #315bd4);
+  border-color: #3867e8;
+  box-shadow: 0 5px 14px rgba(56, 103, 232, .20);
+}
+
+.button-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3869e3, #274fc3);
+  box-shadow: 0 8px 18px rgba(56, 103, 232, .25);
+  transform: translateY(-1px);
+}
+
+.button-secondary {
+  border-color: var(--atlas-line);
+  background: #fff;
+  color: #40516b;
+}
+
+.button-secondary:hover:not(:disabled) {
+  border-color: #c5d4f1;
+  background: #f5f8ff;
+  color: var(--atlas-blue-strong);
+  transform: translateY(-1px);
+}
+
+.button:active:not(:disabled),
+.tool-button:active:not(:disabled),
+.organize-actions button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button:disabled,
+.tool-button:disabled,
+.organize-actions button:disabled {
+  cursor: not-allowed;
+  box-shadow: none;
+  filter: saturate(.55);
+}
+
+/* Document workspace surfaces and page controls. */
+.page-sidebar,
+.preview-panel {
+  border-color: var(--atlas-line);
+  border-radius: var(--atlas-radius-md);
+  box-shadow: var(--atlas-shadow-sm);
+}
+
+.sidebar-heading,
+.preview-toolbar {
+  background: linear-gradient(180deg, #fff, #fbfcff);
+  border-color: var(--atlas-line);
+}
+
+.page-card {
+  border-color: #e7ecf4;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(24, 39, 65, .025);
+}
+
+.page-card:hover {
+  border-color: #b9c9ee;
+  background: #f8faff;
+  box-shadow: 0 4px 12px rgba(40, 75, 145, .07);
+}
+
+.page-card.sel {
+  border-color: var(--atlas-blue);
+  background: linear-gradient(145deg, #f0f4ff, #fff);
+  box-shadow: 0 0 0 2px rgba(56, 103, 232, .12), 0 4px 12px rgba(40, 75, 145, .06);
+}
+
+.page-tools button,
+.tool-button,
+.preview-zoom-controls button {
+  border-color: #e1e8f2;
+  border-radius: 8px;
+  background: #fff;
+  color: #53647c;
+}
+
+.page-tools button:hover:not(:disabled),
+.tool-button:hover:not(:disabled),
+.preview-zoom-controls button:hover:not(:disabled) {
+  border-color: #bdcdef;
+  background: var(--atlas-blue-soft);
+  color: var(--atlas-blue-strong);
+}
+
+.tool-button.active,
+#previewSnip.active {
+  border-color: #b8c9f0;
+  background: var(--atlas-blue-soft);
+  color: var(--atlas-blue-strong);
+  box-shadow: inset 0 0 0 1px rgba(56, 103, 232, .08);
+}
+
+.preview-canvas-area {
+  background:
+    radial-gradient(circle at 1px 1px, rgba(155, 169, 190, .22) 1px, transparent 1.2px),
+    #f0f3f9;
+  background-size: 18px 18px;
+}
+
+.preview-empty span {
+  border: 1px solid #e5eaf4;
+  border-radius: 13px;
+  background: linear-gradient(145deg, #f0f4ff, #fff);
+  color: var(--atlas-blue);
+  box-shadow: var(--atlas-shadow-sm);
+}
+
+/* Consistent dialog foundation for organize, unlock and conversion tools. */
+.organize-dialog {
+  padding: 18px;
+  background: rgba(20, 32, 54, .48);
+  backdrop-filter: blur(7px);
+}
+
+.organize-card {
+  border: 1px solid rgba(224, 232, 244, .95);
+  border-radius: 20px;
+  background: linear-gradient(180deg, #fff 0%, #fcfdff 100%);
+  box-shadow: 0 26px 85px rgba(15, 29, 53, .25);
+}
+
+.organize-heading {
+  margin-bottom: 17px;
+}
+
+.organize-heading h2 {
+  color: var(--atlas-ink);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -.55px;
+}
+
+.organize-heading button {
+  border-color: #e5eaf3;
+  border-radius: 10px;
+  background: #f8faff;
+  color: #687891;
+}
+
+.organize-heading button:hover {
+  border-color: #c9d5e9;
+  background: #eef3fc;
+  color: #344765;
+  transform: rotate(4deg);
+}
+
+.organize-label,
+.crop-grid label,
+.crop-scope {
+  color: #42536e;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+#pageRanges,
+.crop-grid input,
+.crop-scope select,
+.quality-control select,
+#etools input[type="number"] {
+  border: 1px solid #dfe6f1;
+  border-radius: 10px;
+  background: #f9fbff;
+  color: var(--atlas-ink);
+  transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+
+#pageRanges:focus,
+.crop-grid input:focus,
+.crop-scope select:focus,
+.quality-control select:focus,
+#etools input[type="number"]:focus {
+  border-color: #8aa6ed;
+  background: #fff;
+  box-shadow: var(--atlas-focus);
+  outline: none;
+}
+
+.organize-hint,
+.unlock-description,
+.convert-description {
+  color: #6f7f96;
+}
+
+.organize-actions button {
+  min-height: 41px;
+  border-radius: 10px;
+  border-color: #dfe6f1;
+  background: #fff;
+  color: #40516b;
+}
+
+.organize-actions button:hover:not(:disabled) {
+  border-color: #bfd0f1;
+  background: #f3f6ff;
+  color: var(--atlas-blue-strong);
+}
+
+.organize-actions .organize-danger {
+  border-color: #f0d8dc;
+  background: #fffafb;
+  color: #b43b49;
+}
+
+.organize-actions .organize-danger:hover:not(:disabled) {
+  border-color: #e8b8c0;
+  background: var(--atlas-red-soft);
+  color: #a82d3c;
+}
+
+/* Colorful upload and file-selection surfaces shared by tools. */
+.unlock-file,
+.convert-drop {
+  border-radius: 15px;
+  border-color: #c8d5f0;
+  background: linear-gradient(135deg, #f1f5ff 0%, #fbfcff 78%);
+}
+
+.unlock-file:hover,
+.convert-drop:hover {
+  border-color: #8ba6ed;
+  background: linear-gradient(135deg, #eaf0ff 0%, #fff 82%);
+  box-shadow: var(--atlas-focus);
+}
+
+.unlock-file-icon,
+.convert-drop-icon {
+  border-radius: 12px;
+  background: linear-gradient(145deg, #e5edff, #f1edff);
+  color: var(--atlas-blue);
+  box-shadow: inset 0 0 0 1px rgba(56, 103, 232, .07);
+}
+
+.unlock-browse {
+  border-color: #cbd8f1;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--atlas-blue-strong);
+}
+
+.unlock-browse:hover {
+  border-color: #9bb2e9;
+  background: var(--atlas-blue-soft);
+}
+
+.convert-file-list li {
+  border-color: #e3eaf4;
+  border-radius: 11px;
+  background: #fff;
+  box-shadow: 0 2px 7px rgba(24, 39, 65, .035);
+}
+
+.convert-file-controls button:hover:not(:disabled) {
+  border-color: #bfd0f1;
+  background: var(--atlas-blue-soft);
+  color: var(--atlas-blue-strong);
+}
+
+/* Clear, color-coded operation feedback. */
+.unlock-status,
+.convert-status {
+  border-radius: 10px;
+}
+
+.unlock-status.active {
+  padding: 8px 10px;
+  background: #eff4ff;
+  color: #4565a7;
+}
+
+.unlock-status.success {
+  padding: 8px 10px;
+  background: var(--atlas-green-soft);
+  color: #16734f;
+}
+
+.unlock-status.error,
+.convert-status.error {
+  padding: 8px 10px;
+  background: var(--atlas-red-soft);
+  color: #b33443;
+}
+
+#msg {
+  border-radius: 13px;
+  box-shadow: var(--atlas-shadow-md);
+  backdrop-filter: blur(12px);
+}
+
+#msg.show:not(.err) {
+  border-color: #d6e9df;
+  background: #fbfffc;
+}
+
+#msg.err {
+  border-color: #f0cbd0;
+  background: #fffafb;
+}
+
+/* Crop, watermark and page-range controls share one visual language. */
+.crop-apply {
+  border-color: #cbd8f2;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #eef3ff, #f7f8ff);
+  color: var(--atlas-blue-strong);
+  font-weight: 800;
+}
+
+.crop-apply:hover {
+  border-color: #a9bfed;
+  background: #e8efff;
+  box-shadow: 0 4px 12px rgba(56, 103, 232, .09);
+}
+
+.crop-number-option {
+  color: #42536e;
+}
+
+#watermarkColor,
+#etools input[type="color"],
+#eannctl input[type="color"] {
+  overflow: hidden;
+  border: 1px solid #dfe6f1;
+  border-radius: 9px;
+  background: #fff;
+}
+
+#etools {
+  border-color: var(--atlas-line);
+}
+
+#etools button {
+  border-color: #dfe6f1;
+  border-radius: 9px;
+  background: #fff;
+  color: #465773;
+}
+
+#etools button:hover:not(:disabled) {
+  border-color: #bfd0f1;
+  background: var(--atlas-blue-soft);
+  color: var(--atlas-blue-strong);
+}
+
+#etools button.active {
+  border-color: #b8c9f0;
+  background: var(--atlas-blue-soft);
+  color: var(--atlas-blue-strong);
+}
+
+@media (max-width: 640px) {
+  .organize-dialog {
+    padding: 12px;
+  }
+
+  .organize-card {
+    border-radius: 17px;
+  }
+
+  .tool-button {
+    min-height: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .tool-button,
+  .sidebar-add,
+  .preview-zoom-controls button,
+  #etools button,
+  .organize-actions button,
+  .organize-heading button,
+  .convert-file-controls button,
+  .crop-apply {
+    transition: none !important;
+  }
+}
