@@ -1,0 +1,26 @@
+/* Protect PDF dialog — compact, colorful AtlasPDF workspace styling. */
+.protect-dialog{z-index:76}
+.protect-card{width:min(520px,calc(100vw - 28px));padding:22px}
+.protect-description{margin:0 0 15px;color:#68778f;font-size:12px;line-height:1.5}
+.protect-file{display:flex;align-items:center;gap:11px;min-height:62px;padding:10px 12px;border:1px solid #dce5f2;border-radius:11px;background:#f8faff;cursor:pointer}
+.protect-file-icon{display:grid;place-items:center;width:38px;height:42px;border-radius:8px;background:#e8f7ef;color:#15945f;font-size:10px;font-weight:800}
+.protect-file>span:nth-child(2){display:grid;gap:3px;min-width:0;flex:1}
+.protect-file strong{overflow:hidden;color:#34445c;font-size:12px;text-overflow:ellipsis;white-space:nowrap}
+.protect-file small{color:#8794a8;font-size:10px}
+.protect-browse{padding:7px 11px;border-radius:7px;background:#e7f8ef;color:#168657;font-size:11px;font-weight:750}
+.protect-field{display:grid;gap:6px;margin-top:13px}
+.protect-field label{color:#52627a;font-size:11px;font-weight:750}
+.protect-field input{width:100%;min-height:40px;padding:0 11px;border:1px solid #dce4ef;border-radius:8px;background:#fff;color:#34445c;font:inherit;font-size:12px}
+.protect-field input:focus{outline:3px solid #15945f20;border-color:#6cbf96}
+.protect-strength{height:4px;margin-top:11px;overflow:hidden;border-radius:5px;background:#edf1f6}
+.protect-strength span{display:block;width:0;height:100%;border-radius:5px;background:#15945f;transition:width .18s,background .18s}
+.protect-hint{margin:6px 0 0;color:#8995a7;font-size:10px}
+.protect-privacy{display:flex;align-items:flex-start;gap:7px;margin:13px 0 0;padding:10px;border-radius:9px;background:#edf8f2;color:#28734f;font-size:10px;line-height:1.45}
+.protect-privacy span{font-weight:900}
+.protect-status{min-height:18px;margin:10px 0 0;color:#526b9a;font-size:11px}
+.protect-status.error{color:#c43d4b}
+.protect-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.protect-actions button{min-height:38px}
+.protect-note{margin:11px 0 0;color:#8995a7;font-size:9px;line-height:1.45}
+.home-tool-card:nth-child(11) .home-tool-icon{background:#e7f8ef;color:#15945f}
+@media(max-width:480px){.protect-card{padding:17px}.protect-actions{display:grid;grid-template-columns:1fr 1fr}}
