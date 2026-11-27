@@ -4,12 +4,15 @@
 .preview-toolbar{
   display:grid;
   grid-template-columns:minmax(0,1fr);
+  grid-template-areas:"filename" "actions";
+  grid-template-rows:auto auto;
   align-items:start;
   justify-content:initial;
   gap:10px;
   padding:12px 14px;
 }
 .preview-toolbar > div:first-child{
+  grid-area:filename;
   width:100%;
   min-width:0;
 }
@@ -17,6 +20,7 @@
   max-width:100%;
 }
 .preview-actions{
+  grid-area:actions;
   width:100%;
   min-width:0;
   display:flex;
