@@ -73,6 +73,8 @@
       <button class="home-tool-card" type="button" data-home-tool="protect"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1"/><path d="M12 16.5v1.5"/></svg></span><strong>Protect PDF</strong><span>Encrypt a PDF with a password to open it.</span><b>Protect a PDF <i aria-hidden="true">→</i></b></button>
 
       <button class="home-tool-card" type="button" data-home-tool="pdf-word"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5M8 13l1.2 6 2.1-4.5 2.1 4.5 1.2-6"/></svg></span><strong>PDF to Word</strong><span>Extract selectable PDF text into an editable DOCX file.</span><b>Convert to Word <i aria-hidden="true">→</i></b></button>
+    
+      <button class="home-tool-card" type="button" data-home-tool="ocr"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><path d="M8.5 13h7M8.5 16h4M8.5 19h6"/></svg></span><strong>OCR PDF</strong><span>Make scanned PDF pages searchable and selectable.</span><b>Run OCR <i aria-hidden="true">→</i></b></button>
     </div>
   </section>
     <section id="uploadZone" class="upload-zone" aria-label="Upload PDF files">
@@ -227,6 +229,20 @@
       <p class="protect-note">Keep your password safe. If it is lost, AtlasPDF cannot recover the protected document.</p>
     </div>
   </section>
+
+  <section id="ocrDialog" class="organize-dialog ocr-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="ocrTitle">
+    <div class="organize-card ocr-card">
+      <div class="organize-heading"><h2 id="ocrTitle">OCR PDF</h2><button id="ocrClose" type="button" aria-label="Close">×</button></div>
+      <p class="ocr-description">Recognize text in scanned pages and add an invisible text layer, making the original PDF searchable and selectable.</p>
+      <label class="ocr-file" for="ocrPicker"><span class="ocr-file-icon">PDF</span><span><strong id="ocrFileName">Choose a scanned PDF</strong><small id="ocrFileMeta">One PDF · processed locally in your browser</small></span><span class="ocr-browse">Browse</span></label>
+      <input id="ocrPicker" type="file" accept="application/pdf,.pdf" hidden>
+      <div class="ocr-options"><label for="ocrLanguage">Recognition language</label><select id="ocrLanguage"><option value="eng">English</option></select><label for="ocrQuality">Recognition quality</label><select id="ocrQuality"><option value="1">Standard</option><option value="1.5" selected>High</option><option value="2">Very high</option></select></div>
+      <p class="ocr-privacy"><span aria-hidden="true">✓</span> OCR runs in your browser. Your PDF is not uploaded. The language model downloads on first use.</p>
+      <p id="ocrStatus" class="ocr-status" role="status" aria-live="polite"></p>
+      <div class="ocr-actions"><button id="ocrCancel" type="button" class="button button-secondary">Cancel</button><button id="ocrRun" type="button" class="button button-primary" disabled>Make PDF searchable</button></div>
+      <p class="ocr-note">Best for scanned or image-only PDFs. English recognition is available in this first version. Existing PDF content is retained; OCR adds a searchable text layer.</p>
+    </div>
+  </section>
   <footer class="site-footer">
     <span>AtlasPDF</span>
     
@@ -252,5 +268,6 @@
 <script type="module" src="js/conversion.js"></script>
 <script type="module" src="js/sign-pdf.js"></script>
 <script type="module" src="js/protect-pdf.js"></script>
+<script type="module" src="js/ocr-pdf.js"></script>
 </body>
 </html>
