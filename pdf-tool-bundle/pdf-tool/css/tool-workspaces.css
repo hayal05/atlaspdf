@@ -1,0 +1,735 @@
+/* AtlasPDF tool workspace refinement — PR 2.
+   Applies only after a user opens a tool or loads a document.
+   The homepage hero and tools grid are intentionally excluded. */
+
+/* Document workspace: clearer hierarchy and more generous working surfaces. */
+.document-workspace {
+  gap: 18px;
+  min-height: 640px;
+}
+
+.page-sidebar,
+.preview-panel {
+  border-radius: 17px;
+  box-shadow: 0 5px 22px rgba(28, 47, 82, .055);
+}
+
+.sidebar-heading {
+  min-height: 56px;
+  height: auto;
+  padding: 10px 15px;
+}
+
+.sidebar-title strong {
+  color: #263752;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sidebar-title span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 8px;
+  border-radius: 7px;
+  background: #edf2ff;
+  color: #4165bd;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.sidebar-add {
+  width: 33px;
+  height: 33px;
+  flex-basis: 33px;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #eef3ff, #f8faff);
+}
+
+.page-list {
+  padding: 13px;
+  gap: 11px;
+}
+
+.page-card {
+  padding: 8px;
+  border-radius: 12px;
+}
+
+.page-thumb {
+  border-radius: 8px;
+  background: linear-gradient(145deg, #f0f3f9, #e9eef7);
+}
+
+.page-label {
+  margin: 8px 2px 6px;
+  color: #52647f;
+  font-size: 10px;
+}
+
+.page-tools button {
+  height: 28px;
+  border-radius: 7px;
+  font-size: 12px;
+}
+
+.preview-toolbar {
+  min-height: 64px;
+  padding: 11px 16px;
+  flex-wrap: wrap;
+}
+
+.preview-toolbar strong {
+  color: #263752;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.preview-toolbar span {
+  color: #8795aa;
+  font-size: 10px;
+}
+
+.preview-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.preview-actions .tool-button {
+  min-height: 34px;
+  height: auto;
+  padding: 0 10px;
+  border-radius: 9px;
+  font-size: 10px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+/* Each workspace action has a subtle color identity for faster recognition. */
+#previewSnip {
+  border-color: #e2d8fa;
+  background: #f7f3ff;
+  color: #7650bd;
+}
+#previewSnip:hover:not(:disabled),
+#previewSnip.active {
+  border-color: #cbb8f2;
+  background: #eee7ff;
+  color: #633eaa;
+}
+
+#previewUnlock {
+  border-color: #ccebdc;
+  background: #effaf4;
+  color: #18764f;
+}
+#previewUnlock:hover:not(:disabled) {
+  border-color: #a9ddc2;
+  background: #e4f6ec;
+  color: #126541;
+}
+
+#organizePages {
+  border-color: #ded6f7;
+  background: #f5f1ff;
+  color: #7050b4;
+}
+#organizePages:hover:not(:disabled) {
+  border-color: #c8b9ee;
+  background: #eee8ff;
+}
+
+#cropNumber {
+  border-color: #d2e1fb;
+  background: #f0f6ff;
+  color: #3e68bd;
+}
+#cropNumber:hover:not(:disabled) {
+  border-color: #b6cdf2;
+  background: #e6efff;
+}
+
+#watermark {
+  border-color: #f2e0c6;
+  background: #fff8ed;
+  color: #a76a22;
+}
+#watermark:hover:not(:disabled) {
+  border-color: #e8cca3;
+  background: #fff1dc;
+}
+
+#previewPaste {
+  border-color: #c9e8ec;
+  background: #effafb;
+  color: #247f8b;
+}
+#previewPaste:hover:not(:disabled) {
+  border-color: #a7dce2;
+  background: #e4f6f8;
+}
+
+#previewEdit {
+  border-color: #f4d7c8;
+  background: #fff5ef;
+  color: #b65d31;
+}
+#previewEdit:hover:not(:disabled) {
+  border-color: #edc1a9;
+  background: #ffede3;
+}
+
+#previewRotate {
+  border-color: #d8e0f7;
+  background: #f1f4ff;
+  color: #536db5;
+}
+#previewRotate:hover:not(:disabled) {
+  border-color: #bdc9ee;
+  background: #e8edff;
+}
+
+#previewRemove {
+  border-color: #f1d2d7;
+  background: #fff4f5;
+  color: #b64050;
+}
+#previewRemove:hover:not(:disabled) {
+  border-color: #e7b5bd;
+  background: #ffe9ec;
+}
+
+.preview-actions .tool-button:disabled {
+  opacity: .42;
+  filter: grayscale(.35);
+}
+
+.preview-canvas-area {
+  min-height: 560px;
+  padding: 20px;
+}
+
+.preview-zoom-controls {
+  min-height: 54px;
+  gap: 14px;
+  background: #fff;
+}
+
+.preview-zoom-controls button {
+  width: 33px;
+  height: 33px;
+  border-radius: 9px;
+  background: #f7f9fd;
+  color: #52647f;
+  font-weight: 700;
+}
+
+/* Tool dialogs: stronger title, clear sections, and friendly action hierarchy. */
+.organize-card {
+  width: min(480px, 100%);
+  padding: 25px;
+  border-radius: 21px;
+}
+
+.organize-heading {
+  gap: 12px;
+  margin-bottom: 17px;
+}
+
+.organize-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-size: 19px;
+  letter-spacing: -.55px;
+}
+
+.organize-heading h2::before {
+  content: "✦";
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #eaf0ff, #f2edff);
+  color: #5b68d4;
+  font-size: 17px;
+}
+
+#organizeTitle::before { content: "▦"; background: #f0eaff; color: #7852c6; }
+#cropNumberTitle::before { content: "◫"; background: #eaf2ff; color: #416bc2; }
+#watermarkTitle::before { content: "✎"; background: #fff2e4; color: #bd762c; }
+#unlockTitle::before { content: "🔓"; background: #e8f8ef; color: #21845a; }
+#convertTitle::before { content: "⇄"; background: #e9f5ff; color: #3678b7; }
+
+.organize-heading button {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  font-size: 20px;
+}
+
+.organize-hint {
+  line-height: 1.55;
+}
+
+.organize-actions {
+  gap: 9px;
+}
+
+.organize-actions button {
+  min-height: 42px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+#extractRanges {
+  border-color: #cddbf7;
+  background: #f0f5ff;
+  color: #3c62b4;
+}
+#extractRanges:hover:not(:disabled) {
+  border-color: #afc4f0;
+  background: #e6efff;
+}
+
+#splitRanges {
+  border-color: #d9d0f3;
+  background: #f5f1ff;
+  color: #7452b7;
+}
+#splitRanges:hover:not(:disabled) {
+  border-color: #c7b8ea;
+  background: #eee8ff;
+}
+
+.organize-actions .organize-danger {
+  border-color: #f0d1d6;
+  background: #fff5f6;
+  color: #b43b49;
+}
+
+/* Conversion workspace: clear drop target, visible file queue and action states. */
+.convert-card {
+  width: min(560px, calc(100vw - 28px));
+  padding: 25px;
+  border-radius: 21px;
+}
+
+.convert-description {
+  max-width: 470px;
+  margin: 0 0 18px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.convert-drop {
+  min-height: 150px;
+  gap: 8px;
+  border-width: 2px;
+  border-radius: 16px;
+}
+
+.convert-drop-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #e6efff, #f0eaff);
+  color: #5269ce;
+  font-size: 26px;
+}
+
+.convert-drop strong {
+  color: #344b75;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.convert-drop small {
+  color: #8795aa;
+  font-size: 11px;
+}
+
+.convert-file-list {
+  gap: 8px;
+  max-height: 220px;
+  margin-top: 14px;
+}
+
+.convert-file-list li {
+  min-height: 48px;
+  padding: 8px 10px 8px 13px;
+  border-radius: 11px;
+  font-size: 11px;
+}
+
+.convert-file-list li > span:first-child::before {
+  content: "PDF";
+  display: inline-grid;
+  place-items: center;
+  width: 29px;
+  height: 31px;
+  margin-right: 9px;
+  border-radius: 8px;
+  background: #fff0f1;
+  color: #c34b5a;
+  font-size: 8px;
+  font-weight: 850;
+  vertical-align: middle;
+}
+
+.convert-file-controls {
+  gap: 5px;
+}
+
+.convert-file-controls button {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.convert-actions {
+  gap: 9px;
+  margin-top: 17px;
+}
+
+.convert-actions button {
+  min-height: 42px;
+  border-radius: 10px;
+}
+
+.convert-actions #convertRun {
+  min-width: 145px;
+}
+
+.convert-status {
+  min-height: 0;
+  margin-top: 13px;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.convert-status:not(:empty) {
+  padding: 9px 11px;
+  border: 1px solid #d9e6fb;
+  background: #f3f7ff;
+  color: #48669f;
+}
+
+.convert-status.error {
+  border-color: #f0cbd0;
+  background: #fff2f3;
+  color: #b33443;
+}
+
+.convert-note {
+  padding-top: 11px;
+  border-top: 1px solid #edf0f5;
+  line-height: 1.5;
+}
+
+/* Unlock flow: emphasize local processing and status feedback. */
+.unlock-description {
+  margin: 0 0 17px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.unlock-file {
+  min-height: 84px;
+  gap: 12px;
+  padding: 13px;
+  border-width: 1.5px;
+  border-radius: 14px;
+}
+
+.unlock-file-icon {
+  display: grid;
+  place-items: center;
+  width: 45px;
+  height: 48px;
+  flex: 0 0 45px;
+  border-radius: 11px;
+  background: linear-gradient(145deg, #e5f7ed, #eaf2ff);
+  color: #21845a;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.unlock-file strong {
+  display: block;
+  color: #30435f;
+  font-size: 12px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.unlock-file small {
+  display: block;
+  margin-top: 3px;
+  color: #8391a6;
+  font-size: 10px;
+}
+
+.unlock-browse {
+  min-height: 33px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.unlock-privacy {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 13px 0 0;
+  color: #63816f;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.unlock-privacy::before {
+  content: "✓";
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  border-radius: 50%;
+  background: #e7f6ed;
+  color: #16845b;
+  font-weight: 850;
+}
+
+.unlock-legal {
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid #edf0f5;
+  color: #8995a7;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+/* Editor: group controls into a clean, colorful toolbar without changing behavior. */
+#editor {
+  background: #f1f4fa;
+}
+
+#etools {
+  gap: 7px;
+  min-height: 66px;
+  padding: 11px 16px;
+  box-shadow: 0 2px 12px rgba(28, 47, 82, .045);
+}
+
+.editor-title {
+  margin-right: 9px;
+  color: #263752;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+#etools button {
+  min-height: 36px;
+  padding: 0 11px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+#etools #eimg { background: #f0f5ff; border-color: #d4e0f8; color: #4168bb; }
+#etools #etxt { background: #f4efff; border-color: #e0d5f6; color: #7652b7; }
+#etools #ehighlight { background: #fff9e8; border-color: #f1e4b8; color: #98731b; }
+#etools #erectangle { background: #eef8ff; border-color: #d2e9f8; color: #367ba7; }
+#etools #efreehand { background: #fff3ed; border-color: #f2d8c9; color: #b76139; }
+#etools #edel { background: #fff2f3; border-color: #f0d0d5; color: #b43b49; }
+#etools button[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 1px currentColor;
+  filter: saturate(1.12);
+}
+
+#etools label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #63738c;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+#etools input[type="number"],
+#etools select {
+  min-height: 32px;
+  border: 1px solid #dfe6f1;
+  border-radius: 8px;
+  background: #fff;
+  color: #34445e;
+}
+
+#etools input[type="color"] {
+  width: 30px;
+  height: 29px;
+  padding: 2px;
+  border: 1px solid #dfe6f1;
+  border-radius: 7px;
+  background: #fff;
+}
+
+#etools #edone {
+  margin-left: auto;
+  min-width: 82px;
+}
+
+#escroll {
+  padding: 28px;
+}
+
+#stage {
+  border-radius: 3px;
+  box-shadow: 0 8px 30px rgba(20, 35, 60, .16);
+}
+
+/* Responsive tool workspaces: wrap controls rather than creating horizontal scroll. */
+@media (max-width: 900px) {
+  .document-workspace {
+    grid-template-columns: minmax(280px, .8fr) minmax(0, 1.2fr);
+    gap: 12px;
+  }
+
+  .preview-toolbar {
+    align-items: flex-start;
+  }
+
+  .preview-actions {
+    justify-content: flex-start;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .document-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 11px;
+  }
+
+  .page-sidebar,
+  .preview-panel {
+    border-radius: 14px;
+  }
+
+  .preview-toolbar {
+    gap: 10px;
+    padding: 11px;
+  }
+
+  .preview-toolbar > div:first-child {
+    width: 100%;
+  }
+
+  .preview-toolbar strong {
+    max-width: 100%;
+  }
+
+  .preview-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 6px;
+  }
+
+  .preview-actions .tool-button {
+    width: 100%;
+    min-width: 0;
+    padding: 0 6px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .preview-canvas-area {
+    min-height: 390px;
+    padding: 12px;
+  }
+
+  .organize-card,
+  .convert-card {
+    padding: 19px;
+    border-radius: 18px;
+  }
+
+  .organize-heading h2 {
+    font-size: 17px;
+  }
+
+  .organize-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .organize-actions .organize-danger {
+    grid-column: 1 / -1;
+  }
+
+  .convert-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .convert-actions button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  #etools {
+    gap: 7px;
+    padding: 10px;
+  }
+
+  .editor-title {
+    width: 100%;
+    margin: 0 0 2px;
+  }
+
+  #etools #edone {
+    margin-left: 0;
+  }
+
+  #escroll {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .preview-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .organize-card,
+  .convert-card {
+    padding: 16px;
+  }
+
+  .organize-actions,
+  .convert-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .organize-actions .organize-danger {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preview-actions .tool-button,
+  .page-card,
+  #etools button {
+    transition: none !important;
+  }
+}
