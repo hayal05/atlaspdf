@@ -264,8 +264,28 @@ async function unlockLoadedPdf() {
       $('info').textContent = message;
     });
     const bytes = new Uint8Array(await blob.arrayBuffer());
-    download(bytes, `${source.name.replace(/\.pdf$/i, '')}-unlocked.pdf`);
-    say('PDF unlocked. Your download has started.', false, 9000);
+    const unlockedFile = new File([bytes], source.name, { type: 'application/pdf' });
+    const loaded = await loadFiles([unlockedFile], message => {
+      $('info').textContent = message;
+    });
+    if (loaded.errors.length || !loaded.pages.length) {
+      throw new Error(loaded.errors[0] || 'The unlocked PDF could not be loaded into the workspace.');
+    }
+
+    // Swap the shared file reference for every page from this source PDF.
+    // Keep page order and per-page edits, rotations, crops and annotations intact.
+    const replacementFile = loaded.pages[0].file;
+    for (const page of state.pages) {
+      if (page.file === source) {
+        page.file = replacementFile;
+        delete page.canvas;
+        delete page.drawing;
+        delete page.box;
+      }
+    }
+    try { await source.doc.destroy(); } catch {}
+    refresh();
+    say('PDF unlocked and replaced in the current workspace.', false, 9000);
   } catch (error) {
     console.error(error);
     say(error.message || 'Could not unlock this PDF.', true, 10000);
