@@ -16,8 +16,8 @@ async function getQpdf() {
       return createModule({
         noInitialRun: true,
         locateFile: path => path.endsWith('.wasm') ? QPDF_WASM_URL : path,
-        print: message => { qpdfDiagnostics += String(message) + '\\n'; },
-        printErr: message => { qpdfDiagnostics += String(message) + '\\n'; }
+        print: message => { qpdfDiagnostics += String(message) + '\n'; },
+        printErr: message => { qpdfDiagnostics += String(message) + '\n'; }
       });
     })().catch(error => {
       qpdfPromise = null;
