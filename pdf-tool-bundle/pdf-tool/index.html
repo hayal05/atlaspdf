@@ -112,19 +112,16 @@
   <section id="unlockDialog" class="organize-dialog unlock-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="unlockTitle">
     <div class="organize-card unlock-card">
       <div class="organize-heading"><h2 id="unlockTitle">Unlock PDF</h2><button id="unlockClose" type="button" aria-label="Close">×</button></div>
-      <p class="unlock-description">Remove password protection from a PDF you’re authorized to access.</p>
+      <p class="unlock-description">Select a PDF and AtlasPDF will automatically try to remove its restrictions. No password entry is needed.</p>
       <label class="unlock-file" for="unlockPicker">
         <span class="unlock-file-icon" aria-hidden="true">PDF</span>
-        <span><strong id="unlockFileName">Choose a PDF file</strong><small id="unlockFileMeta">Select one password-protected PDF</small></span>
+        <span><strong id="unlockFileName">Choose a PDF file</strong><small id="unlockFileMeta">Select a PDF to start automatic unlocking</small></span>
         <span class="unlock-browse">Browse</span>
       </label>
       <input id="unlockPicker" type="file" accept="application/pdf,.pdf" hidden>
-      <label class="organize-label unlock-password-label" for="unlockPassword">PDF password</label>
-      <div class="unlock-password-wrap"><input id="unlockPassword" type="password" autocomplete="current-password" placeholder="Enter the document password"><button id="unlockPasswordToggle" type="button" aria-label="Show password">Show</button></div>
-      <p class="unlock-privacy">Your PDF and password stay in your browser. Only the PDF engine is downloaded when needed.</p>
+      <p class="unlock-privacy">Your PDF stays on your device and is processed locally in your browser.</p>
       <p id="unlockStatus" class="unlock-status" role="status" aria-live="polite"></p>
-      <div class="organize-actions"><button id="unlockSubmit" type="button" disabled>Unlock PDF <span aria-hidden="true">→</span></button></div>
-      <p class="unlock-legal">AtlasPDF does not crack passwords or bypass unknown passwords.</p>
+      <p class="unlock-legal">PDFs that require a non-empty document password cannot be decrypted automatically.</p>
     </div>
   </section>
   <footer class="site-footer">

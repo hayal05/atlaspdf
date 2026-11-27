@@ -27,16 +27,15 @@ async function getQpdf() {
   return qpdfPromise;
 }
 
-export async function unlockPdf(file, password, onProgress) {
+export async function unlockPdf(file, onProgress) {
   if (!(file instanceof File) || (!file.type.includes('pdf') && !file.name.toLowerCase().endsWith('.pdf'))) {
     throw new Error('Choose a valid PDF file.');
   }
-  if (!password) throw new Error('Enter the document password.');
   if (file.size > 150 * 1024 * 1024) {
     throw new Error('This PDF is larger than the 150 MB limit.');
   }
 
-  onProgress?.('Loading secure PDF engine…');
+  onProgress?.('Loading automatic PDF unlock engine…');
   const qpdf = await getQpdf();
   const inputPath = '/atlaspdf-unlock-input.pdf';
   const outputPath = '/atlaspdf-unlocked-output.pdf';
@@ -50,10 +49,12 @@ export async function unlockPdf(file, password, onProgress) {
 
     qpdf.FS.writeFile(inputPath, bytes);
     qpdfDiagnostics = '';
-    onProgress?.('Checking password and removing protection…');
+    onProgress?.('Automatically removing PDF restrictions…');
     let exitCode;
     try {
-      exitCode = qpdf.callMain([`--password=${password}`, '--decrypt', inputPath, outputPath]);
+      // QPDF uses the empty password by default. This removes owner-password
+      // permissions without asking the user to enter a password.
+      exitCode = qpdf.callMain(['--decrypt', inputPath, outputPath]);
     } catch (error) {
       if (error?.name !== 'ExitStatus' && !String(error).includes('ExitStatus')) throw error;
       exitCode = error.status;
@@ -64,9 +65,9 @@ export async function unlockPdf(file, password, onProgress) {
     if ((exitCode !== 0 && exitCode !== 3 && exitCode !== undefined) || !output?.length) {
       const detail = qpdfDiagnostics.toLowerCase();
       if (detail.includes('invalid password') || detail.includes('password')) {
-        throw new Error('The password is incorrect, or this PDF uses an unsupported encryption method.');
+        throw new Error('This PDF requires a document password. AtlasPDF cannot determine or recover an unknown password.');
       }
-      throw new Error('AtlasPDF could not unlock this PDF. Check the password and try again.');
+      throw new Error('AtlasPDF could not automatically unlock this PDF. It may be damaged or use unsupported encryption.');
     }
 
     onProgress?.('Preparing your unlocked PDF…');
