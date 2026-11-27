@@ -84,3 +84,30 @@
 .repair-info{display:flex;align-items:flex-start;gap:8px;margin:15px 0;color:#23805c;font-size:11px;line-height:1.5}.repair-info>span:first-child{font-weight:900}
 .repair-status{min-height:20px;margin:12px 0 0;color:#526b9a;font-size:12px}.repair-status.error{color:#c43d4b}.repair-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.repair-actions button{min-height:39px}.repair-note{margin:12px 0 0;color:#8995a7;font-size:10px;line-height:1.5}
 @media(max-width:640px){.repair-card{padding:18px}.repair-actions{display:grid;grid-template-columns:1fr 1fr}}
+
+
+/* OCR and Repair use the same full-page workspace shell as other tools. */
+.tool-page-workspace[hidden]{display:none!important}
+.tool-page-workspace:not([hidden]){
+  display:block;position:relative;z-index:1;width:100%;min-height:calc(100vh - 112px);
+  margin:0;padding:28px 18px 40px;background:#f5f7fb;
+}
+body.ocr-workspace-open .workspace>:not(#ocrDialog),
+body.repair-workspace-open .workspace>:not(#repairDialog){display:none!important}
+body.ocr-workspace-open .workspace,
+body.repair-workspace-open .workspace{padding-top:0}
+body.ocr-workspace-open .top-actions,
+body.repair-workspace-open .top-actions{display:none}
+#ocrDialog .ocr-card,#repairDialog .repair-card{
+  width:min(680px,100%);margin:0 auto;padding:24px;border:1px solid #e2e8f1;
+  border-radius:16px;background:#fff;box-shadow:0 6px 24px rgba(29,53,87,.05);
+}
+#ocrTitle,#repairTitle{font-size:24px;letter-spacing:-.5px}
+#ocrClose,#repairClose{width:36px;height:36px;border:1px solid #e0e7f1;border-radius:9px;background:#f7f9fc;color:#596b83;font-size:20px}
+#ocrClose:hover,#repairClose:hover{background:#edf3ff;color:#315fe8}
+#ocrCancel,#ocrRun,#repairCancel,#repairRun{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 16px;border-radius:9px;font-weight:700}
+@media(max-width:600px){
+ .tool-page-workspace:not([hidden]){padding:16px 10px 28px}
+ #ocrDialog .ocr-card,#repairDialog .repair-card{padding:16px;border-radius:12px}
+ #ocrTitle,#repairTitle{font-size:21px}
+}
