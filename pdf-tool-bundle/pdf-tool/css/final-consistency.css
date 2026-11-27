@@ -1,0 +1,102 @@
+/* AtlasPDF final workspace consistency pass — PR 7.
+   Scoped to active document tools and dialogs; the homepage tools grid is excluded. */
+
+/* Keep interactive workspace controls visually consistent and keyboard-visible. */
+.documents-section button:focus-visible,
+#editor button:focus-visible,
+.organize-dialog button:focus-visible,
+.unlock-dialog button:focus-visible,
+.documents-section select:focus-visible,
+.documents-section input:focus-visible,
+#editor input:focus-visible,
+#editor select:focus-visible,
+.organize-dialog input:focus-visible,
+.organize-dialog select:focus-visible,
+.unlock-dialog input:focus-visible,
+.unlock-dialog select:focus-visible {
+  outline: 3px solid rgba(54, 95, 229, .28);
+  outline-offset: 2px;
+}
+
+/* Prevent long filenames and status messages from stretching tool surfaces. */
+.page-sidebar,
+.preview-panel,
+.organize-card,
+.convert-card,
+.unlock-card {
+  min-width: 0;
+}
+
+.page-label,
+.convert-file-list li,
+.unlock-file strong,
+.unlock-status,
+.convert-status,
+.organize-hint,
+.convert-description,
+.convert-note {
+  overflow-wrap: anywhere;
+}
+
+.convert-file-list li > span:first-child {
+  min-width: 0;
+}
+
+/* Align dialog surfaces and action rows without changing their visual identity. */
+.organize-card,
+.convert-card,
+.unlock-card {
+  box-sizing: border-box;
+}
+
+.organize-actions button,
+.convert-actions button,
+.unlock-card .organize-actions button {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.organize-heading,
+.convert-actions,
+.organize-actions {
+  min-width: 0;
+}
+
+/* Consistent empty, busy, and result feedback sizing across workspace surfaces. */
+#msg {
+  box-sizing: border-box;
+  max-width: min(520px, calc(100vw - 28px));
+  overflow-wrap: anywhere;
+}
+
+#busybar {
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  #msg {
+    max-width: calc(100vw - 24px);
+    margin-inline: 12px;
+    padding: 10px 12px;
+  }
+
+  .organize-actions button,
+  .convert-actions button,
+  .unlock-card .organize-actions button {
+    min-height: 42px;
+  }
+
+  .convert-file-list li {
+    gap: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .documents-section button,
+  #editor button,
+  .organize-dialog button,
+  .unlock-dialog button {
+    scroll-behavior: auto;
+    transition-duration: 0s !important;
+  }
+}
