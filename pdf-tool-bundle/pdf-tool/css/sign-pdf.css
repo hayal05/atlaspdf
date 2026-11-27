@@ -30,3 +30,28 @@
 
 /* Keep the new Sign PDF homepage icon colorful and distinct. */
 .home-tool-card:nth-child(10) .home-tool-icon{background:#f1eaff;color:#8656d8}
+
+
+/* Full-page tool workspace, aligned with the conversion and Merge/Edit workspaces. */
+.tool-page-workspace[hidden]{display:none!important}
+.tool-page-workspace:not([hidden]){
+  display:block;position:relative;z-index:1;width:100%;min-height:calc(100vh - 112px);
+  margin:0;padding:28px 18px 40px;background:#f5f7fb;
+}
+body.sign-workspace-open .workspace > :not(#signDialog){display:none!important}
+body.sign-workspace-open .workspace{padding-top:0}
+body.sign-workspace-open .top-actions{display:none}
+#signDialog .sign-card{
+  width:min(760px,100%);margin:0 auto;padding:24px;
+  border:1px solid #e2e8f1;border-radius:16px;background:#fff;
+  box-shadow:0 6px 24px rgba(29,53,87,.05);
+}
+#signTitle{font-size:24px;letter-spacing:-.5px}
+#signClose{width:36px;height:36px;border:1px solid #e0e7f1;border-radius:9px;background:#f7f9fc;color:#596b83;font-size:20px}
+#signClose:hover{background:#edf3ff;color:#315fe8}
+#signCancel,#signRun{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 16px;border-radius:9px;font-weight:700}
+@media(max-width:600px){
+ .tool-page-workspace:not([hidden]){padding:16px 10px 28px}
+ #signDialog .sign-card{padding:16px;border-radius:12px}
+ #signTitle{font-size:21px}
+}
