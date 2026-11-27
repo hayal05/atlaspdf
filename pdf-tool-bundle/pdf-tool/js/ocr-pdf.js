@@ -55,7 +55,7 @@ async function makeSearchablePDF(source) {
   }
   status('Opening your PDF…');
   const bytes = new Uint8Array(await source.arrayBuffer());
-  const pdfLoading = pdfjs.getDocument({ data: bytes });
+  const pdfLoading = pdfjs.getDocument({ data: bytes.slice() });
   let renderedPdf;
   let worker;
   try {
