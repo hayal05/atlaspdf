@@ -1,0 +1,144 @@
+/* AtlasPDF icon polish and micro-interactions — PR 5.
+   Workspace-only styling. The homepage tools grid is deliberately excluded. */
+
+/* Consistent, tactile feedback for controls throughout the document workspace. */
+.documents-section button,
+#editor button,
+.organize-dialog button {
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color .16s ease,
+    background-color .16s ease,
+    border-color .16s ease,
+    box-shadow .16s ease,
+    transform .16s ease,
+    opacity .16s ease;
+}
+.documents-section button:not(:disabled):active,
+#editor button:not(:disabled):active,
+.organize-dialog button:not(:disabled):active {
+  transform: translateY(1px) scale(.985);
+}
+.documents-section button:disabled,
+#editor button:disabled,
+.organize-dialog button:disabled {
+  transform: none;
+}
+
+/* Normalize the small action glyphs already present in workspace controls. */
+.top-actions .button > span[aria-hidden="true"] {
+  display: inline-grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .18);
+  font-size: 14px;
+  line-height: 1;
+}
+.top-actions .button-secondary > span[aria-hidden="true"] {
+  background: #edf2ff;
+  color: #4569bd;
+}
+.top-actions .button-primary > span[aria-hidden="true"] {
+  background: rgba(255, 255, 255, .18);
+  color: #fff;
+}
+.sidebar-add {
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid #dce5f6;
+  color: #496bc0;
+  font-size: 19px;
+  font-weight: 650;
+}
+.sidebar-add:hover:not(:disabled) {
+  border-color: #b9c9eb;
+  background: #eaf1ff;
+  box-shadow: 0 4px 11px rgba(54, 91, 165, .12);
+  transform: translateY(-1px);
+}
+
+/* Small lift and selection feedback make page navigation feel responsive. */
+.page-card {
+  transition:
+    border-color .16s ease,
+    background-color .16s ease,
+    box-shadow .16s ease,
+    transform .16s ease;
+}
+.page-card:active {
+  transform: scale(.985);
+}
+.page-card.sel {
+  transform: translateY(-1px);
+}
+.page-tools button {
+  transition:
+    color .14s ease,
+    background-color .14s ease,
+    border-color .14s ease,
+    transform .14s ease;
+}
+.page-tools button:active {
+  transform: scale(.96);
+}
+
+/* Preview actions have a clear hover/focus response without changing their colors. */
+.preview-actions .tool-button {
+  position: relative;
+  overflow: hidden;
+  transition:
+    color .15s ease,
+    background-color .15s ease,
+    border-color .15s ease,
+    box-shadow .15s ease,
+    transform .15s ease;
+}
+.preview-actions .tool-button:hover:not(:disabled) {
+  box-shadow: 0 3px 9px rgba(38, 59, 100, .08);
+  transform: translateY(-1px);
+}
+.preview-actions .tool-button:active:not(:disabled) {
+  transform: translateY(0) scale(.98);
+}
+.preview-actions .tool-button:focus-visible,
+.sidebar-add:focus-visible,
+.page-tools button:focus-visible {
+  outline: 3px solid rgba(74, 112, 211, .28);
+  outline-offset: 2px;
+}
+
+/* Drag-and-drop feedback is visible but restrained. */
+.page-card.drag {
+  box-shadow: 0 8px 20px rgba(38, 67, 123, .12);
+}
+.page-card.over {
+  box-shadow: inset 0 0 0 1px rgba(75, 111, 198, .12);
+}
+
+/* Keep interactions subtle on touch devices and disable motion when requested. */
+@media (hover: none) {
+  .page-card:hover,
+  .preview-actions .tool-button:hover:not(:disabled),
+  .sidebar-add:hover:not(:disabled) {
+    transform: none;
+    box-shadow: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .documents-section button,
+  #editor button,
+  .organize-dialog button,
+  .page-card,
+  .page-tools button,
+  .preview-actions .tool-button {
+    transition: none !important;
+  }
+  .documents-section button:not(:disabled):active,
+  #editor button:not(:disabled):active,
+  .organize-dialog button:not(:disabled):active {
+    transform: none;
+  }
+}
