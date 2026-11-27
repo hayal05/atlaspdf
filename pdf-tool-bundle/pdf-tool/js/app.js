@@ -253,6 +253,7 @@ function closeUnlock() {
   $('unlockDialog').hidden = true;
   $('unlockPassword').value = '';
   $('unlockStatus').textContent = '';
+  updateUnlockFile();
 }
 function updateUnlockFile() {
   const file = $('unlockPicker').files[0];
