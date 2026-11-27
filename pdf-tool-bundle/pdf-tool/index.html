@@ -27,6 +27,7 @@
 <link rel="stylesheet" href="css/compact-top-action-tools.css">
 <link rel="stylesheet" href="css/workspace-action-toolbar.css">
 <link rel="stylesheet" href="css/sign-pdf.css">
+<link rel="stylesheet" href="css/protect-pdf.css">
 </head>
 <body>
 <div id="busybar"></div>
@@ -69,6 +70,7 @@
       <button class="home-tool-card" type="button" data-home-tool="image"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9" r="1.5"/><path d="m21 15-5-5L5 20"/></svg></span><strong>Image to PDF</strong><span>Turn JPG and PNG images into one PDF.</span><b>Convert images <i aria-hidden="true">→</i></b></button>
       <button class="home-tool-card" type="button" data-home-tool="pdf-image"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l5 5v13H6z"/><path d="M14 3v5h5"/><rect x="8.5" y="12" width="8" height="6" rx="1"/><circle cx="11" cy="14" r=".8"/><path d="m9 18 2.5-2 1.5 1 1.5-1.5 2 2.5"/></svg></span><strong>PDF to JPG</strong><span>Convert every PDF page into JPG or PNG images.</span><b>Convert to images <i aria-hidden="true">→</i></b></button>
       <button class="home-tool-card" type="button" data-home-tool="sign"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20c3-1 4-5 6-8 1-2 3-2 3 0 0 2-2 4-1 5 1 1 4-2 6-4"/><path d="M4 4h16v16H4z" opacity=".35"/></svg></span><strong>Sign PDF</strong><span>Add your handwritten or typed signature to a PDF.</span><b>Sign a document <i aria-hidden="true">→</i></b></button>
+      <button class="home-tool-card" type="button" data-home-tool="protect"><span class="home-tool-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1"/><path d="M12 16.5v1.5"/></svg></span><strong>Protect PDF</strong><span>Encrypt a PDF with a password to open it.</span><b>Protect a PDF <i aria-hidden="true">→</i></b></button>
     </div>
   </section>
     <section id="uploadZone" class="upload-zone" aria-label="Upload PDF files">
@@ -206,6 +208,23 @@
       <p class="sign-note">This adds a visible signature image. It is not a certificate-based digital signature.</p>
     </div>
   </section>
+
+  <section id="protectDialog" class="organize-dialog protect-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="protectTitle">
+    <div class="organize-card protect-card">
+      <div class="organize-heading"><h2 id="protectTitle">Protect PDF</h2><button id="protectClose" type="button" aria-label="Close">×</button></div>
+      <p class="protect-description">Encrypt your PDF with AES-256. Anyone opening the protected copy will need the password you set.</p>
+      <label class="protect-file" for="protectPicker"><span class="protect-file-icon">PDF</span><span><strong id="protectFileName">Choose a PDF file</strong><small id="protectFileMeta">One PDF · processed locally on your device</small></span><span class="protect-browse">Browse</span></label>
+      <input id="protectPicker" type="file" accept="application/pdf,.pdf" hidden>
+      <div class="protect-field"><label for="protectPassword">Password</label><input id="protectPassword" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="At least 8 characters"></div>
+      <div class="protect-field"><label for="protectConfirm">Confirm password</label><input id="protectConfirm" type="password" autocomplete="new-password" minlength="8" maxlength="128" placeholder="Enter the password again"></div>
+      <div class="protect-strength"><span id="protectStrengthBar"></span></div>
+      <p id="protectStrengthText" class="protect-hint">Use a long, unique password. There is no password recovery.</p>
+      <p class="protect-privacy"><span aria-hidden="true">✓</span> AES-256 encryption runs in your browser. Your PDF and password are not uploaded.</p>
+      <p id="protectStatus" class="protect-status" role="status" aria-live="polite"></p>
+      <div class="protect-actions"><button id="protectCancel" type="button" class="button button-secondary">Cancel</button><button id="protectRun" type="button" class="button button-primary" disabled>Encrypt &amp; Download</button></div>
+      <p class="protect-note">Keep your password safe. If it is lost, AtlasPDF cannot recover the protected document.</p>
+    </div>
+  </section>
   <footer class="site-footer">
     <span>AtlasPDF</span>
     
@@ -230,5 +249,6 @@
 <script type="module" src="js/home.js"></script>
 <script type="module" src="js/conversion.js"></script>
 <script type="module" src="js/sign-pdf.js"></script>
+<script type="module" src="js/protect-pdf.js"></script>
 </body>
 </html>
