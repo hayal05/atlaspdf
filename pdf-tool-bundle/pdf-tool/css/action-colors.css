@@ -1,0 +1,183 @@
+/* PR 1 — colorful icon + label actions inside PDF workspaces.
+   Keep the existing control markup and behavior; this layer only improves
+   visual hierarchy. Homepage cards and layout are intentionally untouched. */
+
+.preview-actions .tool-button,
+.page-tools button,
+.sidebar-add,
+.organize-actions button,
+#etools button,
+.convert-file-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 700;
+  transition: color .16s ease, background-color .16s ease,
+    border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+/* Preview toolbar: recognizable action colors, with labels retained. */
+#previewSnip {
+  color: #245bc8;
+  border-color: #cbd9fb;
+  background: #edf3ff;
+}
+#previewSnip:hover:not(:disabled),
+#previewSnip.active {
+  color: #1949ad;
+  border-color: #a9c1f4;
+  background: #e1ebff;
+}
+
+#previewPaste {
+  color: #087f91;
+  border-color: #bce8ee;
+  background: #e9f9fb;
+}
+#previewPaste:hover:not(:disabled) {
+  color: #066979;
+  border-color: #8bd5df;
+  background: #d9f4f7;
+}
+
+#previewUnlock {
+  color: #bd650c;
+  border-color: #f3d2ad;
+  background: #fff3e7;
+}
+#previewUnlock:hover:not(:disabled) {
+  color: #995006;
+  border-color: #eab77e;
+  background: #ffead5;
+}
+
+#organizePages {
+  color: #7042bd;
+  border-color: #dfd0f8;
+  background: #f5efff;
+}
+#organizePages:hover:not(:disabled) {
+  color: #59309d;
+  border-color: #c8b0ef;
+  background: #eee4ff;
+}
+
+#cropNumber {
+  color: #087d70;
+  border-color: #bde8df;
+  background: #eaf9f5;
+}
+#cropNumber:hover:not(:disabled) {
+  color: #06675d;
+  border-color: #8ed7ca;
+  background: #dcf5ee;
+}
+
+#watermark {
+  color: #7650b9;
+  border-color: #ded2f4;
+  background: #f5f0fc;
+}
+#watermark:hover:not(:disabled) {
+  color: #5e3b9c;
+  border-color: #c7b5e8;
+  background: #ece4f8;
+}
+
+#previewEdit {
+  color: #285fc3;
+  border-color: #cbdafa;
+  background: #eff4ff;
+}
+#previewEdit:hover:not(:disabled) {
+  color: #1e4ca4;
+  border-color: #abc2f0;
+  background: #e3edff;
+}
+
+#previewRotate {
+  color: #a65b12;
+  border-color: #f0d5b8;
+  background: #fff5eb;
+}
+#previewRotate:hover:not(:disabled) {
+  color: #88470b;
+  border-color: #e6bd91;
+  background: #ffebd8;
+}
+
+#previewRemove,
+.page-tools .danger-tool,
+.page-tools button[aria-label*="Remove"],
+.page-tools button[title*="Remove"] {
+  color: #bd3445;
+  border-color: #f0cbd1;
+  background: #fff1f3;
+}
+#previewRemove:hover:not(:disabled),
+.page-tools .danger-tool:hover:not(:disabled),
+.page-tools button[aria-label*="Remove"]:hover:not(:disabled),
+.page-tools button[title*="Remove"]:hover:not(:disabled) {
+  color: #9f2636;
+  border-color: #e6aab4;
+  background: #ffe5e9;
+}
+
+/* Utility controls stay colorful without competing with primary actions. */
+.sidebar-add {
+  color: #2460c9;
+  border-color: #cbdafa;
+  background: #edf3ff;
+}
+.sidebar-add:hover:not(:disabled) {
+  color: #194cae;
+  border-color: #a9c1f1;
+  background: #e2ecff;
+}
+
+/* Dialog operations: blue primary actions and a clear red destructive action. */
+#extractRanges,
+#splitRanges,
+#cropNumberDone {
+  color: #245bc8;
+  border-color: #cbd9fb;
+  background: #edf3ff;
+}
+#extractRanges:hover:not(:disabled),
+#splitRanges:hover:not(:disabled),
+#cropNumberDone:hover:not(:disabled) {
+  color: #1949ad;
+  border-color: #a9c1f4;
+  background: #e1ebff;
+}
+#removeRanges {
+  color: #bd3445;
+  border-color: #f0cbd1;
+  background: #fff1f3;
+}
+#removeRanges:hover:not(:disabled) {
+  color: #9f2636;
+  border-color: #e6aab4;
+  background: #ffe5e9;
+}
+
+/* Disabled actions remain legible while clearly unavailable. */
+.preview-actions .tool-button:disabled,
+.page-tools button:disabled,
+.sidebar-add:disabled,
+.organize-actions button:disabled,
+#etools button:disabled,
+.convert-file-controls button:disabled {
+  opacity: .48;
+  filter: saturate(.55);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .preview-actions .tool-button {
+    min-height: 36px;
+    padding-inline: 9px;
+  }
+}
