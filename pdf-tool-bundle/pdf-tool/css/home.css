@@ -130,3 +130,10 @@ body.repair-workspace-open .top-actions{display:none}
   .home-privacy{margin-top:6px;font-size:9px}
 }
 
+
+
+/* Compact greeting and live Ethiopian calendar date in the site header. */
+.topbar-welcome{display:flex;flex-direction:column;justify-content:center;gap:1px;min-width:0;margin-right:auto;padding-left:16px;border-left:1px solid var(--line)}
+.topbar-welcome strong{color:#26364f;font-size:13px;font-weight:800;line-height:1.25}
+.topbar-welcome time{max-width:220px;overflow:hidden;color:#7b899d;font-size:11px;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:640px){.topbar-welcome{max-width:48%;margin-right:0;margin-left:auto;padding-left:11px}.topbar-welcome strong{font-size:12px}.topbar-welcome time{max-width:100%;font-size:10px}}

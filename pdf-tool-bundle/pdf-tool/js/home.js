@@ -1,4 +1,24 @@
 const $ = id => document.getElementById(id);
+
+// Show the current date using the Ethiopian calendar and Amharic locale.
+function updateEthiopianHeaderDate() {
+  const dateElement = $('ethiopianDate');
+  if (!dateElement) return;
+  const now = new Date();
+  try {
+    dateElement.textContent = new Intl.DateTimeFormat('am-ET-u-ca-ethiopic', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    }).format(now);
+  } catch (error) {
+    dateElement.textContent = new Intl.DateTimeFormat('en-US-u-ca-ethiopic', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    }).format(now);
+  }
+  dateElement.dateTime = now.toISOString();
+}
+updateEthiopianHeaderDate();
+setInterval(updateEthiopianHeaderDate, 60 * 60 * 1000);
+
 const hub = $('homeHub');
 const workspace = $('documentWorkspace');
 const picker = $('picker');
